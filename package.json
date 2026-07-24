@@ -5,6 +5,7 @@
   "type": "module",
   "scripts": {
     "dev": "vite dev",
+    "start": "node backend/server.js",
     "backend": "node backend/server.js",
     "dev:all": "node backend/server.js & vite dev",
     "build": "vite build",
