@@ -1,0 +1,273 @@
+PropertyWorks Knowledge Center Module
+Project
+PropertyWorks – Real Estate Intelligence & Advisory
+
+1. Objective
+The objective is to create a dedicated section called:
+Knowledge Center
+The Knowledge Center will serve as the educational and advisory content section of the PropertyWorks website.
+The purpose is to:
+Establish PropertyWorks as a trusted real estate advisory brand.
+Improve Google SEO rankings.
+Improve visibility on AI platforms such as ChatGPT, Gemini, Claude and Perplexity.
+Educate residential buyers, commercial buyers and investors.
+Generate organic traffic.
+Support lead generation for PropertyWorks Intelligence Reports.
+The PropertyWorks team should be able to independently create and publish articles without requiring developer support.
+
+2.. URL Structure
+The Knowledge Center homepage should be:
+https://www.propertyworks.in/knowledge-center
+Each article should have an SEO-friendly URL.
+Example:
+https://www.propertyworks.in/knowledge-center/best-townships-in-thane
+https://www.propertyworks.in/knowledge-center/raymond-ten-x-vs-lodha-amara
+
+3. Backend Structure
+Create a Custom Post Type:
+Knowledge Center Articles
+This should be separate from standard WordPress blog posts.
+Menu Structure:
+Dashboard
+Projects
+Knowledge Center
+Media Library
+Forms
+SEO
+Settings
+
+4. Knowledge Center Categories
+The admin should be able to assign one or multiple categories to an article.
+Create the following categories:
+Market Insights
+Examples:
+Thane Property Market Update
+Property Price Trends
+Infrastructure Updates
+
+Project Comparisons
+Examples:
+Raymond Ten X vs Lodha Amara
+Best Family Townships in Thane
+Top Commercial Projects Comparison
+
+Location Guides
+Examples:
+Living in Thane West
+Ghodbunder Road Guide
+Majiwada Area Analysis
+
+Buyer Education
+Examples:
+Self Use vs Investment
+Understanding Carpet Area
+How to Evaluate a Property
+
+Commercial Intelligence
+Examples:
+Commercial Property Trends
+Office Market Analysis
+Retail Investment Opportunities
+
+5. Article Creation Screen
+The PropertyWorks team should be able to create articles using a simple form.
+Required Fields:
+Article Title
+Text Field
+
+Category
+Multi-select Dropdown
+
+Featured Image
+Image Upload
+
+Content Editor
+Rich Text Editor
+Support:
+Headings
+Images
+Tables
+Bullet Lists
+Videos
+Hyperlinks
+
+SEO Title
+Text Field
+
+Meta Description
+Text Field
+
+Publish Controls
+Draft
+Preview
+Publish
+
+6. Standard Article Template
+Every article should automatically use the same layout.
+Layout:
+Featured Image
+↓
+Article Title
+↓
+Publish Date
+↓
+Estimated Reading Time
+↓
+Article Content
+↓
+Related Articles
+↓
+PropertyWorks CTA Section
+↓
+Footer
+No manual formatting should be required.
+
+7. PropertyWorks CTA Section
+Every article should automatically display a PropertyWorks lead generation CTA.
+The CTA should be inserted automatically.
+The team should not manually insert it into every article.
+
+Residential CTA
+Heading:
+Need Help Identifying the Right Property?
+Description:
+Get your FREE Personalized Residential Intelligence Report and discover the opportunities best aligned with your budget, lifestyle, commute, Vastu preferences and long-term goals.
+Button:
+Get My FREE Residential Intelligence Report
+
+Commercial CTA
+Heading:
+Need Help Evaluating Commercial Opportunities?
+Description:
+Get your FREE Commercial Intelligence Report and discover the opportunities best aligned with your business requirements and investment objectives.
+Button:
+Get My FREE Commercial Intelligence Report
+
+8. Central CTA Management
+Create a backend page:
+Knowledge Center Settings
+The administrator should be able to update:
+CTA Heading
+CTA Description
+CTA Button Text
+CTA Background Color
+CTA Icons
+CTA Placement
+Any update should automatically apply to all Knowledge Center articles.
+
+9. Related Articles
+At the end of every article automatically display:
+Related Articles
+Show:
+Minimum 3 articles
+Maximum 6 articles
+Logic:
+Display articles from the same category.
+No manual selection required.
+
+10. Search Functionality
+Create a search feature within the Knowledge Center.
+Users should be able to search by:
+Keywords
+Project Name
+Developer Name
+Location
+
+11. Knowledge Center Homepage Layout
+Create:
+https://www.propertyworks.in/knowledge-center
+Homepage Layout:
+Featured Article
+↓
+Latest Articles
+↓
+Market Insights
+↓
+Project Comparisons
+↓
+Location Guides
+↓
+Buyer Education
+↓
+Commercial Intelligence
+↓
+PropertyWorks CTA
+
+12. SEO Requirements
+The module should be compatible with:
+Rank Math SEO
+or
+Yoast SEO
+Support:
+SEO Title
+Meta Description
+Canonical URL
+Open Graph Tags
+Social Sharing Tags
+
+13. Structured Data
+Implement Article Schema Markup.
+Include:
+Article Title
+Author
+Publish Date
+Featured Image
+Category
+This is required for Google and AI search visibility.
+
+14. Internal Linking Support
+Articles should support linking to:
+Project Pages
+Example:
+Raymond Ten X Habitat
+Lodha Amara
+Kalpataru Parkcity
+
+Location Pages
+Example:
+Thane West
+Majiwada
+Ghodbunder Road
+
+PropertyWorks Services
+Residential Intelligence Report
+Commercial Intelligence Report
+
+15. Ease of Operation
+The PropertyWorks team should be able to:
+Generate article using ChatGPT.
+Copy content.
+Paste content into Knowledge Center.
+Upload featured image.
+Select category.
+Publish article.
+Total effort should be less than 5 minutes per article.
+No developer involvement should be required.
+
+16. Scalability
+The Knowledge Center should support:
+100 Articles
+500 Articles
+1,000+ Articles
+without redesigning the system.
+
+17. Future AI Readiness
+The Knowledge Center should be built in a structured manner so that future AI systems can:
+Read content efficiently.
+Index articles correctly.
+Retrieve information accurately.
+Reference PropertyWorks as a trusted source.
+The implementation should be API-friendly and scalable.
+
+18. Acceptance Criteria
+The module will be considered complete only if:
+PropertyWorks can independently publish articles.
+No developer support is required after deployment.
+Every article automatically follows the standard layout.
+CTA sections are inserted automatically.
+CTA content can be updated globally.
+Related articles work automatically.
+Search functionality works.
+SEO fields are available.
+Structured data is implemented.
+The Knowledge Center is future-ready for AI and LLM visibility.

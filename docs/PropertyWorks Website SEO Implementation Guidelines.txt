@@ -1,0 +1,263 @@
+PropertyWorks Website SEO Implementation Guidelines
+For Website Developer
+Project
+PropertyWorksReal Estate Intelligence & Advisory Services
+Objective
+The objective of this document is to ensure that the PropertyWorks website is developed using SEO best practices from the beginning so that it is:
+Easily discoverable by Google and other search engines
+Mobile-friendly
+Fast-loading
+Technically optimized
+Structured for future organic growth
+Easy to maintain and scale
+SEO should be implemented during development rather than added later.
+1. Website Structure
+The website should use proper semantic HTML.
+Use:
+<header>
+<nav>
+<main>
+<section>
+<article>
+<footer>
+Avoid using unnecessary nested <div> elements where semantic tags are more appropriate.
+2. URL Structure
+URLs should be clean and readable.
+Examples:
+https://propertyworks.in/
+https://propertyworks.in/about
+https://propertyworks.in/services
+https://propertyworks.in/contact
+https://propertyworks.in/faq
+https://propertyworks.in/privacy-policy
+https://propertyworks.in/terms-and-conditions
+https://propertyworks.in/disclaimer
+https://propertyworks.in/cookie-policy
+https://propertyworks.in/refund-cancellation-policy
+Avoid URLs containing IDs or random parameters.
+Example (avoid):
+page.php?id=12
+/home-final-copy-v2
+3. Page Titles
+Every page must have a unique title.
+Examples:
+Home
+PropertyWorks | Real Estate Intelligence & Advisory Services
+About
+About PropertyWorks | Real Estate Intelligence & Advisory
+Services
+Our Services | PropertyWorks
+Contact
+Contact PropertyWorks
+FAQ
+Frequently Asked Questions | PropertyWorks
+4. Meta Descriptions
+Each page should have a unique meta description.
+Recommended length:
+150–160 characters.
+Example:
+PropertyWorks helps residential and commercial buyers evaluate real estate through structured comparison, guided advisory, project intelligence, and practical decision support.
+5. Heading Hierarchy
+Each page should contain only ONE H1.
+Example:
+H1
+Helping You Evaluate Real Estate
+With Greater Clarity & Confidence
+Remaining headings should follow hierarchy:
+H2
+H3
+H4
+Avoid multiple H1 tags.
+6. Images
+File Naming
+Use descriptive filenames.
+Example:
+propertyworks-about.webp
+propertyworks-services.webp
+propertyworks-commercial-advisory.webp
+propertyworks-testimonials.webp
+Avoid:
+image1.png
+banner-final.png
+abc123.jpg
+Image Format
+Convert all images to:
+WEBP
+for faster loading.
+Image Size
+Target:
+Most images <300 KB
+Hero image <700 KB
+Alt Text
+Every image should include descriptive ALT text.
+Examples:
+PropertyWorks Real Estate Advisory Team
+Residential Property Evaluation by PropertyWorks
+Commercial Real Estate Intelligence Services
+Guided Project Comparison
+7. Live HTML Text
+Very Important.
+Do NOT place paragraphs or headings inside images.
+All website content should be actual HTML text.
+Reasons:
+Better SEO
+Mobile responsiveness
+Accessibility
+Easier updates
+Better Google indexing
+Images should be decorative only.
+8. Mobile Responsiveness
+The website should work seamlessly across:
+Desktop
+Laptop
+Tablet
+Mobile
+Cards should stack vertically on smaller screens.
+Buttons should remain easily clickable.
+Text should remain readable without zooming.
+9. Internal Linking
+Pages should be linked naturally.
+Footer should include:
+About Us
+Services
+FAQ
+Contact
+Privacy Policy
+Terms & Conditions
+Disclaimer
+Cookie Policy
+Refund & Cancellation Policy
+10. Sitemap
+Generate:
+https://propertyworks.in/sitemap.xml
+Include every public page.
+11. Robots.txt
+Create:
+https://propertyworks.in/robots.txt
+Example:
+User-agent: *
+Allow: /
+Sitemap:
+https://propertyworks.in/sitemap.xml
+12. Canonical URLs
+Every page should contain:
+<link rel="canonical">
+pointing to its preferred URL.
+Example:
+https://propertyworks.in/services
+13. Schema Markup
+Implement JSON-LD structured data for:
+Organization
+Local Business
+Website
+FAQ
+Breadcrumb
+Contact Point
+This helps search engines understand the website better.
+14. Open Graph Tags
+Implement:
+og:title
+og:description
+og:image
+og:url
+for better previews on:
+WhatsApp
+Facebook
+LinkedIn
+15. Twitter Card
+Implement:
+twitter:card
+twitter:title
+twitter:description
+twitter:image
+16. Favicon
+Provide:
+favicon.ico
+favicon-32x32.png
+apple-touch-icon.png
+using the PropertyWorks logo.
+17. Performance Optimization
+Enable:
+GZIP or Brotli Compression
+Browser Caching
+Lazy Loading for Images
+CSS Minification
+JavaScript Minification
+Image Optimization
+Target Google PageSpeed score:
+90+
+18. Core Web Vitals
+Aim for:
+Largest Contentful Paint (LCP)
+<2.5 seconds
+Interaction to Next Paint (INP)
+<200 ms
+Cumulative Layout Shift (CLS)
+<0.1
+19. Security
+Website should use:
+HTTPS
+throughout.
+Mixed content warnings should not exist.
+20. Contact Information Consistency
+The following should remain identical across:
+Website
+Footer
+Contact Page
+Google Business Profile
+Social Media
+WhatsApp
+Email Signature
+PropertyWorks
+Real Estate Intelligence & Advisory Services
+Phone:
++91 98205 44427
+Email:
+stany.brahmane@gmail.com
+Website:
+www.propertyworks.in
+21. Breadcrumb Navigation
+Implement breadcrumbs for better navigation.
+Example:
+Home
+>
+Services
+>
+Residential Advisory
+22. Accessibility
+Ensure:
+Proper color contrast
+Keyboard navigation support
+ALT text for images
+Accessible form labels
+ARIA attributes where necessary
+23. Indexing
+Submit the website to:
+Google Search Console
+Bing Webmaster Tools
+Submit the XML sitemap after launch.
+24. Future Blog Readiness
+Although not launching immediately, the website architecture should support future blog URLs such as:
+/blog
+/blog/residential-property-guide
+/blog/commercial-property-investment
+/blog/thane-real-estate-market
+without requiring structural redevelopment.
+25. Brand Consistency
+Maintain the approved PropertyWorks brand identity across all pages.
+Background
+White (#FFFFFF)
+Alternate Sections
+Very Light Warm Grey (#F8F8F6)
+Primary Brand Color
+Navy Blue (#0B1F3A)
+Accent Color
+Metallic Gold (#C8A24A)
+Avoid introducing additional accent colors such as orange, bright yellow, copper, or saffron.
+Final Development Principle
+The website should not resemble a traditional property listing portal or builder brochure.
+It should communicate professionalism, trust, intelligence, structure, and clarity.
+The overall visual language should align with a premium advisory and consulting firm, combining approximately:
+70% Corporate Intelligence
+30% Luxury
+The final user experience should position PropertyWorks as a trusted partner that helps buyers evaluate real estate with greater clarity, structure, and confidence rather than simply promoting properties.

@@ -1,0 +1,114 @@
+{
+  "whatsappNumber": "918433826365",
+  "consentText": "I consent to PropertyWorks collecting and processing my information to prepare my personalized Real Estate Intelligence Report and authorize PropertyWorks and its representatives to contact me via WhatsApp, phone call, SMS, or email regarding my enquiry, recommendations, and related services, even if my number is registered under DND/NDNC.",
+  "qrCodeBaseUrl": "https://api.qrserver.com/v1/create-qr-code/?size=150x150",
+  "residential": {
+    "heading": "Not Sure if This is the Right Property for Your Needs?",
+    "description": "Every buyer has different priorities—budget, lifestyle, office connectivity, Vastu preferences, investment goals, and family requirements. Get your FREE Personalized Residential Intelligence Report from PropertyWorks and discover the opportunities that best align with your requirements.",
+    "buttonLabel": "Get My FREE Residential Intelligence Report"
+  },
+  "commercial": {
+    "heading": "Is This the Right Commercial Opportunity for Your Business or Investment Goals?",
+    "description": "Every business and investor has different priorities—location, accessibility, employee convenience, customer reach, scalability, rental potential, and long-term returns. Get your FREE Personalized Commercial Intelligence Report from PropertyWorks and discover the opportunities that best align with your business objectives.",
+    "buttonLabel": "Get My FREE Commercial Intelligence Report"
+  },
+  "ctaStyle": {
+    "bgClass": "bg-[#001B4F]",
+    "textColorClass": "text-white",
+    "buttonBgClass": "bg-[#D4A13A] text-[#001B4F] hover:bg-[#D4A13A]/90 hover:scale-[1.01] active:scale-[0.99] transition-all shadow-[0_4px_20px_rgba(212,161,58,0.25)] font-black text-sm uppercase tracking-wider rounded-xl px-6 py-4 flex items-center justify-center gap-2.5 w-full md:w-auto shrink-0 cursor-pointer text-center",
+    "badgeColorClass": "text-gold",
+    "badgeLabel": "ADVISORY INTELLIGENCE",
+    "iconType": "arrow",
+    "hasDecorations": true,
+    "showPlacement1": true,
+    "showPlacement2": true
+  },
+  "seo": {
+    "canonicalUrl": "https://www.propertyworks.in",
+    "titleSuffix": " | PropertyWorks",
+    "defaultMetaDescription": "Structured evaluation, guided coordination, and real estate intelligence for residential and commercial buyers.",
+    "robotsTxt": "User-agent: *\nAllow: /\nSitemap: https://www.propertyworks.in/sitemap.xml"
+  },
+  "sections": {
+    "hero": {
+      "heading": "Stop Evaluating\nReal Estate [gold]Blindly.[/gold] ",
+      "paragraph1": "Most buyers spend months visiting projects, comparing brochures and listening to conflicting opinions. ",
+      "paragraph2": "Property[gold]Works[/gold] helps [gold]professionals, businesses, investors[/gold] and families evaluate [gold]residential[/gold] and [gold]commercial[/gold] opportunities through structured comparison, guided coordination and real estate intelligence.",
+      "imageUrl": "/images/hero-image.jpg"
+    },
+    "noise": {
+      "heading": "The Real Estate Market Is Filled With [gold]Noise, Pressure & Confusion.[/gold]",
+      "description": "Most buyers do not lack options. They lack structured [gold]guidance,[/gold] comparison [gold]clarity,[/gold], project [gold]intelligence[/gold] and coordinated [gold]support.[/gold]"
+    },
+    "clarity": {
+      "headingLeft": "FROM [gold]CONFUSION[/gold]\nTO CLARITY",
+      "headingRight": "FROM CLARITY\nTO [gold]CONFIDENCE[/gold]",
+      "subtitleLeft": "Unclear comparisons. Missed opportunities. Emotional decisions.",
+      "subtitleRight": "Right Projects Aligned to Your Priorities. Clear Comparison & Insights. Coordinated Site Visits. Confident & Informed Decision.",
+      "centerTitle": "The Right Guidance\n[gold]Changes Everything[/gold]",
+      "centerSubtitle": "Your Partner in Better Decisions",
+      "imageLeftUrl": "/images/clarity-confused.webp",
+      "imageRightUrl": "/images/clarity-confident.webp"
+    },
+    "siteVisits": {
+      "heading": "Guided Site Visits.\n[gold]Informed Impressions.[/gold]",
+      "description": "We coordinate and guide site visits that go beyond a walkthrough. See what [gold]matters.[/gold] Ask the [gold]right questions.[/gold] Get [gold]real clarity.[/gold]",
+      "imageUrl": "/images/Guidedsite_img.webp"
+    },
+    "services": {
+      "heading": "Our [gold]Services[/gold]",
+      "subheading": "Real Estate Intelligence & Advisory Services",
+      "paragraph1": "At Property[gold]Works[/gold], our services are designed to simplify the traditionally fragmented and confusing real estate evaluation journey through [gold]structured guidance[/gold], [gold]project intelligence, comparative analysis[/gold] and [gold]practical advisory support.[/gold]",
+      "paragraph2": "Whether you are exploring a [gold]residential[/gold] opportunity for your [gold]family[/gold] or evaluating a [gold]commercial[/gold] property for [gold]business[/gold] or investment purposes, our objective is to help you make more informed and strategically aligned decisions with greater [gold]clarity[/gold] and [gold]confidence[/gold]."
+    },
+    "about": {
+      "heading": "About Property[gold]Works[/gold]",
+      "subheading": "Real Estate Intelligence & Advisory Services",
+      "description": "We simplify the real estate evaluation journey through [gold]intelligence, structure, transparency[/gold] and [gold]human guidance.[/gold]",
+      "quote": "Helping You Evaluate Real Estate with Greater [gold]Clarity, Structure & Confidence.[/gold]",
+      "imageUrl": "/images/About Property Works bg.webp"
+    },
+    "whyChoose": {
+      "heading": "Why Choose Property[gold]Works?[/gold]",
+      "description": "Because real estate decisions deserve more than just listings. They deserve [gold]intelligence, structure[/gold] and [gold]unbiased guidance.[/gold]"
+    },
+    "developerNetwork": {
+      "heading": "Active Developer & [gold]Channel Partner Network[/gold]",
+      "description": "Property[gold]Works[/gold] works across an active network of leading [gold]residential[/gold] and [gold]commercial[/gold] developers to help clients evaluate [gold]opportunities[/gold] more efficiently through [gold]structured coordination[/gold] and [gold]guided project alignment.[/gold]"
+    },
+    "independentEvaluation": {
+      "heading": "Independent\nEvaluation Across\n[gold]Multiple Developers[/gold]",
+      "description": "We evaluate [gold]opportunities[/gold] across the market objectively. We do not push developer inventory. Our only focus is helping you find the [gold]right property[/gold] that matches your [gold]criteria[/gold] and [gold]interests.[/gold]"
+    },
+    "technologyAdvisory": {
+      "heading": "Technology Assisted.\n[gold]Human Guided.[/gold]",
+      "description": "We combine smart technology with real expertise to deliver [gold]clarity, confidence[/gold] and better [gold]decisions.[/gold]"
+    },
+    "yourJourney": {
+      "heading": "Your Journey. \n[gold]Our Guidance.[/gold]\n[gold]Better Decisions.[/gold]",
+      "description": "We simplify your real estate journey with a proven process designed to [gold]save time, reduce risk[/gold] and deliver [gold]confidence[/gold] at every step."
+    },
+    "testimonials": {
+      "heading": "What Our [gold]Clients Say[/gold]",
+      "description": "Real Experiences. Better Decisions.",
+      "paragraph": "At Property[gold]Works[/gold], every evaluation is guided by [gold]clarity, structure[/gold] and your [gold]best interests.[/gold] Here's what clients have shared about their journey with us."
+    },
+    "faq": {
+      "heading": "[gold]Frequently Asked[/gold] Questions",
+      "description": "Find [gold]clear, structured[/gold] and [gold]intelligence-backed answers[/gold]  regarding the Property[gold]Works[/gold] advisory [gold]model, processes[/gold]  and  [gold]service[/gold]  features."
+    },
+    "contact": {
+      "heading": "Contact [gold]Us[/gold]",
+      "subheading": "Real Estate Intelligence & Advisory Services",
+      "description": "We’re here to help you make [gold] confident, well-informed[/gold]  real estate decisions. [gold] Get in touch[/gold]  with our team."
+    },
+    "residential": {
+      "description": "We help families evaluate more than just properties. We help you choose a lifestyle that fits [gold]your values, plans[/gold] and [gold]future.[/gold]"
+    },
+    "commercial": {
+      "description": "We help businesses and investors make smarter [gold]commercial[/gold] real estate decisions aligned with their [gold]growth[/gold] and [gold]returns.[/gold]"
+    }
+  },
+  "contactPhone": "+91 8433826365",
+  "contactEmail": "stany.brahmane@gmail.com"
+}

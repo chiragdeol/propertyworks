@@ -1,0 +1,317 @@
+Detailed Requirements – Real Estate Digital Platform Development
+Project Overview
+We are building a modern digital-first real estate platform focused on:
+lead generation,
+project discovery,
+buyer qualification,
+microsite management,
+WhatsApp-driven engagement workflows,
+and AI-assisted advisory experiences.
+The objective is to create a scalable, easy-to-manage, and professionally designed ecosystem that supports long-term operational growth while minimizing dependency on developers for routine updates.
+This is not intended to be just a static brochure website. The focus is on building a scalable digital lead-generation and customer engagement platform for the real estate domain.
+
+1. Website Development Requirements
+The website should be developed using WordPress with a clean, modern, and professional UI/UX.
+Expected requirements:
+Responsive/mobile-first design
+Fast loading performance
+SEO-friendly architecture
+User-friendly navigation
+Conversion-focused layouts
+Scalable structure for future growth
+Easy backend management for non-technical users
+Preferred approach:
+Elementor or similar drag-and-drop page builder
+Reusable templates/components
+Modular structure
+
+2. Core Website Scope
+Expected website sections/pages may include:
+Home Page
+About Us
+Services
+Projects
+Microsites/Landing Pages
+Blog/Insights
+Contact Us
+Consultation/Inquiry Pages
+Legal, Privacy, Terms & Conditions & Compliance Pages
+
+3. Microsite & Landing Page System (Critical Requirement)
+A major requirement is the ability to quickly create and manage builder/project-specific microsites and landing pages.
+The architecture should support:
+Reusable microsite templates
+Easy duplication/cloning of project pages
+Dynamic replacement of project-specific content
+Independent internal management of:
+brochures
+images/videos
+pricing
+payment plans
+floor plans
+amenities
+RERA details
+lead forms
+CTAs
+Important:Routine project/microsite creation and asset uploads should not require developer dependency.
+The internal team should be able to manage and publish new project pages independently.
+
+4. CMS & Backend Usability
+The backend/admin experience should be designed for non-technical business users.
+Expected capabilities:
+Drag-and-drop editing
+Easy media uploads
+Editable forms
+Dynamic CTA updates
+Landing page duplication
+Easy publishing workflows
+Structured media organization
+The objective is operational flexibility and ease of management.
+
+5. Lead Generation & Conversion Workflow
+The website should support a strong lead-generation ecosystem.
+Expected capabilities:
+Inquiry/contact forms
+WhatsApp click-to-chat
+Consultation request forms
+Site visit booking flows
+Calendly integration
+Lead routing readiness
+Source attribution capability
+High-conversion CTA placements
+
+6. WhatsApp API & Conversational Workflow Support
+The platform will use WhatsApp API-based workflows for structured buyer qualification and engagement.
+Expected readiness/support:
+WhatsApp API integration readiness
+Interactive conversational workflows
+Button/list-based user journeys
+Structured lead qualification workflows
+Human intervention capability within automated conversations
+Lead handoff workflows
+CRM synchronization readiness
+Conversation workflow support
+The objective is to create a professional, structured, and user-friendly buyer engagement experience.
+
+7. CRM & Automation Readiness
+The platform should support future integrations with:
+Zoho CRM
+Google Sheets: (Preferred Initially)
+WhatsApp API platforms
+Automation workflows/tools
+The architecture should be scalable and integration-friendly.
+
+8. AI-Assisted Property Evaluation Workflow
+The platform will eventually support AI-assisted generation of Property Evaluation Reports using external AI models/tools.
+Expected readiness/support:
+Structured lead and property data capture
+Integration-friendly workflow architecture
+AI-trigger compatibility
+PDF/report generation readiness
+Report delivery workflow support
+The objective is to support a digital advisory-style customer experience.
+
+9. Technical SEO & AI/LLM Discoverability
+The website should follow modern technical SEO and discoverability best practices.
+Expected implementation:
+Sitemap.xml
+Robots.txt
+Schema markup
+Structured metadata
+Proper heading hierarchy
+Mobile optimization
+Fast loading speed
+Crawlability/indexing setup
+Google Search Console readiness
+Bing Webmaster readiness
+Experience with AI/LLM-friendly website architecture is an added advantage.
+
+10. Analytics & Tracking Setup
+Expected support/setup:
+Google Analytics
+Meta Pixel
+LinkedIn Insight Tag
+Conversion tracking readiness
+UTM parameter support
+Campaign tracking readiness
+
+
+11. Branding, Business Setup & Digital Presence
+Support/setup assistance is expected for establishing the foundational digital presence of the platform.
+Expected scope may include:
+Brand Identity
+Professional logo design
+Brand color/theme guidance
+Basic visual identity consistency
+Professional Email Setup
+Support/setup for:
+Domain-based professional email accounts
+Business email configuration
+Basic email authentication setup (SPF/DKIM/DMARC readiness)
+Examples:
+hello@domain.com
+support@domain.com
+connect@domain.com
+Social Media & Business Presence Setup
+Creation/setup guidance for:
+Facebook Business Page
+Instagram Business Profile
+Youtube
+Twitter
+LinkedIn Company Page
+Meta Business Manager
+Basic branding consistency across platforms
+Analytics & Tracking Ecosystem
+Setup/readiness support for:
+Google Analytics
+Meta Pixel
+LinkedIn Insight Tag
+Google Search Console
+Bing Webmaster Tools
+Business Profile & Discoverability Setup
+Support/guidance for:
+Google Business Profile setup
+Business verification readiness
+Basic discoverability optimization
+The objective is to establish a professional and scalable digital foundation aligned with the overall platform ecosystem.
+
+
+12. Hosting, Security & Deployment
+Support required for:
+Hosting deployment
+Domain mapping
+SSL setup
+Backup setup
+Security configuration
+Performance optimization
+Preferred hosting environment:Hostinger
+
+13. Security & Maintenance Best Practices
+Expected implementation:
+Backup system
+Security/firewall setup
+Spam protection
+Admin access controls
+Plugin management best practices
+Maintenance expectations may include:
+plugin updates
+bug fixes
+security updates
+performance monitoring
+technical troubleshooting
+Routine operational content updates should remain internally manageable.
+
+Ownership, Access & Credential Management
+All business-critical assets, accounts, credentials, and configurations created as part of the project should remain under company ownership and control.
+This includes (where applicable):
+domain access
+hosting access
+WordPress admin access
+plugin licenses
+social media accounts/pages
+Meta Business Manager
+analytics accounts
+tracking pixels
+CRM accounts
+WhatsApp API-related assets
+email accounts/configurations
+The developer/team should ensure proper handover and access transfer upon project completion.
+
+
+Third-Party Tools, Plugins & Licensing Transparency
+Any recommended third-party tools, plugins, themes, APIs, or paid services should be clearly communicated upfront along with:
+licensing model
+recurring costs
+dependency implications
+scalability considerations
+ownership/access structure
+Preference will be given to practical, scalable, and commercially sustainable implementation approaches.
+
+Change Management & Revision Approach
+The implementation approach should include reasonable flexibility for iterative feedback and refinements during the development lifecycle.
+At the same time, major scope additions or functional changes beyond agreed requirements should be identified, discussed, and mutually aligned before implementation.
+
+Future Scalability Considerations
+The architecture should be designed keeping future scalability in mind, including potential expansion across:
+additional projects/builders
+multiple microsites
+workflow automation
+CRM enhancements
+AI integrations
+advanced analytics
+multi-city expansion
+additional digital services
+The preference is for scalable and modular implementation approaches rather than short-term isolated solutions.
+
+
+
+
+14. Documentation & Knowledge Transfer
+Developer should provide:
+Admin walkthrough
+Backend training
+Basic SOP/documentation
+Guidance for microsite management
+Handover documentation
+The objective is to reduce operational dependency.
+
+15. Preferred Developer Profile
+We are looking for someone who:
+understands business workflows and lead funnels
+has experience with real estate websites/landing pages
+can think beyond just development
+is practical and solution-oriented
+understands scalability and operational flexibility
+can recommend implementation best practices
+
+Important Notes
+The focus is on scalability, flexibility, and operational efficiency.
+We prefer practical and maintainable solutions over unnecessarily complex implementations.
+Long-term maintainability and ease of management are extremely important.
+The platform should support future growth, automation, and integration opportunities.
+
+
+Additional Note – Content & Execution Responsibility
+We will be providing the required website/content material including:
+text/copy,
+brochures,
+images/videos,
+project details,
+pricing information,
+and other relevant digital assets wherever applicable.
+The developer/team will be expected to handle the complete implementation and execution aspects including:
+website design,
+page layouts,
+UI/UX,
+development,
+integrations,
+responsiveness,
+optimization,
+workflow setup,
+deployment,
+and overall technical implementation.
+We are looking for a developer/partner who can independently drive the execution process with minimal handholding while also providing practical recommendations and best-practice guidance wherever required.
+
+To make our "Locked Publicly but Unlocked via WhatsApp Link" strategy work on WordPress, you do not need complex coding. You just need a specific configuration of custom fields and a user access plugin.
+The WordPress Architecture You Need
+To make this function automatically, you will combine three core WordPress elements:
+Custom Post Types (CPT): Create a section called "Projects" instead of using standard blog posts.
+Advanced Custom Fields (ACF): Create custom text boxes for project names, RERA numbers, prices, and blurred images.
+A Dynamic Content Restriction Plugin: These handles showing or hiding data based on the link sent to WhatsApp.
+Step-by-Step Implementation Guide
+Step 1: Create the Project Pages
+Use a free plugin like CPT UI (Custom Post Type UI) and ACF (Advanced Custom Fields).
+Build a single template for all your real estate projects.
+For each project, you will input the "Public Data" (e.g., location, configuration) and the "Gated Data" (e.g., developer name, final price sheets, floor plan PDFs).
+Step 2: Set Up the URL-Based Unlock
+To ensure the page unlocks only when clicked from your WhatsApp automated message, use a plugin like Dynamic Conditions (for Elementor) or Restrict Content Pro.
+You will configure a rule that says: If the URL contains ?access=unlocked, show the full page. If it does not contain that parameter, show the blurred/locked version.
+Example Link sent via WhatsApp: ://yourwebsite.com
+Step 3: Connect WordPress to Your WhatsApp Bot
+When your AI finds the top 3 matches, your automation tool (like Make.com or Zapier) will pull the matching project URLs from your WordPress database. It will automatically attach the ?access=unlocked tag to the end of the links before your bot sends them to the client's WhatsApp chat.
+Recommended WordPress Tool Stack
+Page Builder: Elementor Pro or Divi (Makes it incredibly easy to design the "blurred" background overlays for normal users).
+Database Backend: ACF (Advanced Custom Fields) to organize all your developer details neatly.
+Automation Glue: Uncanny Owl or WP Webhooks (These plugins let your WordPress site talk directly to WhatsApp tools like Wati or AiSensy without needing a middleman software like Zapier).
+
+

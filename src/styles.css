@@ -1,0 +1,795 @@
+@import url("https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,600;0,700;1,400&family=Inter:wght@300;400;500;600;700&display=swap");
+@import "tailwindcss";
+@import "tw-animate-css";
+
+@theme {
+  /* ── Brand Colors ── */
+  --color-navy: #001b4f; /* Primary navy – headings, dark backgrounds */
+  --color-navy-deep: #000c24; /* Deeper navy – footer, darkest bg */
+  --color-gold: #d4a13a; /* Brand gold – accents, highlights */
+  --color-gold-soft: #e2b45a; /* Softer gold – hover states */
+
+  /* ── UI Colors ── */
+  --color-body-dark: #1f2937; /* Body text on light backgrounds */
+  --color-light-bg: #f8f9fb; /* Light section backgrounds */
+  --color-card-bg: #ffffff;
+  --color-divider: #e5e7eb;
+  --color-secondary-text: #94a3b8; /* Muted / secondary text */
+
+  /* ── Typography ── */
+  --font-heading: "Playfair Display", Georgia, serif; /* All headings (h1–h4, titles) */
+  --font-serif: "Playfair Display", Georgia, serif; /* Alias – same as heading */
+  --font-sans: "Inter", system-ui, sans-serif; /* Body text, UI elements */
+}
+
+body {
+  font-family: "Inter", system-ui, sans-serif;
+  font-size: 14px;
+  line-height: 1.7;
+  color: #1f2937;
+}
+@media (min-width: 768px) {
+  body {
+    font-size: 16px;
+  }
+}
+
+/* Global heading consistency */
+h1,
+h2,
+h3,
+h4 {
+  font-family: "Playfair Display", Georgia, serif;
+  line-height: 1.2;
+}
+
+@custom-variant dark (&:is(.dark *));
+
+/*
+ * Design system definition.
+ *
+ * The @theme inline block maps CSS custom properties to Tailwind utility
+ * classes (e.g. --color-primary -> bg-primary, text-primary).
+ *
+ * The :root and .dark blocks define the actual color values using oklch.
+ * All colors MUST use oklch format.
+ *
+ * To add a new semantic color:
+ * 1. Add the variable to :root (light value) and .dark (dark value)
+ * 2. Register it in @theme inline as --color-<name>: var(--<name>)
+ */
+
+@theme inline {
+  --radius-sm: calc(var(--radius) - 4px);
+  --radius-md: calc(var(--radius) - 2px);
+  --radius-lg: var(--radius);
+  --radius-xl: calc(var(--radius) + 4px);
+  --radius-2xl: calc(var(--radius) + 8px);
+  --radius-3xl: calc(var(--radius) + 12px);
+  --radius-4xl: calc(var(--radius) + 16px);
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --color-card: var(--card);
+  --color-card-foreground: var(--card-foreground);
+  --color-popover: var(--popover);
+  --color-popover-foreground: var(--popover-foreground);
+  --color-primary: var(--primary);
+  --color-primary-foreground: var(--primary-foreground);
+  --color-secondary: var(--secondary);
+  --color-secondary-foreground: var(--secondary-foreground);
+  --color-muted: var(--muted);
+  --color-muted-foreground: var(--muted-foreground);
+  --color-accent: var(--accent);
+  --color-accent-foreground: var(--accent-foreground);
+  --color-destructive: var(--destructive);
+  --color-destructive-foreground: var(--destructive-foreground);
+  --color-border: var(--border);
+  --color-input: var(--input);
+  --color-ring: var(--ring);
+  --color-ring-offset-background: var(--background);
+  --color-chart-1: var(--chart-1);
+  --color-chart-2: var(--chart-2);
+  --color-chart-3: var(--chart-3);
+  --color-chart-4: var(--chart-4);
+  --color-chart-5: var(--chart-5);
+  --color-sidebar: var(--sidebar);
+  --color-sidebar-foreground: var(--sidebar-foreground);
+  --color-sidebar-primary: var(--sidebar-primary);
+  --color-sidebar-primary-foreground: var(--sidebar-primary-foreground);
+  --color-sidebar-accent: var(--sidebar-accent);
+  --color-sidebar-accent-foreground: var(--sidebar-accent-foreground);
+  --color-sidebar-border: var(--sidebar-border);
+  --color-sidebar-ring: var(--sidebar-ring);
+}
+
+:root {
+  --radius: 0.625rem;
+  --background: oklch(1 0 0);
+  --foreground: oklch(0.129 0.042 264.695);
+  --card: oklch(1 0 0);
+  --card-foreground: oklch(0.129 0.042 264.695);
+  --popover: oklch(1 0 0);
+  --popover-foreground: oklch(0.129 0.042 264.695);
+  --primary: #001b4f;
+  --primary-foreground: oklch(0.984 0.003 247.858);
+  --secondary: oklch(0.968 0.007 247.896);
+  --secondary-foreground: oklch(0.208 0.042 265.755);
+  --muted: oklch(0.968 0.007 247.896);
+  --muted-foreground: oklch(0.554 0.046 257.417);
+  --accent: oklch(0.968 0.007 247.896);
+  --accent-foreground: oklch(0.208 0.042 265.755);
+  --destructive: oklch(0.577 0.245 27.325);
+  --destructive-foreground: oklch(0.984 0.003 247.858);
+  --border: oklch(0.929 0.013 255.508);
+  --input: oklch(0.929 0.013 255.508);
+  --ring: oklch(0.704 0.04 256.788);
+  --chart-1: oklch(0.646 0.222 41.116);
+  --chart-2: oklch(0.6 0.118 184.704);
+  --chart-3: oklch(0.398 0.07 227.392);
+  --chart-4: oklch(0.828 0.189 84.429);
+  --chart-5: oklch(0.769 0.188 70.08);
+  --sidebar: oklch(0.984 0.003 247.858);
+  --sidebar-foreground: oklch(0.129 0.042 264.695);
+  --sidebar-primary: #001b4f;
+  --sidebar-primary-foreground: oklch(0.984 0.003 247.858);
+  --sidebar-accent: oklch(0.968 0.007 247.896);
+  --sidebar-accent-foreground: oklch(0.208 0.042 265.755);
+  --sidebar-border: oklch(0.929 0.013 255.508);
+  --sidebar-ring: oklch(0.704 0.04 256.788);
+}
+
+.dark {
+  --background: oklch(0.129 0.042 264.695);
+  --foreground: oklch(0.984 0.003 247.858);
+  --card: oklch(0.208 0.042 265.755);
+  --card-foreground: oklch(0.984 0.003 247.858);
+  --popover: oklch(0.208 0.042 265.755);
+  --popover-foreground: oklch(0.984 0.003 247.858);
+  --primary: oklch(0.929 0.013 255.508);
+  --primary-foreground: oklch(0.208 0.042 265.755);
+  --secondary: oklch(0.279 0.041 260.031);
+  --secondary-foreground: oklch(0.984 0.003 247.858);
+  --muted: oklch(0.279 0.041 260.031);
+  --muted-foreground: oklch(0.704 0.04 256.788);
+  --accent: oklch(0.279 0.041 260.031);
+  --accent-foreground: oklch(0.984 0.003 247.858);
+  --destructive: oklch(0.704 0.191 22.216);
+  --destructive-foreground: oklch(0.984 0.003 247.858);
+  --border: oklch(1 0 0 / 10%);
+  --input: oklch(1 0 0 / 15%);
+  --ring: oklch(0.551 0.027 264.364);
+  --chart-1: oklch(0.488 0.243 264.376);
+  --chart-2: oklch(0.696 0.17 162.48);
+  --chart-3: oklch(0.769 0.188 70.08);
+  --chart-4: oklch(0.627 0.265 303.9);
+  --chart-5: oklch(0.645 0.246 16.439);
+  --sidebar: oklch(0.208 0.042 265.755);
+  --sidebar-foreground: oklch(0.984 0.003 247.858);
+  --sidebar-primary: oklch(0.488 0.243 264.376);
+  --sidebar-primary-foreground: oklch(0.984 0.003 247.858);
+  --sidebar-accent: oklch(0.279 0.041 260.031);
+  --sidebar-accent-foreground: oklch(0.984 0.003 247.858);
+  --sidebar-border: oklch(1 0 0 / 10%);
+  --sidebar-ring: oklch(0.551 0.027 264.364);
+}
+
+@layer base {
+  * {
+    border-color: var(--color-border);
+  }
+
+  body {
+    background-color: var(--color-background);
+    color: var(--color-foreground);
+  }
+
+  img {
+    transition: transform 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+    will-change: transform;
+  }
+  img:hover {
+    transform: scale(1.04);
+  }
+}
+
+/* Slide Canvas Layout Panels */
+.slide-section {
+  background-color: #fff;
+  justify-content: center;
+  display: flex;
+  overflow: hidden;
+}
+
+.slide-canvas-16-9 {
+  aspect-ratio: 16/9;
+  width: 100%;
+  max-width: 2560px;
+  min-height: 650px;
+  color: var(--color-primary);
+  background-color: #fff;
+  border-top: 1px solid #001c3d0d;
+  margin-inline: auto;
+  position: relative;
+  box-shadow: 0 12px 44px #0000000f;
+}
+
+
+
+.gold-divider {
+  width: 36px;
+  height: 2px;
+  background-color: #d4a13a;
+  margin-top: 8px;
+  margin-bottom: 16px;
+}
+
+.section-panel {
+  background-color: #fff;
+  border: 1px solid #001c6114;
+  border-radius: 14px;
+  box-shadow: 0 8px 28px #001c3d21;
+}
+
+/* Global typography size consistency classes (no color styling) */
+.h1-global {
+  font-family: var(--font-heading, "Playfair Display", Georgia, serif);
+  font-size: 1.75rem; /* 28px */
+  line-height: 1.2;
+  font-weight: 700; /* font-bold */
+}
+@media (min-width: 640px) {
+  .h1-global {
+    font-size: 2.125rem; /* text-3xl (34px) */
+  }
+}
+@media (min-width: 1024px) {
+  .h1-global {
+    font-size: 42px; /* lg */
+  }
+}
+@media (min-width: 1280px) {
+  .h1-global {
+    font-size: 52px; /* xl */
+  }
+}
+@media (min-width: 1536px) {
+  .h1-global {
+    font-size: 60px; /* 2xl */
+  }
+}
+
+.h2-global {
+  font-family: var(--font-heading, "Playfair Display", Georgia, serif);
+  font-size: 2rem; /* text-3xl (32px) */
+  line-height: 1.2;
+  font-weight: 700; /* font-bold */
+}
+@media (min-width: 640px) {
+  .h2-global {
+    font-size: 2.5rem; /* text-4xl (40px) */
+  }
+}
+@media (min-width: 1024px) {
+  .h2-global {
+    font-size: 48px; /* lg:text-[48px] */
+  }
+}
+@media (min-width: 1280px) {
+  .h2-global {
+    font-size: 56px; /* xl:text-[56px] */
+  }
+}
+@media (min-width: 1536px) {
+  .h2-global {
+    font-size: 68px; /* 2xl:text-[68px] */
+  }
+}
+
+.h3-global {
+  font-family: var(--font-heading, "Playfair Display", Georgia, serif);
+  font-size: 1.375rem; /* text-xl (22px) */
+  line-height: 1.25;
+  font-weight: 700; /* font-bold */
+}
+@media (min-width: 640px) {
+  .h3-global {
+    font-size: 1.625rem; /* text-2xl (26px) */
+  }
+}
+@media (min-width: 1024px) {
+  .h3-global {
+    font-size: 30px; /* lg:text-[30px] */
+  }
+}
+
+.h4-global {
+  font-family: var(--font-heading, "Playfair Display", Georgia, serif);
+  font-size: 1rem; /* 16px */
+  line-height: 1.3;
+  font-weight: 700; /* font-bold */
+}
+@media (min-width: 640px) {
+  .h4-global {
+    font-size: 1.125rem; /* 18px */
+  }
+}
+@media (min-width: 1024px) {
+  .h4-global {
+    font-size: 20px; /* lg:text-[20px] */
+  }
+}
+
+.p-global {
+  font-size: 0.875rem; /* text-sm (14px) */
+  line-height: 1.625; /* leading-relaxed */
+}
+@media (min-width: 640px) {
+  .p-global {
+    font-size: 15px; /* sm:text-[15px] */
+  }
+}
+@media (min-width: 1280px) {
+  .p-global {
+    font-size: 16px; /* xl:text-[16px] */
+  }
+}
+
+/* ─────────────────────────────────────────────────────────────
+   GPU / Animation Performance
+   Promotes animated elements to their own composite layer,
+   preventing main-thread paint jank.
+───────────────────────────────────────────────────────────── */
+
+html {
+  scroll-behavior: auto;
+}
+
+/* Lenis smooth scrolling compatibility */
+html.lenis,
+html.lenis body {
+  height: auto;
+}
+
+.lenis.lenis-smooth {
+  scroll-behavior: auto !important;
+}
+
+.lenis.lenis-smooth [data-lenis-prevent] {
+  overflow: clip;
+}
+
+.lenis.lenis-stopped {
+  overflow: hidden;
+}
+
+.lenis.lenis-scrolling iframe {
+  pointer-events: none;
+}
+
+
+
+/* Respect user's reduced-motion preference */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}
+
+/* ─────────────────────────────────────────────────────────────
+   Awesome Modern UI Enhancements (Header & Buttons)
+───────────────────────────────────────────────────────────── */
+
+/* Animated glowing button background - upgraded */
+.btn-glowing-gold {
+  position: relative;
+  overflow: hidden;
+  background: linear-gradient(
+    270deg,
+    var(--color-gold, #d4a13a),
+    var(--color-gold-soft, #e2b45a),
+    #f3d271,
+    var(--color-gold, #d4a13a)
+  );
+  background-size: 300% 300%;
+  animation: glowMove 3s ease infinite;
+  box-shadow:
+    0 0 15px rgba(212, 161, 58, 0.4),
+    inset 0 0 10px rgba(255, 255, 255, 0.3);
+  border: 1px solid rgba(255, 255, 255, 0.4);
+  z-index: 1;
+}
+
+/* Shine effect sweeping across the button */
+.btn-glowing-gold::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 50%;
+  height: 100%;
+  background: linear-gradient(
+    to right,
+    rgba(255, 255, 255, 0) 0%,
+    rgba(255, 255, 255, 0.4) 50%,
+    rgba(255, 255, 255, 0) 100%
+  );
+  transform: skewX(-20deg);
+  animation: sweepShine 3s infinite;
+  z-index: -1;
+}
+
+.btn-glowing-gold:hover {
+  animation: glowMove 1.5s ease infinite;
+  box-shadow:
+    0 0 25px rgba(212, 161, 58, 0.7),
+    inset 0 0 12px rgba(255, 255, 255, 0.4);
+}
+
+.btn-glowing-gold:active {
+  box-shadow:
+    0 0 10px rgba(212, 161, 58, 0.5),
+    inset 0 0 5px rgba(255, 255, 255, 0.2);
+}
+
+/* Animated glowing navy button background */
+.btn-glowing-navy {
+  position: relative;
+  overflow: hidden;
+  background: linear-gradient(
+    270deg,
+    #001b4f,
+    #003399,
+    #002266,
+    #001b4f
+  );
+  background-size: 300% 300%;
+  animation: glowMove 3s ease infinite;
+  box-shadow:
+    0 0 15px rgba(0, 51, 153, 0.4),
+    inset 0 0 10px rgba(255, 255, 255, 0.15);
+  border: 1px solid rgba(255, 255, 255, 0.25);
+  z-index: 1;
+}
+
+/* Shine effect sweeping across the button */
+.btn-glowing-navy::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 50%;
+  height: 100%;
+  background: linear-gradient(
+    to right,
+    rgba(255, 255, 255, 0) 0%,
+    rgba(255, 255, 255, 0.25) 50%,
+    rgba(255, 255, 255, 0) 100%
+  );
+  transform: skewX(-20deg);
+  animation: sweepShine 3s infinite;
+  z-index: -1;
+}
+
+.btn-glowing-navy:hover {
+  animation: glowMove 1.5s ease infinite;
+  box-shadow:
+    0 0 25px rgba(0, 51, 153, 0.6),
+    inset 0 0 12px rgba(255, 255, 255, 0.25);
+}
+
+.btn-glowing-navy:active {
+  box-shadow:
+    0 0 10px rgba(0, 51, 153, 0.5),
+    inset 0 0 5px rgba(255, 255, 255, 0.2);
+}
+
+@keyframes sweepShine {
+  0% {
+    left: -100%;
+  }
+  20% {
+    left: 200%;
+  }
+  100% {
+    left: 200%;
+  }
+}
+
+@keyframes glowMove {
+  0% {
+    background-position: 0% 50%;
+  }
+  50% {
+    background-position: 100% 50%;
+  }
+  100% {
+    background-position: 0% 50%;
+  }
+}
+
+
+
+
+
+.mobile-btn-click {
+  transition: transform 0.15s ease;
+}
+.mobile-btn-click:active {
+  transform: scale(0.95);
+}
+
+/* Shimmer animation for skeleton loaders */
+@keyframes shimmer {
+  0% {
+    background-position: -200% 0;
+  }
+  100% {
+    background-position: 200% 0;
+  }
+}
+.animate-shimmer {
+  background: linear-gradient(90deg, #f1f5f9 25%, #e2e8f0 50%, #f1f5f9 75%);
+  background-size: 200% 100%;
+  animation: shimmer 1.5s infinite linear;
+}
+
+/* Shake animation for invalid form fields */
+@keyframes shake {
+  0%,
+  100% {
+    transform: translateX(0);
+  }
+  20%,
+  60% {
+    transform: translateX(-4px);
+  }
+  40%,
+  80% {
+    transform: translateX(4px);
+  }
+}
+.animate-shake {
+  animation: shake 0.4s ease-in-out;
+}
+
+/* ─────────────────────────────────────────────────────────────
+   Hardware-Accelerated CSS Animations (Compositor Thread)
+   ───────────────────────────────────────────────────────────── */
+
+@keyframes floatSlow {
+  0%, 100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-5px);
+  }
+}
+
+@keyframes floatMedium {
+  0%, 100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-8px);
+  }
+}
+
+@keyframes pulseScaleGlow {
+  0%, 100% {
+    transform: scale(1);
+    box-shadow: 0 8px 30px rgba(0, 27, 79, 0.12);
+  }
+  50% {
+    transform: scale(1.02);
+    box-shadow: 0 8px 40px rgba(212, 161, 58, 0.35);
+  }
+}
+
+@keyframes pulseScaleOnly {
+  0%, 100% {
+    transform: scale(1);
+  }
+  50% {
+    transform: scale(1.08);
+  }
+}
+
+@keyframes rotateWiggle {
+  0%, 100% {
+    transform: rotate(0deg);
+  }
+  33% {
+    transform: rotate(4deg);
+  }
+  66% {
+    transform: rotate(-4deg);
+  }
+}
+
+@keyframes svgDashFlow {
+  from {
+    stroke-dashoffset: 24;
+  }
+  to {
+    stroke-dashoffset: 0;
+  }
+}
+
+.animate-float-slow {
+  animation: floatSlow 4s ease-in-out infinite;
+  will-change: transform;
+}
+
+.animate-float-medium {
+  animation: floatMedium 4.5s ease-in-out infinite;
+  will-change: transform;
+}
+
+.animate-pulse-gold {
+  animation: pulseScaleGlow 4s ease-in-out infinite;
+  will-change: transform;
+}
+
+.animate-pulse-scale {
+  animation: pulseScaleOnly 3s ease-in-out infinite;
+  will-change: transform;
+}
+
+.animate-wiggle-slow {
+  animation: rotateWiggle 4s ease-in-out infinite;
+  will-change: transform;
+}
+
+@keyframes spinSlow {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+.animate-spin-slow {
+  animation: spinSlow 20s linear infinite;
+  will-change: transform;
+}
+
+.animate-spin-slow-reverse {
+  animation: spinSlow 20s linear infinite reverse;
+  will-change: transform;
+}
+
+.animate-svg-dash {
+  animation: svgDashFlow 1s linear infinite;
+}
+
+/* ─────────────────────────────────────────────────────────────
+   Cinematic Video Simulation Look Animations
+   ───────────────────────────────────────────────────────────── */
+
+/* Animation Type 1: Zoom In & Slow Pan Right (Hero Image) */
+@keyframes videoKB1 {
+  0% { transform: scale(1.02) translate(0%, 0%); }
+  50% { transform: scale(1.10) translate(-1%, 0.5%); }
+  100% { transform: scale(1.02) translate(0%, 0%); }
+}
+.animate-video-kb-1 {
+  animation: videoKB1 26s ease-in-out infinite;
+  will-change: transform;
+}
+
+/* Animation Type 2: Zoom Out & Slow Pan Left (Residential Image) */
+@keyframes videoKB2 {
+  0% { transform: scale(1.12) translate(0.5%, -0.5%); }
+  50% { transform: scale(1.03) translate(-0.5%, 0.5%); }
+  100% { transform: scale(1.12) translate(0.5%, -0.5%); }
+}
+.animate-video-kb-2 {
+  animation: videoKB2 28s ease-in-out infinite;
+  will-change: transform;
+}
+
+/* Animation Type 3: Slow Pan Horizontal (Commercial Image) */
+@keyframes videoKB3 {
+  0% { transform: scale(1.04) translate(-1.2%, 0%); }
+  50% { transform: scale(1.04) translate(1.2%, 0%); }
+  100% { transform: scale(1.04) translate(-1.2%, 0%); }
+}
+.animate-video-kb-3 {
+  animation: videoKB3 30s ease-in-out infinite;
+  will-change: transform;
+}
+
+/* Animation Type 4: Cinematic Breathe / Slow Zoom Pulse (Noise Image) */
+@keyframes videoKB4 {
+  0% { transform: scale(1.02); }
+  50% { transform: scale(1.07); }
+  100% { transform: scale(1.02); }
+}
+.animate-video-kb-4 {
+  animation: videoKB4 24s ease-in-out infinite;
+  will-change: transform;
+}
+
+/* Animation Type 5: Subtle Pan Vertical (Clarity Confused Image) */
+@keyframes videoKB5 {
+  0% { transform: scale(1.04) translate(0%, -0.6%); }
+  50% { transform: scale(1.04) translate(0%, 0.6%); }
+  100% { transform: scale(1.04) translate(0%, -0.6%); }
+}
+.animate-video-kb-5 {
+  animation: videoKB5 25s ease-in-out infinite;
+  will-change: transform;
+}
+
+/* Animation Type 6: Diagonal Drift (Clarity Confident Image) */
+@keyframes videoKB6 {
+  0% { transform: scale(1.06) translate(-0.6%, -0.6%); }
+  50% { transform: scale(1.06) translate(0.6%, 0.6%); }
+  100% { transform: scale(1.06) translate(-0.6%, -0.6%); }
+}
+.animate-video-kb-6 {
+  animation: videoKB6 27s ease-in-out infinite;
+  will-change: transform;
+}
+
+/* Animation Type 7: Slow Zoom In & Pan Up (Guided Site Visits Image) */
+@keyframes videoKB7 {
+  0% { transform: scale(1.02) translate(0%, 0.6%); }
+  50% { transform: scale(1.09) translate(0.6%, -1.2%); }
+  100% { transform: scale(1.02) translate(0%, 0.6%); }
+}
+.animate-video-kb-7 {
+  animation: videoKB7 29s ease-in-out infinite;
+  will-change: transform;
+}
+
+/* Animation Type 8: Slow Rotation Drift (About PW Image) */
+@keyframes videoKB8 {
+  0% { transform: scale(1.03) rotate(0.15deg); }
+  50% { transform: scale(1.08) rotate(-0.15deg); }
+  100% { transform: scale(1.03) rotate(0.15deg); }
+}
+.animate-video-kb-8 {
+  animation: videoKB8 32s ease-in-out infinite;
+  will-change: transform;
+}
+
+.animation-paused {
+  animation-play-state: paused !important;
+}
+
+@keyframes videoProgressBar {
+  0% {
+    width: 0%;
+  }
+  100% {
+    width: 100%;
+  }
+}
+
+.animate-video-progress {
+  animation: videoProgressBar 28s linear infinite;
+  will-change: width;
+}
+
+@keyframes shimmerSweep {
+  0% {
+    left: -150%;
+  }
+  100% {
+    left: 150%;
+  }
+}
+
+.animate-shimmer-sweep {
+  animation: shimmerSweep 3s infinite ease-in-out;
+}
+
+
+

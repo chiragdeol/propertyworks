@@ -1,0 +1,237 @@
+Functional Requirement – Dynamic Project Page Template with Centrally Managed CTA Sections
+Project
+PropertyWorks – Real Estate Intelligence & Advisory
+
+1. Objective
+The objective is to build a single dynamic Project Page Template that will be used for all Residential and Commercial projects listed on the PropertyWorks website.
+The system should allow the PropertyWorks team to independently create and manage new projects from the WordPress backend without requiring any developer support.
+The template should automatically maintain consistent branding, layout, messaging, CTA placement, and user experience across all current and future project pages.
+
+2. Core Requirement
+A single master template shall be created for all project pages.
+Every new project added from the backend should automatically inherit this template.
+No manual page creation or manual placement of CTA sections should be required.
+
+3. Backend Project Management
+The backend should provide an easy-to-use interface where authorized PropertyWorks team members can:
+Add New Project
+Edit Existing Project
+Publish Project
+Unpublish Project
+Delete Project
+No coding knowledge should be required.
+
+4. Information Managed by PropertyWorks Team
+Our internal team should only be responsible for uploading project-specific information.
+This includes:
+Basic Details
+Project Name
+Developer Name
+Property Type
+Residential
+Commercial
+City
+Locality
+Address
+Google Maps Link
+
+Pricing
+Starting Price
+Maximum Price
+
+Configurations
+Configuration Name
+Carpet Area
+Starting Price
+Examples:
+1 BHK
+2 BHK
+3 BHK
+Office
+Retail
+
+Media Uploads
+Hero Banner Image
+Gallery Images
+Floor Plans
+Master Plan
+Brochure PDF
+Support multiple uploads.
+
+Project Description
+Rich Text Editor
+This will include:
+Project Overview
+Amenities
+Highlights
+Location Advantages
+Connectivity
+Lifestyle Information
+
+Availability Status
+Dropdown:
+Active
+Limited Availability
+Sold Out
+Coming Soon
+
+5. Template-Managed Sections
+The following sections should NOT be editable individually for each project.
+They should be controlled centrally by the administrator through one master template.
+
+Page Layout
+The complete layout should remain identical for every project.
+Example:
+Hero Banner
+↓
+Overview
+↓
+CTA Block
+↓
+Highlights
+↓
+Amenities
+↓
+Floor Plans
+↓
+Gallery
+↓
+Location
+↓
+CTA Block
+↓
+FAQ
+
+CTA Design
+The CTA design, styling, colors, icons, spacing, and positioning should be managed centrally.
+Any future design changes should automatically reflect across all project pages.
+
+CTA Content
+CTA messaging should also be managed centrally.
+The team should not have to edit every project individually.
+
+6. Dynamic CTA Based on Property Type
+The template should automatically detect the Property Type.
+Residential Projects
+Automatically display:
+CTA Heading
+Not Sure if This is the Right Property for Your Needs?
+CTA Description
+Every buyer has different priorities—budget, lifestyle, office connectivity, Vastu preferences, investment goals, and family requirements.
+Get your FREE Personalized Residential Intelligence Report from PropertyWorks and discover the opportunities that best align with your requirements.
+CTA Button
+Get My FREE Residential Intelligence Report
+
+Commercial Projects
+Automatically display:
+CTA Heading
+Is This the Right Commercial Opportunity for Your Business or Investment Goals?
+CTA Description
+Every business and investor has different priorities—location, accessibility, employee convenience, customer reach, scalability, rental potential, and long-term returns.
+Get your FREE Personalized Commercial Intelligence Report from PropertyWorks and discover the opportunities that best align with your business objectives.
+CTA Button
+Get My FREE Commercial Intelligence Report
+
+7. CTA Placement
+The CTA block should automatically appear at the following two locations:
+Placement 1
+Immediately after the Project Overview section.
+
+Placement 2
+Immediately before the FAQ section (or at the end of the page if FAQ is not available).
+These placements should be automatic.
+The PropertyWorks team should not manually insert or reposition CTA blocks.
+
+8. CTA Button Behaviour
+Clicking the CTA button should launch the existing PropertyWorks lead capture flow.
+This flow will remain common across all projects.
+The project page should simply pass the Project Name and Property Type to the lead capture process.
+
+9. Lead Capture Flow
+CTA Click
+↓
+Lead Capture Form
+↓
+Collect:
+Full Name
+Mobile Number
+↓
+Mandatory Consent Checkbox
+↓
+Continue
+↓
+If Mobile Device
+Redirect to WhatsApp
+↓
+If Desktop/Laptop
+Display QR Code to continue on WhatsApp
+↓
+Customer sends first WhatsApp message
+↓
+PropertyWorks automation takes over.
+
+10. No Manual CTA Management
+The PropertyWorks team should NEVER need to:
+Insert CTA sections
+Edit CTA text
+Design CTA banners
+Change CTA buttons
+Duplicate CTA blocks
+These should always be inherited automatically from the master template.
+
+11. Centralized CTA Administration
+A single global settings page should be provided where an administrator can update:
+CTA Heading
+CTA Description
+CTA Button Text
+CTA Colors
+CTA Icons
+CTA Background
+CTA Placement
+Updating these settings once should automatically update every Residential and Commercial project page.
+
+12. SEO
+Each project should automatically generate:
+SEO-friendly URL
+Example:
+https://www.propertyworks.in/projects/project-name
+The project page should be fully indexable by search engines.
+
+13. Future AI Readiness
+The Project Repository should be designed so that future AI systems can retrieve structured project information without redesigning the website.
+The implementation should be scalable and API-friendly.
+
+14. Scalability
+The architecture should comfortably support:
+10 projects
+100 projects
+1,000 projects
+10,000+ projects
+without requiring redesign or manual maintenance.
+
+15. Acceptance Criteria
+The module will be considered complete only if:
+New projects can be created entirely from the backend.
+The internal team does not require developer assistance to publish new projects.
+Every project automatically inherits the common page layout.
+CTA sections are inserted automatically.
+CTA messaging changes globally from one central location.
+Residential and Commercial projects automatically display their respective CTA content.
+All future projects maintain consistent branding and user experience.
+The solution remains scalable and future-ready for AI integration.
+
+
+
+
+One enhancement we strongly recommend
+The developer should build a Global Project Template Settings page in WordPress. This page should let us update:
+Residential CTA text 
+Commercial CTA text 
+CTA button labels 
+WhatsApp destination 
+QR code 
+Consent wording 
+Lead form fields 
+from one central place. That way, if we decide to change our messaging or process in the future, the update will instantly apply to every existing and future project page without touching each project individually.
+
+

@@ -1,0 +1,278 @@
+[
+  {
+    "id": "prestige-sanctuary",
+    "name": "Prestige Sanctuary",
+    "developer": "Prestige Group",
+    "type": "Commercial",
+    "status": "Limited Availability",
+    "location": {
+      "city": "Bengaluru",
+      "locality": "Nandi Hills",
+      "address": "Karalahalli Village, Nandi Hills Road, Devanahalli, Bengaluru, Karnataka 562110",
+      "mapsLink": "https://maps.google.com/?q=Prestige+Sanctuary+Nandi+Hills"
+    },
+    "pricing": {
+      "startingPrice": "₹3.75 Cr",
+      "maxPrice": "₹5.50 Cr"
+    },
+    "configurations": [
+      {
+        "name": "3 BHK Luxury Villa",
+        "carpetArea": "3,200 sq.ft.",
+        "startingPrice": "₹3.75 Cr"
+      },
+      {
+        "name": "4 BHK Premium Villa",
+        "carpetArea": "4,100 sq.ft.",
+        "startingPrice": "₹4.85 Cr"
+      }
+    ],
+    "media": {
+      "heroImage": "/images/hero-image.jpg",
+      "galleryImages": [
+        "/images/residential-image.webp",
+        "/images/site-visits-image.webp"
+      ],
+      "floorPlans": [
+        "https://images.unsplash.com/photo-1580587771525-78b9dba3b914?w=400"
+      ],
+      "masterPlan": "https://images.unsplash.com/photo-1506973035872-a4ec16b8e8d9?w=800",
+      "brochurePdf": "#"
+    },
+    "description": {
+      "overview": "Prestige Sanctuary offers an exquisite collection of luxury villas nestled in the serene foothills of Nandi Hills.",
+      "amenities": [
+        "Signature Clubhouse & Lounge",
+        "Infinity Pool"
+      ],
+      "highlights": [
+        "Scenic view of Nandi Hills",
+        "Private landscaped gardens"
+      ],
+      "connectivity": [
+        "20 mins to Kempegowda International Airport"
+      ],
+      "locationAdvantages": [
+        "Clean and pollution free microclimate"
+      ],
+      "lifestyle": "Built for a premium lifestyle balancing nature and city connections."
+    },
+    "faqs": [
+      {
+        "question": "What is the total acreage?",
+        "answer": "Prestige Sanctuary is spread across 23 acres."
+      }
+    ]
+  },
+  {
+    "id": "lodha-world-towers",
+    "name": "Lodha World Towers",
+    "developer": "Lodha Group",
+    "type": "Commercial",
+    "status": "Active",
+    "location": {
+      "city": "Mumbai",
+      "locality": "Lower Parel",
+      "address": "Senapati Bapat Marg, Lower Parel, Mumbai, Maharashtra 400013",
+      "mapsLink": "https://maps.google.com/?q=Lodha+World+Towers+Lower+Parel"
+    },
+    "pricing": {
+      "startingPrice": "₹8.50 Cr",
+      "maxPrice": "₹18.00 Cr"
+    },
+    "configurations": [
+      {
+        "name": "3 BHK Residences",
+        "carpetArea": "1,850 sq.ft.",
+        "startingPrice": "₹8.50 Cr"
+      }
+    ],
+    "media": {
+      "heroImage": "/images/residential-image.webp",
+      "galleryImages": [
+        "/images/hero-image.jpg",
+        "/images/site-visits-image.webp"
+      ],
+      "floorPlans": [
+        "https://images.unsplash.com/photo-1580587771525-78b9dba3b914?w=400"
+      ],
+      "masterPlan": "https://images.unsplash.com/photo-1506973035872-a4ec16b8e8d9?w=800",
+      "brochurePdf": "#"
+    },
+    "description": {
+      "overview": "Lodha World Towers redefines ultra-luxury skyscraper living.",
+      "amenities": [
+        "Sky Lounge",
+        "Indoor Heated Lap Pool"
+      ],
+      "highlights": [
+        "Interiors curated by Armani/Casa",
+        "Arabian Sea Views"
+      ],
+      "connectivity": [
+        "5 mins to Lower Parel corporate hubs"
+      ],
+      "locationAdvantages": [
+        "Epicenter of South Mumbai's corporate life"
+      ],
+      "lifestyle": "Status, comfort, and luxury."
+    },
+    "faqs": [
+      {
+        "question": "Is it gated?",
+        "answer": "Yes, fully secured."
+      }
+    ]
+  },
+  {
+    "id": "dlf-cybercity",
+    "name": "DLF CyberCity",
+    "developer": "DLF Limited",
+    "type": "Commercial",
+    "status": "Active",
+    "location": {
+      "city": "Gurugram",
+      "locality": "Sector 24, Phase 3",
+      "address": "DLF Cyber City, Sector 24, Gurugram, Haryana 122002",
+      "mapsLink": "https://maps.google.com/?q=DLF+Cyber+City+Gurugram"
+    },
+    "pricing": {
+      "startingPrice": "₹2.20 Cr",
+      "maxPrice": "₹15.00 Cr"
+    },
+    "configurations": [
+      {
+        "name": "Grade-A Office Space",
+        "carpetArea": "800 sq.ft.",
+        "startingPrice": "₹2.20 Cr"
+      }
+    ],
+    "media": {
+      "heroImage": "/images/commercial-image.jpg",
+      "galleryImages": [
+        "/images/hero-image.jpg",
+        "/images/site-visits-image.webp"
+      ],
+      "floorPlans": [
+        "https://images.unsplash.com/photo-1580587771525-78b9dba3b914?w=400"
+      ],
+      "masterPlan": "https://images.unsplash.com/photo-1506973035872-a4ec16b8e8d9?w=800",
+      "brochurePdf": "#"
+    },
+    "description": {
+      "overview": "DLF CyberCity is the corporate hub of Gurugram.",
+      "amenities": [
+        "Power Backups",
+        "Fiber Connectivity"
+      ],
+      "highlights": [
+        "LEED Certified",
+        "Integrated CyberHub access"
+      ],
+      "connectivity": [
+        "Metro station inside campus"
+      ],
+      "locationAdvantages": [
+        "Corporate district with top social infrastructure"
+      ],
+      "lifestyle": "High productivity office workspace."
+    },
+    "faqs": [
+      {
+        "question": "Is there access control?",
+        "answer": "Yes, card control."
+      }
+    ]
+  },
+  {
+    "id": "godrej-zenith-sector-89",
+    "name": "Godrej Zenith",
+    "developer": "Godrej Properties",
+    "type": "Residential",
+    "status": "Active",
+    "location": {
+      "city": "Gurgaon",
+      "locality": "Sector 89",
+      "address": "Sector 89, Dwarka Expressway Link Road, Gurgaon, Haryana 122004 ",
+      "mapsLink": "https://maps.app.goo.gl/yZ89TestLink"
+    },
+    "pricing": {
+      "startingPrice": "2.25 Cr",
+      "maxPrice": "4.20 Cr"
+    },
+    "configurations": [
+      {
+        "name": "2 BHK Premium",
+        "carpetArea": "1250 sq.ft",
+        "startingPrice": "2.25 Cr"
+      },
+      {
+        "name": "3 BHK Luxury",
+        "carpetArea": "1750 sq.ft",
+        "startingPrice": "3.15 Cr"
+      },
+      {
+        "name": "4 BHK Ultra-Luxury",
+        "carpetArea": "2100 sq.ft",
+        "startingPrice": "3.80 Cr"
+      }
+    ],
+    "media": {
+      "heroImage": "https://images.unsplash.com/photo-1545324418-cc1a3fa10c00?auto=format&fit=crop&w=1200&q=80",
+      "galleryImages": [
+        "https://images.unsplash.com/photo-1512917774080-9991f1c4c750?auto=format&fit=crop&w=800&q=80",
+        "https://images.unsplash.com/photo-1613490493576-7fde63acd811?auto=format&fit=crop&w=800&q=80",
+        "https://images.unsplash.com/photo-1564013799919-ab600027ffc6?auto=format&fit=crop&w=800&q=80"
+      ],
+      "floorPlans": [
+        "https://images.unsplash.com/photo-1580587771525-78b9dba3b914?auto=format&fit=crop&w=800&q=80",
+        "https://images.unsplash.com/photo-1507089947368-19c1da9775ae?auto=format&fit=crop&w=800&q=80"
+      ],
+      "masterPlan": "https://images.unsplash.com/photo-1524813686514-a57563d77d61?auto=format&fit=crop&w=1200&q=80",
+      "brochurePdf": "https://www.w3.org/WAI/ER/tests/xhtml/testfiles/resources/pdf/dummy.pdf"
+    },
+    "description": {
+      "overview": "\nGodrej Zenith Sector 89 represents the pinnacle of residential design in Gurgaon. Curated for the modern executive, this high-density township offers 2, 3, and 4 BHK options constructed with state-of-the-art pre-cast concrete technology.\nThe layout boasts private entry foyers, double-height ceilings, and high-performance building materials designed to buffer acoustics and maintain optimal thermal index.\n",
+      "amenities": [
+        "Luxury Clubhouse",
+        "Olympic-size Swimming Pool",
+        "CTFA Air Purification System",
+        "Indoor Squash Court",
+        "24/7 Multi-Tier Security",
+        "Gated Zen Gardens",
+        "Kids Play Zone",
+        "Amphitheater"
+      ],
+      "highlights": [
+        "Double-height Entrance Foyers",
+        "East-West Facing Vastu Layouts",
+        "Pre-Cast Acoustic Concrete Construction",
+        "80% Open Green Spaces",
+        "Low Density Floor Distribution"
+      ],
+      "connectivity": [
+        "5 min drive to Dwarka Expressway",
+        "10 min to National Highway-8",
+        "15 min to Gurgaon Cyber City",
+        "20 min to IGI Airport Terminals"
+      ],
+      "locationAdvantages": [
+        "Near DPS Sector 84",
+        "Close to Max Hospital Clinic",
+        "Walking distance to Sector 88 High Street Retail",
+        "Direct connectivity to Southern Peripheral Road"
+      ],
+      "lifestyle": "Exquisite Urban Wellness\nLive a lifestyle balanced with physical, mental, and environmental wellness. Godrej Zenith features clean air ventilation loops filtering out PM2.5 particles, combined with expansive visual green pockets, jogging decks, and co-working pods to accommodate the hybrid work environment.\n"
+    },
+    "faqs": [
+      {
+        "question": " What is the construction status and RERA ID of Godrej Zenith?",
+        "answer": "The project is currently under construction and has received Haryana RERA approval. RERA ID: RC/REP/HARERA/GGM/803/2026.\n"
+      },
+      {
+        "question": "Is there a buyer-side brokerage fee for PropertyWorks advisory clients?",
+        "answer": "No. PropertyWorks provides unbiased property shortlists and developer direct coordination with zero buyer-side commission charges."
+      }
+    ]
+  }
+]
