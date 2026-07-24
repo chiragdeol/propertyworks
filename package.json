@@ -7,7 +7,7 @@
     "dev": "vite dev",
     "backend": "node backend/server.js",
     "dev:all": "node backend/server.js & vite dev",
-    "build": "npm install --prefix backend && vite build",
+    "build": "vite build",
     "postbuild": "node scripts/postbuild.js",
     "build:dev": "vite build --mode development",
     "preview": "vite preview",
