@@ -691,7 +691,11 @@ app.get("/sitemap.xml", (req, res) => {
 });
 
 // Serve static frontend assets in production or welcome page in development
-const distPath = path.join(__dirname, "../dist");
+let distPath = path.join(__dirname, "../dist");
+if (!fs.existsSync(distPath)) {
+  distPath = path.join(__dirname, "dist");
+}
+
 if (fs.existsSync(distPath)) {
   app.use(express.static(distPath));
   app.get("*", (req, res, next) => {
