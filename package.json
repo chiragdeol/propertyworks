@@ -118,6 +118,8 @@
     "@esbuild/linux-x64": "^0.28.0",
     "@rollup/rollup-linux-x64-gnu": "^4.62.3",
     "@rollup/rollup-linux-x64-musl": "^4.62.3",
+    "@tailwindcss/oxide-linux-x64-gnu": "*",
+    "@tailwindcss/oxide-linux-x64-musl": "*",
     "lightningcss-linux-x64-gnu": "*",
     "lightningcss-linux-x64-musl": "*"
   }

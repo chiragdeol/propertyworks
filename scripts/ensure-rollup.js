@@ -23,7 +23,22 @@ if (process.platform === "linux") {
     }
   }
 
-  // 2. Configure Rollup WASM Fallback
+  // 2. Ensure @tailwindcss/oxide linux binaries are installed
+  const oxidePath = path.join(projectRoot, "node_modules", "@tailwindcss", "oxide-linux-x64-gnu");
+  if (!fs.existsSync(oxidePath)) {
+    console.log("[ensure-rollup] Installing @tailwindcss/oxide linux binaries for Tailwind v4...");
+    try {
+      execSync("npm install @tailwindcss/oxide-linux-x64-gnu @tailwindcss/oxide-linux-x64-musl --no-save --force", {
+        cwd: projectRoot,
+        stdio: "inherit"
+      });
+      console.log("[ensure-rollup] @tailwindcss/oxide linux binaries installed successfully!");
+    } catch (err) {
+      console.error("[ensure-rollup] Warning installing oxide binaries:", err);
+    }
+  }
+
+  // 3. Configure Rollup WASM Fallback
   const rollupNativeJs = path.join(projectRoot, "node_modules", "rollup", "dist", "native.js");
 
   if (fs.existsSync(rollupNativeJs)) {
