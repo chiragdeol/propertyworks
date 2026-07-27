@@ -26,28 +26,42 @@ if (process.platform === "linux") {
     console.log("[ensure-rollup] musl binary already present.");
   }
 
-  // 2. Patch Rollup's native.js to fallback to musl if gnu (GLIBC 2.29) fails
+  // 2. Patch Rollup's native.js to fallback to musl package if GLIBC fails
   const rollupNativeJs = path.join(projectRoot, "node_modules", "rollup", "dist", "native.js");
   if (fs.existsSync(rollupNativeJs)) {
     try {
       let content = fs.readFileSync(rollupNativeJs, "utf-8");
-      if (!content.includes("// PATCHED_GLIBC_FALLBACK")) {
+      if (!content.includes("// PATCHED_GLIBC_FALLBACK_V2")) {
         content = content.replace(
           "const requireWithFriendlyError = id => {",
-          `// PATCHED_GLIBC_FALLBACK
+          `// PATCHED_GLIBC_FALLBACK_V2
 const requireWithFriendlyError = id => {
 	try {
 		return require(id);
-	} catch (origErr) {
-		if (typeof id === 'string' && id.includes('linux-x64-gnu')) {
+	} catch (error) {
+		if (error && error.code === 'ERR_DLOPEN_FAILED') {
 			try {
-				return require(id.replace('linux-x64-gnu', 'linux-x64-musl'));
+				return require('@rollup/rollup-linux-x64-musl');
 			} catch (muslErr) {}
-		}
-	}`
+		}`
         );
+
+        content = content.replace(
+          "if ('musl' in imported && isMusl()) {",
+          `if ('musl' in imported) {
+		try {
+			require('@rollup/rollup-' + imported.base);
+		} catch (glibcErr) {
+			if (glibcErr && glibcErr.code === 'ERR_DLOPEN_FAILED') {
+				return imported.musl;
+			}
+		}
+	}
+	if ('musl' in imported && isMusl()) {`
+        );
+
         fs.writeFileSync(rollupNativeJs, content, "utf-8");
-        console.log("[ensure-rollup] Successfully applied GLIBC musl fallback patch to Rollup native.js!");
+        console.log("[ensure-rollup] Successfully applied GLIBC musl package fallback patch to Rollup native.js!");
       } else {
         console.log("[ensure-rollup] Rollup native.js already patched.");
       }
