@@ -32,7 +32,7 @@ app.use(cors({
     ) {
       return callback(null, true);
     }
-    return callback(null, true);
+    return callback(new Error("Not allowed by CORS"));
   },
   credentials: true
 }));
@@ -372,7 +372,7 @@ app.post("/api/auth/login", (req, res) => {
   if (password === admin.passwordHash) {
     res.cookie(SESSION_COOKIE_NAME, SESSION_TOKEN, {
       httpOnly: true,
-      secure: false, // Set to true in prod (HTTPS)
+      secure: process.env.NODE_ENV === "production",
       sameSite: "lax",
       path: "/",
       maxAge: 60 * 60 * 24 * 1000 // 1 day
