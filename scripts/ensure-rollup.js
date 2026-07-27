@@ -1,5 +1,6 @@
 import fs from "node:fs";
 import path from "node:path";
+import { execSync } from "node:child_process";
 import { fileURLToPath } from "node:url";
 
 const __filename = fileURLToPath(import.meta.url);
@@ -7,6 +8,22 @@ const __dirname = path.dirname(__filename);
 const projectRoot = path.resolve(__dirname, "..");
 
 if (process.platform === "linux") {
+  // 1. Ensure lightningcss linux binaries are installed
+  const lightningPath = path.join(projectRoot, "node_modules", "lightningcss-linux-x64-gnu");
+  if (!fs.existsSync(lightningPath)) {
+    console.log("[ensure-rollup] Installing lightningcss linux binaries for Tailwind v4...");
+    try {
+      execSync("npm install lightningcss-linux-x64-gnu lightningcss-linux-x64-musl --no-save --force", {
+        cwd: projectRoot,
+        stdio: "inherit"
+      });
+      console.log("[ensure-rollup] lightningcss linux binaries installed successfully!");
+    } catch (err) {
+      console.error("[ensure-rollup] Warning installing lightningcss binaries:", err);
+    }
+  }
+
+  // 2. Configure Rollup WASM Fallback
   const rollupNativeJs = path.join(projectRoot, "node_modules", "rollup", "dist", "native.js");
 
   if (fs.existsSync(rollupNativeJs)) {
