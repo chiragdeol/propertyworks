@@ -22,6 +22,8 @@ if (process.platform === "linux") {
     } catch (err) {
       console.error("[ensure-rollup] Warning: Failed to install musl binary:", err);
     }
+  } else {
+    console.log("[ensure-rollup] musl binary already present.");
   }
 
   // 2. Patch Rollup's native.js to fallback to musl if gnu (GLIBC 2.29) fails
@@ -29,10 +31,11 @@ if (process.platform === "linux") {
   if (fs.existsSync(rollupNativeJs)) {
     try {
       let content = fs.readFileSync(rollupNativeJs, "utf-8");
-      if (!content.includes("linux-x64-musl")) {
+      if (!content.includes("// PATCHED_GLIBC_FALLBACK")) {
         content = content.replace(
           "const requireWithFriendlyError = id => {",
-          `const requireWithFriendlyError = id => {
+          `// PATCHED_GLIBC_FALLBACK
+const requireWithFriendlyError = id => {
 	try {
 		return require(id);
 	} catch (origErr) {
@@ -44,7 +47,9 @@ if (process.platform === "linux") {
 	}`
         );
         fs.writeFileSync(rollupNativeJs, content, "utf-8");
-        console.log("[ensure-rollup] Successfully patched Rollup native.js for GLIBC musl fallback.");
+        console.log("[ensure-rollup] Successfully applied GLIBC musl fallback patch to Rollup native.js!");
+      } else {
+        console.log("[ensure-rollup] Rollup native.js already patched.");
       }
     } catch (patchErr) {
       console.error("[ensure-rollup] Warning: Failed to patch Rollup native.js:", patchErr);
