@@ -338,7 +338,7 @@ export default function ShortlistModal({ type, onClose, projectName }: Shortlist
                       >
                         <option value="Residential">Residential Advisory</option>
                         <option value="Commercial">Commercial Advisory</option>
-                        {/* <option value="Investment">Real Estate Investment</option> */}
+                      
                       </select>
                       <div className="absolute right-4 top-1/2 -translate-y-1/2 pointer-events-none text-[#001B4F]/60">
                         <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2.5">
