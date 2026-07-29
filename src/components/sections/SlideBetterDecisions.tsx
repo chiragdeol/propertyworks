@@ -138,7 +138,7 @@ export default function SlideBetterDecisions() {
                 </div>
                 <div className="mt-1.5">
                   <p className="text-white text-[12px] sm:text-[13px] font-semibold truncate">
-                    stany.brahmane@gmail.com
+                    support@propertyworks.in
                   </p>
                 </div>
               </div>
@@ -321,7 +321,7 @@ export default function SlideBetterDecisions() {
             <SlideImage src={y.email} size="clamp(24px, 2.2vw, 36px)" className="shrink-0 mt-0.5" />
             <div className="min-w-0 mt-1">
               <p className="text-white text-[clamp(10px,0.75vw,14px)] leading-[1.35] font-semibold truncate">
-                stany.brahmane@gmail.com
+                support@propertyworks.in
               </p>
             </div>
           </div>

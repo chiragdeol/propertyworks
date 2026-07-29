@@ -1,5 +1,6 @@
 import { createFileRoute } from "@tanstack/react-router";
 import PolicyLayout from "@/components/PolicyLayout";
+import PolicyContactSection from "@/components/PolicyContactSection";
 
 export const Route = createFileRoute("/disclaimer")({
   head: () => ({
@@ -202,19 +203,7 @@ function DisclaimerPage() {
         This website may contain links to external websites operated by third parties. PropertyWorks does not control or assume responsibility for the content, privacy practices, services, or accuracy of information provided on such external websites. Accessing third-party websites is entirely at the user's own discretion and risk.
       </p>
 
-      <h2 className="text-xl font-bold text-primary border-b border-slate-100 pb-2 mt-8 mb-4 font-heading">
-        13. Contact Information
-      </h2>
-      <p>
-        For questions regarding this Disclaimer, please contact:
-      </p>
-      <div className="bg-[#F8FAFC] border border-slate-200/60 rounded-xl p-6 mt-4 space-y-2 font-medium text-slate-700">
-        <p className="font-bold text-primary">PropertyWorks</p>
-        <p className="text-xs text-slate-500 uppercase tracking-wider">Real Estate Intelligence & Advisory Services</p>
-        <p>Email: <a href="mailto:support@PropertyWorks.in" className="text-gold hover:underline">support@PropertyWorks.in</a></p>
-        <p>Phone: +91 98205 44427</p>
-        <p>Website: <a href="https://www.propertyworks.in" target="_blank" rel="noopener noreferrer" className="text-gold hover:underline">www.propertyworks.in</a></p>
-      </div>
+      <PolicyContactSection description="For questions regarding this Disclaimer, please contact:" />
     </PolicyLayout>
   );
 }

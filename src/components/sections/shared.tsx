@@ -987,7 +987,7 @@ export const O = [
 export const k = [
   { icon: y.phone, lines: ["+91-8433826365"] },
   { icon: y.whatsapp, lines: ["+91-8433826365"] },
-  { icon: y.email, lines: ["stany.brahmane@gmail.com"] },
+  { icon: y.email, lines: ["support@propertyworks.in"] },
 ];
 
 export const w = [

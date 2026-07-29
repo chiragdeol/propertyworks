@@ -5,12 +5,12 @@
   "residential": {
     "heading": "Not Sure if This is the Right Property for Your Needs?",
     "description": "Every buyer has different priorities—budget, lifestyle, office connectivity, Vastu preferences, investment goals, and family requirements. Get your FREE Personalized Residential Intelligence Report from PropertyWorks and discover the opportunities that best align with your requirements.",
-    "buttonLabel": "Get My FREE Residential Intelligence Report"
+    "buttonLabel": "Get My Free Residential Shortlist"
   },
   "commercial": {
     "heading": "Is This the Right Commercial Opportunity for Your Business or Investment Goals?",
     "description": "Every business and investor has different priorities—location, accessibility, employee convenience, customer reach, scalability, rental potential, and long-term returns. Get your FREE Personalized Commercial Intelligence Report from PropertyWorks and discover the opportunities that best align with your business objectives.",
-    "buttonLabel": "Get My FREE Commercial Intelligence Report"
+    "buttonLabel": "Get My Free Commercial Shortlist"
   },
   "ctaStyle": {
     "bgClass": "bg-[#001B4F]",
@@ -110,5 +110,5 @@
     }
   },
   "contactPhone": "+91 8433826365",
-  "contactEmail": "stany.brahmane@gmail.com"
+  "contactEmail": "support@propertyworks.in"
 }

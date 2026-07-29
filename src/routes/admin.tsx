@@ -1539,7 +1539,7 @@ function SettingsTab({ settings, loadData }: SettingsTabProps) {
             <label className="text-[10px] font-black uppercase text-slate-400">Contact Phone (Footer Display) *</label>
             <input
               type="text"
-              placeholder="e.g. +91 98205 44427"
+              placeholder="e.g. +91 8433826365"
               value={formData.contactPhone || ""}
               onChange={(e) => setFormData({...formData, contactPhone: e.target.value})}
               className="w-full h-11 px-4 bg-slate-50 border border-slate-200 text-sm rounded-xl outline-none focus:bg-white focus:border-gold font-semibold"

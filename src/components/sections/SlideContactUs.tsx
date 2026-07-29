@@ -5,6 +5,10 @@ import footerIcon from "../../assets/icons/footer-icon.png";
 import { fadeInUp, scaleUp, staggerContainer } from "@/lib/motion-variants";
 import { useSettings } from "@/contexts/SettingsContext";
 import { formatDynamicText } from "@/lib/utils";
+import facebookIcon from "@/assets/social-media-icons/facebook_icon.png";
+import instagramIcon from "@/assets/social-media-icons/Instagram_icon.png";
+import youtubeIcon from "@/assets/social-media-icons/YouTube_icon.webp";
+import linkedinIcon from "@/assets/social-media-icons/LinkedIn_icon.webp";
 
 export default function SlideContactUs() {
   const { settings } = useSettings();
@@ -29,7 +33,7 @@ export default function SlideContactUs() {
     },
     {
       label: "Email",
-      value: "stany.brahmane@gmail.com",
+      value: "support@propertyworks.in",
       icon: (
         <svg
           viewBox="0 0 24 24"
@@ -85,64 +89,28 @@ export default function SlideContactUs() {
 
   const socialLinks = [
     {
-      name: "LinkedIn",
-      handle: "/propertyworks",
-      url: "#",
-      icon: (
-        <svg viewBox="0 0 24 24" fill="currentColor" className="w-5.5 h-5.5 text-white">
-          <path d="M19 0h-14c-2.761 0-5 2.239-5 5v14c0 2.761 2.239 5 5 5h14c2.762 0 5-2.239 5-5v-14c0-2.761-2.238-5-5-5zm-11 19h-3v-11h3v11zm-1.5-12.268c-.966 0-1.75-.779-1.75-1.75s.784-1.75 1.75-1.75 1.75.779 1.75 1.75-.784 1.75-1.75 1.75zm13.5 12.268h-3v-5.604c0-3.368-4-3.113-4 0v5.604h-3v-11h3v1.765c1.396-2.586 7-2.777 7 2.476v6.759z" />
-        </svg>
-      ),
+      name: "Facebook",
+      handle: "PropertyWorksIndia",
+      url: "https://www.facebook.com/PropertyWorksIndia",
+      icon: facebookIcon,
     },
     {
       name: "Instagram",
-      handle: "/propertyworks.in",
-      url: "#",
-      icon: (
-        <svg
-          viewBox="0 0 24 24"
-          fill="none"
-          stroke="currentColor"
-          strokeWidth="2"
-          strokeLinecap="round"
-          strokeLinejoin="round"
-          className="w-5.5 h-5.5 text-white"
-        >
-          <rect x="2" y="2" width="20" height="20" rx="5" ry="5" />
-          <path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z" />
-          <line x1="17.5" y1="6.5" x2="17.51" y2="6.5" />
-        </svg>
-      ),
+      handle: "@propertyworks.in",
+      url: "https://www.instagram.com/propertyworks.in/",
+      icon: instagramIcon,
     },
     {
       name: "YouTube",
-      handle: "/propertyworks",
-      url: "#",
-      icon: (
-        <svg viewBox="0 0 24 24" fill="currentColor" className="w-5.5 h-5.5 text-white">
-          <path d="M23.498 6.163a3.003 3.003 0 0 0-2.11-2.11C19.518 3.5 12 3.5 12 3.5s-7.518 0-9.388.553a3.002 3.002 0 0 0-2.11 2.11C0 8.033 0 12 0 12s0 3.967.502 5.837a3.003 3.003 0 0 0 2.11 2.11c1.87.553 9.388.553 9.388.553s7.518 0 9.388-.553a3.002 3.002 0 0 0 2.11-2.11C24 15.967 24 12 24 12s0-3.967-.502-5.837zM9.545 15.568V8.432L15.818 12l-6.273 3.568z" />
-        </svg>
-      ),
+      handle: "@PropertyWorksOfficial",
+      url: "https://www.youtube.com/@PropertyWorksOfficial",
+      icon: youtubeIcon,
     },
     {
-      name: "Facebook",
-      handle: "/propertyworks.in",
-      url: "#",
-      icon: (
-        <svg viewBox="0 0 24 24" fill="currentColor" className="w-5.5 h-5.5 text-white">
-          <path d="M9 8h-3v4h3v12h5v-12h3.642l.358-4h-4v-1.667c0-.955.192-1.333 1.115-1.333h2.885v-5h-3.808c-3.596 0-5.192 1.583-5.192 4.615v3.385z" />
-        </svg>
-      ),
-    },
-    {
-      name: "X (Twitter)",
-      handle: "/propertyworks_in",
-      url: "#",
-      icon: (
-        <svg viewBox="0 0 24 24" fill="currentColor" className="w-5.5 h-5.5 text-white">
-          <path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z" />
-        </svg>
-      ),
+      name: "LinkedIn",
+      handle: "propertyworksindia",
+      url: "https://linkedin.com/company/propertyworksindia",
+      icon: linkedinIcon,
     },
   ];
 
@@ -271,6 +239,8 @@ export default function SlideContactUs() {
               <motion.a
                 key={idx}
                 href={social.url}
+                target={social.url !== "#" ? "_blank" : undefined}
+                rel={social.url !== "#" ? "noopener noreferrer" : undefined}
                 variants={fadeInUp(0, 0.4)}
                 className="flex flex-col items-center text-center gap-2 group shrink-0"
               >
@@ -278,9 +248,9 @@ export default function SlideContactUs() {
                 <motion.div
                   whileHover={{ scale: 1.12, rotate: 6, borderColor: GOLD }}
                   whileTap={{ scale: 0.95 }}
-                  className="w-12 h-12 rounded-full border border-[#D4A13A]/40 bg-[#D4A13A]/10 flex items-center justify-center shadow-[0_0_15px_rgba(212,161,58,0.15)] cursor-pointer transition-colors duration-300"
+                  className="w-12 h-12 rounded-full border border-[#D4A13A]/40 bg-[#D4A13A]/10 flex items-center justify-center p-2.5 shadow-[0_0_15px_rgba(212,161,58,0.15)] cursor-pointer transition-colors duration-300 overflow-hidden"
                 >
-                  {social.icon}
+                  <img src={social.icon} alt={social.name} className="w-full h-full object-contain" />
                 </motion.div>
                 <div className="min-w-0">
                   <span className="text-[12.5px] font-bold text-white group-hover:text-[#D4A13A] transition-colors block leading-tight">

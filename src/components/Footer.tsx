@@ -3,11 +3,15 @@ import { NAVY, GOLD, Logo, footerIcon } from "./sections/shared";
 import { Link } from "@tanstack/react-router";
 import { useState, useEffect } from "react";
 import { getGlobalSettings } from "@/lib/api";
+import facebookIcon from "@/assets/social-media-icons/facebook_icon.png";
+import instagramIcon from "@/assets/social-media-icons/Instagram_icon.png";
+import youtubeIcon from "@/assets/social-media-icons/YouTube_icon.webp";
+import linkedinIcon from "@/assets/social-media-icons/LinkedIn_icon.webp";
 
 export default function Footer() {
   const [whatsappNumber, setWhatsappNumber] = useState("918433826365");
-  const [contactPhone, setContactPhone] = useState("+91 98205 44427");
-  const [contactEmail, setContactEmail] = useState("stany.brahmane@gmail.com");
+  const [contactPhone, setContactPhone] = useState("+91 8433826365");
+  const [contactEmail, setContactEmail] = useState("support@propertyworks.in");
   const [mahaReraNumber, setMahaReraNumber] = useState("P51700077890");
 
   useEffect(() => {
@@ -311,52 +315,36 @@ export default function Footer() {
             {[
               {
                 name: "Facebook",
-                icon: (
-                  <svg viewBox="0 0 24 24" fill="currentColor" className="w-4 h-4">
-                    <path d="M9 8h-3v4h3v12h5v-12h3.642l.358-4h-4v-1.667c0-.955.192-1.333 1.115-1.333h2.885v-5h-3.808c-3.596 0-5.192 1.583-5.192 4.615v3.385z" />
-                  </svg>
-                ),
+                href: "https://www.facebook.com/PropertyWorksIndia",
+                icon: facebookIcon,
               },
               {
                 name: "LinkedIn",
-                icon: (
-                  <svg viewBox="0 0 24 24" fill="currentColor" className="w-4 h-4">
-                    <path d="M19 0h-14c-2.761 0-5 2.239-5 5v14c0 2.761 2.239 5 5 5h14c2.762 0 5-2.239 5-5v-14c0-2.761-2.238-5-5-5zm-11 19h-3v-11h3v11zm-1.5-12.268c-.966 0-1.75-.779-1.75-1.75s.784-1.75 1.75-1.75 1.75.779 1.75 1.75-.784 1.75-1.75 1.75zm13.5 12.268h-3v-5.604c0-3.368-4-3.113-4 0v5.604h-3v-11h3v1.765c1.396-2.586 7-2.777 7 2.476v6.759z" />
-                  </svg>
-                ),
+                href: "https://linkedin.com/company/propertyworksindia",
+                icon: linkedinIcon,
               },
               {
                 name: "Instagram",
-                icon: (
-                  <svg
-                    viewBox="0 0 24 24"
-                    fill="none"
-                    className="w-4 h-4 stroke-current stroke-2"
-                  >
-                    <rect x="2" y="2" width="20" height="20" rx="5" ry="5" />
-                    <path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z" />
-                    <line x1="17.5" y1="6.5" x2="17.51" y2="6.5" />
-                  </svg>
-                ),
+                href: "https://www.instagram.com/propertyworks.in/",
+                icon: instagramIcon,
               },
               {
                 name: "YouTube",
-                icon: (
-                  <svg viewBox="0 0 24 24" fill="currentColor" className="w-4 h-4">
-                    <path d="M23.498 6.163a3.003 3.003 0 0 0-2.11-2.11C19.518 3.5 12 3.5 12 3.5s-7.518 0-9.388.553a3.002 3.002 0 0 0-2.11 2.11C0 8.033 0 12 0 12s0 3.967.502 5.837a3.003 3.003 0 0 0 2.11 2.11c1.87.553 9.388.553 9.388.553s7.518 0 9.388-.553a3.002 3.002 0 0 0 2.11-2.11C24 15.967 24 12 24 12s0-3.967-.502-5.837zM9.545 15.568V8.432L15.818 12l-6.273 3.568z" />
-                  </svg>
-                ),
+                href: "https://www.youtube.com/@PropertyWorksOfficial",
+                icon: youtubeIcon,
               },
             ].map((social) => (
               <motion.a
                 key={social.name}
-                href="#"
-                whileHover={{ scale: 1.18, borderColor: GOLD, color: "#fff", rotate: 5 }}
+                href={social.href}
+                target={social.href !== "#" ? "_blank" : undefined}
+                rel={social.href !== "#" ? "noopener noreferrer" : undefined}
+                whileHover={{ scale: 1.18, borderColor: GOLD, rotate: 5 }}
                 whileTap={{ scale: 0.95 }}
-                className="w-8 h-8 rounded-full border border-white/20 flex items-center justify-center text-slate-400 hover:text-white transition-colors relative cursor-pointer"
+                className="w-8 h-8 rounded-full border border-white/20 flex items-center justify-center p-1.5 transition-all relative cursor-pointer overflow-hidden bg-white/5 hover:bg-white/15"
                 title={social.name}
               >
-                {social.icon}
+                <img src={social.icon} alt={social.name} className="w-full h-full object-contain" />
               </motion.a>
             ))}
           </div>

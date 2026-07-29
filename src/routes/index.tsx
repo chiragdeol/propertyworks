@@ -36,7 +36,7 @@ export const Route = createFileRoute("/")({
         "@type": "ContactPoint",
         "telephone": "+91-98205-44427",
         "contactType": "customer service",
-        "email": "stany.brahmane@gmail.com",
+        "email": "support@propertyworks.in",
         "availableLanguage": ["English", "Hindi"]
       }
     };
