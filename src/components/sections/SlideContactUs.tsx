@@ -173,7 +173,7 @@ export default function SlideContactUs() {
                   <div className="w-[1.5px] h-8 bg-[#D4A13A] shrink-0" />
                   <div className="min-w-0">
                     <span className="text-[9.5px] font-bold text-[#D4A13A] uppercase tracking-wider block">
-                      {item.label}:
+                      {item.label}
                     </span>
                     <span className="text-xs font-bold text-[#031B33] mt-0.5 block break-all leading-normal">
                       {item.value}

@@ -718,6 +718,7 @@ app.get("/sitemap.xml", (req, res) => {
 });
 
 // Serve static frontend assets in production or welcome page in development
+<<<<<<< HEAD
 const candidateDistPaths = [
   path.join(__dirname, "../dist"),
   path.join(__dirname, "dist"),
@@ -735,10 +736,16 @@ let distPath = candidateDistPaths.find((p) => fs.existsSync(path.join(p, "index.
 
 if (!distPath) {
   distPath = candidateDistPaths.find((p) => fs.existsSync(p));
+=======
+let distPath = path.join(__dirname, "../dist");
+if (!fs.existsSync(distPath)) {
+  distPath = path.join(__dirname, "dist");
+>>>>>>> parent of 0c440a2 (.)
 }
 
-if (distPath) {
+if (fs.existsSync(distPath)) {
   app.use(express.static(distPath));
+<<<<<<< HEAD
 }
 
 // Fallback for SPA routing: serve index.html for all non-API routes (projects, knowledge center, etc.)
@@ -769,16 +776,24 @@ app.use((req, res, next) => {
   res.status(404).json({ error: "Not Found" });
 });
 
+=======
+    app.use((req, res, next) => {
+    if (req.path.startsWith("/api") || req.path === "/robots.txt" || req.path === "/sitemap.xml") {
+      return next();
+    }
+    res.sendFile(path.join(distPath, "index.html"));
+  });
+} else {
+  app.get("/", (req, res) => {
+    res.send("PropertyWorks API Backend is running. Please access the frontend at http://localhost:8080");
+  });
+}
+
+>>>>>>> parent of 0c440a2 (.)
 // Global Error Handler for debugging
 app.use((err, req, res, next) => {
-  if (err.status === 404 || err.statusCode === 404 || err.name === "NotFoundError" || err.code === "ENOENT") {
-    return res.status(404).json({ error: "Not Found" });
-  }
   console.error("SERVER ERROR:", err);
-  res.status(err.status || err.statusCode || 500).json({
-    error: err.message || "Internal Server Error",
-    ...(process.env.NODE_ENV !== "production" && { stack: err.stack })
-  });
+  res.status(500).json({ error: err.message, stack: err.stack });
 });
 
 // Start Server
