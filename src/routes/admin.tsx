@@ -251,7 +251,6 @@ function AdminRouteComponent() {
                       {showCurrentPass ? <EyeOff size={18} /> : <Eye size={18} />}
                     </button>
                   </div>
-                  <span className="text-[10px] text-slate-400 italic block pl-1">Default security reset key: <strong className="text-gold">propertyworks2026</strong></span>
                 </div>
 
                 <div className="space-y-1.5">
