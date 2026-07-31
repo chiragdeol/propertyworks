@@ -741,8 +741,12 @@ if (distPath) {
   app.use(express.static(distPath));
 }
 
-// Fallback for SPA routing: serve index.html for all non-API routes (projects, knowledge center, etc.)
-app.get("*", (req, res, next) => {
+// Fallback for SPA routing: serve index.html for all non-API GET requests
+app.use((req, res, next) => {
+  if (req.method !== "GET" && req.method !== "HEAD") {
+    return next();
+  }
+
   if (req.path.startsWith("/api") || req.path.startsWith("/uploads") || req.path === "/robots.txt" || req.path === "/sitemap.xml") {
     return next();
   }
@@ -761,7 +765,7 @@ app.get("*", (req, res, next) => {
     });
   }
 
-  res.status(404).send("PropertyWorks frontend page not found. Please verify deployment dist folder.");
+  next();
 });
 
 // 404 Handler for unhandled API routes
