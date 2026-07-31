@@ -40,13 +40,30 @@ app.use(express.json({ limit: "50mb" }));
 app.use(cookieParser());
 
 // Database configuration
-const DB_DIR = path.join(__dirname, "database");
+const candidateDbDirs = [
+  path.join(__dirname, "database"),
+  path.join(__dirname, "../database"),
+  path.join(__dirname, "../backend/database"),
+  path.join(process.cwd(), "backend/database"),
+  path.join(process.cwd(), "database"),
+  path.join(process.cwd(), "public_html/backend/database"),
+  path.join(process.cwd(), "public_html/database")
+];
+const DB_DIR = candidateDbDirs.find((d) => fs.existsSync(d)) || path.join(__dirname, "database");
 const PROJECTS_PATH = path.join(DB_DIR, "projects.json");
 const ARTICLES_PATH = path.join(DB_DIR, "articles.json");
 const SETTINGS_PATH = path.join(DB_DIR, "settings.json");
 const ADMIN_PATH = path.join(DB_DIR, "admin.json");
 const LEADS_PATH = path.join(DB_DIR, "leads.json");
-const UPLOADS_DIR = path.join(__dirname, "uploads");
+
+const candidateUploadsDirs = [
+  path.join(__dirname, "uploads"),
+  path.join(__dirname, "../uploads"),
+  path.join(process.cwd(), "backend/uploads"),
+  path.join(process.cwd(), "uploads"),
+  path.join(process.cwd(), "public_html/uploads")
+];
+const UPLOADS_DIR = candidateUploadsDirs.find((d) => fs.existsSync(d)) || path.join(__dirname, "uploads");
 
 // Serve uploads statically
 app.use("/uploads", express.static(UPLOADS_DIR));
@@ -349,7 +366,17 @@ function initDb() {
 initDb();
 
 // Database Reading/Writing Helpers
-const readJSON = (filePath) => JSON.parse(fs.readFileSync(filePath, "utf-8"));
+const readJSON = (filePath, fallback = []) => {
+  try {
+    if (fs.existsSync(filePath)) {
+      const content = fs.readFileSync(filePath, "utf-8");
+      return JSON.parse(content);
+    }
+  } catch (err) {
+    console.error(`Error reading JSON file at ${filePath}:`, err);
+  }
+  return fallback;
+};
 const writeJSON = (filePath, data) => fs.writeFileSync(filePath, JSON.stringify(data, null, 2), "utf-8");
 
 // Authentication middleware
@@ -694,47 +721,50 @@ app.get("/sitemap.xml", (req, res) => {
 const candidateDistPaths = [
   path.join(__dirname, "../dist"),
   path.join(__dirname, "dist"),
+  path.join(__dirname, "../public_html"),
+  path.join(__dirname, "../../public_html"),
   path.join(process.cwd(), "dist"),
   path.join(process.cwd(), "backend/dist"),
   path.join(process.cwd(), "public_html"),
   path.join(process.cwd(), ".output/public"),
-  path.join(process.cwd(), "build")
+  path.join(process.cwd(), "build"),
+  process.cwd()
 ];
 
 let distPath = candidateDistPaths.find((p) => fs.existsSync(path.join(p, "index.html")));
 
-// Fallback to any directory that exists if index.html hasn't been found yet
 if (!distPath) {
   distPath = candidateDistPaths.find((p) => fs.existsSync(p));
 }
 
 if (distPath) {
   app.use(express.static(distPath));
-  app.use((req, res, next) => {
-    if (req.path.startsWith("/api") || req.path === "/robots.txt" || req.path === "/sitemap.xml") {
-      return next();
-    }
-    const indexPath = path.join(distPath, "index.html");
-    if (fs.existsSync(indexPath)) {
-      return res.sendFile(indexPath, (err) => {
-        if (err && !res.headersSent) {
-          if (err.status === 404 || err.code === "ENOENT") {
-            res.status(404).send("Page not found");
-          } else {
-            next(err);
-          }
-        }
-      });
-    }
-    next();
-  });
-} else {
-  app.get("/", (req, res) => {
-    res.send("PropertyWorks API Backend is running. Please access the frontend at http://localhost:8080");
-  });
 }
 
-// 404 Handler for unhandled routes
+// Fallback for SPA routing: serve index.html for all non-API routes (projects, knowledge center, etc.)
+app.get("*", (req, res, next) => {
+  if (req.path.startsWith("/api") || req.path.startsWith("/uploads") || req.path === "/robots.txt" || req.path === "/sitemap.xml") {
+    return next();
+  }
+
+  // Find index.html across candidate paths
+  const targetIndex = candidateDistPaths
+    .map((p) => path.join(p, "index.html"))
+    .find((p) => fs.existsSync(p));
+
+  if (targetIndex) {
+    return res.sendFile(targetIndex, (err) => {
+      if (err && !res.headersSent) {
+        console.error("Error sending index.html:", err);
+        res.status(500).send("Error loading application page");
+      }
+    });
+  }
+
+  res.status(404).send("PropertyWorks frontend page not found. Please verify deployment dist folder.");
+});
+
+// 404 Handler for unhandled API routes
 app.use((req, res, next) => {
   res.status(404).json({ error: "Not Found" });
 });
