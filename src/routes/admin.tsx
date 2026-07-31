@@ -1,7 +1,7 @@
 import { createFileRoute, useNavigate, Link } from "@tanstack/react-router";
 import { useState, useEffect } from "react";
 import { 
-  loginAdmin, logoutAdmin, checkSession, 
+  loginAdmin, logoutAdmin, checkSession, resetAdminPassword,
   getProjects, saveProject, deleteProject, 
   getArticles, saveArticle, deleteArticle, 
   getGlobalSettings, saveGlobalSettings,
@@ -13,7 +13,7 @@ import Footer from "@/components/Footer";
 import { toast, Toaster } from "sonner";
 import { 
   Lock, LayoutDashboard, Building, BookOpen, Settings, LogOut, 
-  Plus, Edit, Trash2, CheckCircle2, AlertTriangle, ArrowRight, Eye, FileText,
+  Plus, Edit, Trash2, CheckCircle2, AlertTriangle, ArrowRight, Eye, EyeOff, FileText,
   Image, FileSpreadsheet, Globe, Copy, Check, Upload, Calendar, Search, LayoutGrid
 } from "lucide-react";
 
@@ -88,6 +88,17 @@ function AdminRouteComponent() {
     }
   };
 
+  // Auth Password Reset & Visibility States
+  const [isResetMode, setIsResetMode] = useState(false);
+  const [resetKeyOrOldPass, setResetKeyOrOldPass] = useState("");
+  const [newPass, setNewPass] = useState("");
+  const [confirmNewPass, setConfirmNewPass] = useState("");
+
+  const [showAuthPass, setShowAuthPass] = useState(false);
+  const [showCurrentPass, setShowCurrentPass] = useState(false);
+  const [showNewPass, setShowNewPass] = useState(false);
+  const [showConfirmPass, setShowConfirmPass] = useState(false);
+
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
     const res = await loginAdmin({ data: { password: authPassword } });
@@ -96,6 +107,37 @@ function AdminRouteComponent() {
       toast.success("Welcome back, Administrator!");
     } else {
       toast.error(res.error || "Login failed");
+    }
+  };
+
+  const handleResetPassword = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (newPass !== confirmNewPass) {
+      toast.error("New passwords do not match!");
+      return;
+    }
+    if (newPass.length < 4) {
+      toast.error("New password must be at least 4 characters long.");
+      return;
+    }
+
+    const res = await resetAdminPassword({
+      data: {
+        currentPassword: resetKeyOrOldPass,
+        resetKey: resetKeyOrOldPass,
+        newPassword: newPass,
+      },
+    });
+
+    if (res.success) {
+      toast.success(res.message || "Password reset successfully!");
+      setIsResetMode(false);
+      setAuthPassword(newPass);
+      setResetKeyOrOldPass("");
+      setNewPass("");
+      setConfirmNewPass("");
+    } else {
+      toast.error(res.error || "Failed to reset password.");
     }
   };
 
@@ -126,40 +168,158 @@ function AdminRouteComponent() {
           <div className="absolute bottom-1/4 left-1/4 w-[400px] h-[400px] rounded-full bg-blue-500/[0.03] blur-[120px]" />
         </div>
 
-        <div className="flex-grow flex items-center justify-center p-5 z-10">
-          <div className="max-w-md w-full bg-slate-800/80 backdrop-blur-md p-8 sm:p-10 rounded-3xl border border-slate-700 shadow-2xl space-y-8">
+        <div className="flex-grow flex items-center justify-center p-5 z-10 my-8">
+          <div className="max-w-md w-full bg-slate-800/80 backdrop-blur-md p-8 sm:p-10 rounded-3xl border border-slate-700 shadow-2xl space-y-6">
             <div className="text-center space-y-2">
               <div className="h-12 w-12 bg-gold/10 text-gold rounded-full flex items-center justify-center mx-auto mb-4 border border-gold/20">
                 <Lock size={20} />
               </div>
-              <h2 className="text-2xl font-heading font-black tracking-tight">Admin Authentication</h2>
+              <h2 className="text-2xl font-heading font-black tracking-tight">
+                {isResetMode ? "Reset Admin Password" : "Admin Authentication"}
+              </h2>
               <p className="text-slate-400 text-xs font-semibold">
-                Access restricted to authorized PropertyWorks staff.
+                {isResetMode
+                  ? "Enter your current password or master reset key to update your password."
+                  : "Access restricted to authorized PropertyWorks staff."}
               </p>
             </div>
 
-            <form onSubmit={handleLogin} className="space-y-5">
-              <div className="space-y-2">
-                <label className="text-[10px] font-black uppercase tracking-widest text-slate-400 pl-1">
-                  Security Password
-                </label>
-                <input
-                  type="password"
-                  placeholder="Enter administrator password"
-                  value={authPassword}
-                  onChange={(e) => setAuthPassword(e.target.value)}
-                  className="w-full h-12 px-4 bg-slate-750 border border-slate-700 text-sm rounded-xl focus:border-gold focus:ring-4 focus:ring-gold/10 outline-none transition-all font-semibold"
-                />
-              </div>
+            {!isResetMode ? (
+              <form onSubmit={handleLogin} className="space-y-5">
+                <div className="space-y-2">
+                  <label className="text-[10px] font-black uppercase tracking-widest text-slate-400 pl-1">
+                    Security Password
+                  </label>
+                  <div className="relative">
+                    <input
+                      type={showAuthPass ? "text" : "password"}
+                      placeholder="Enter administrator password"
+                      value={authPassword}
+                      onChange={(e) => setAuthPassword(e.target.value)}
+                      className="w-full h-12 pl-4 pr-11 bg-slate-750 border border-slate-700 text-sm rounded-xl focus:border-gold focus:ring-4 focus:ring-gold/10 outline-none transition-all font-semibold text-white"
+                    />
+                    <button
+                      type="button"
+                      onClick={() => setShowAuthPass(!showAuthPass)}
+                      className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 hover:text-gold transition-colors p-1 cursor-pointer"
+                      title={showAuthPass ? "Hide password" : "Show password"}
+                    >
+                      {showAuthPass ? <EyeOff size={18} /> : <Eye size={18} />}
+                    </button>
+                  </div>
+                </div>
 
-              <button
-                type="submit"
-                className="w-full h-12 bg-gold hover:bg-gold/90 active:scale-98 text-slate-900 font-extrabold rounded-xl text-xs uppercase tracking-wider transition-all shadow-[0_4px_15px_rgba(212,161,58,0.25)] cursor-pointer flex items-center justify-center gap-2"
-              >
-                <span>Authorize Access</span>
-                <ArrowRight size={14} className="stroke-[3]" />
-              </button>
-            </form>
+                <button
+                  type="submit"
+                  className="w-full h-12 bg-gold hover:bg-gold/90 active:scale-98 text-slate-900 font-extrabold rounded-xl text-xs uppercase tracking-wider transition-all shadow-[0_4px_15px_rgba(212,161,58,0.25)] cursor-pointer flex items-center justify-center gap-2"
+                >
+                  <span>Authorize Access</span>
+                  <ArrowRight size={14} className="stroke-[3]" />
+                </button>
+
+                <div className="text-center pt-2">
+                  <button
+                    type="button"
+                    onClick={() => setIsResetMode(true)}
+                    className="text-xs text-gold/80 hover:text-gold font-bold underline transition-colors cursor-pointer"
+                  >
+                    Forgot or Reset Password?
+                  </button>
+                </div>
+              </form>
+            ) : (
+              <form onSubmit={handleResetPassword} className="space-y-4">
+                <div className="space-y-1.5">
+                  <label className="text-[10px] font-black uppercase tracking-widest text-slate-400 pl-1">
+                    Current Password or Security Reset Key
+                  </label>
+                  <div className="relative">
+                    <input
+                      type={showCurrentPass ? "text" : "password"}
+                      placeholder="Enter current password or reset key"
+                      value={resetKeyOrOldPass}
+                      onChange={(e) => setResetKeyOrOldPass(e.target.value)}
+                      required
+                      className="w-full h-11 pl-4 pr-11 bg-slate-750 border border-slate-700 text-sm rounded-xl focus:border-gold focus:ring-4 focus:ring-gold/10 outline-none transition-all font-semibold text-white"
+                    />
+                    <button
+                      type="button"
+                      onClick={() => setShowCurrentPass(!showCurrentPass)}
+                      className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 hover:text-gold transition-colors p-1 cursor-pointer"
+                      title={showCurrentPass ? "Hide key" : "Show key"}
+                    >
+                      {showCurrentPass ? <EyeOff size={18} /> : <Eye size={18} />}
+                    </button>
+                  </div>
+                  <span className="text-[10px] text-slate-400 italic block pl-1">Default security reset key: <strong className="text-gold">propertyworks2026</strong></span>
+                </div>
+
+                <div className="space-y-1.5">
+                  <label className="text-[10px] font-black uppercase tracking-widest text-slate-400 pl-1">
+                    New Password
+                  </label>
+                  <div className="relative">
+                    <input
+                      type={showNewPass ? "text" : "password"}
+                      placeholder="Enter new password"
+                      value={newPass}
+                      onChange={(e) => setNewPass(e.target.value)}
+                      required
+                      className="w-full h-11 pl-4 pr-11 bg-slate-750 border border-slate-700 text-sm rounded-xl focus:border-gold focus:ring-4 focus:ring-gold/10 outline-none transition-all font-semibold text-white"
+                    />
+                    <button
+                      type="button"
+                      onClick={() => setShowNewPass(!showNewPass)}
+                      className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 hover:text-gold transition-colors p-1 cursor-pointer"
+                      title={showNewPass ? "Hide password" : "Show password"}
+                    >
+                      {showNewPass ? <EyeOff size={18} /> : <Eye size={18} />}
+                    </button>
+                  </div>
+                </div>
+
+                <div className="space-y-1.5">
+                  <label className="text-[10px] font-black uppercase tracking-widest text-slate-400 pl-1">
+                    Confirm New Password
+                  </label>
+                  <div className="relative">
+                    <input
+                      type={showConfirmPass ? "text" : "password"}
+                      placeholder="Confirm new password"
+                      value={confirmNewPass}
+                      onChange={(e) => setConfirmNewPass(e.target.value)}
+                      required
+                      className="w-full h-11 pl-4 pr-11 bg-slate-750 border border-slate-700 text-sm rounded-xl focus:border-gold focus:ring-4 focus:ring-gold/10 outline-none transition-all font-semibold text-white"
+                    />
+                    <button
+                      type="button"
+                      onClick={() => setShowConfirmPass(!showConfirmPass)}
+                      className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 hover:text-gold transition-colors p-1 cursor-pointer"
+                      title={showConfirmPass ? "Hide password" : "Show password"}
+                    >
+                      {showConfirmPass ? <EyeOff size={18} /> : <Eye size={18} />}
+                    </button>
+                  </div>
+                </div>
+
+                <button
+                  type="submit"
+                  className="w-full h-11 bg-gold hover:bg-gold/90 active:scale-98 text-slate-900 font-extrabold rounded-xl text-xs uppercase tracking-wider transition-all shadow-[0_4px_15px_rgba(212,161,58,0.25)] cursor-pointer flex items-center justify-center gap-2 mt-2"
+                >
+                  <span>Update Password</span>
+                </button>
+
+                <div className="text-center pt-2">
+                  <button
+                    type="button"
+                    onClick={() => setIsResetMode(false)}
+                    className="text-xs text-slate-400 hover:text-white font-bold transition-colors cursor-pointer"
+                  >
+                    ← Back to Login
+                  </button>
+                </div>
+              </form>
+            )}
           </div>
         </div>
         <Footer />
@@ -2273,9 +2433,52 @@ function SectionsTab({ settings, loadData }: SectionsTabProps) {
   const getFieldValue = (field: string) => {
     const val = formData.sections?.[selectedSection]?.[field];
     if (val === undefined || val === null) {
-      return defaultSections[selectedSection]?.[field] || "";
+      return (defaultSections[selectedSection] as any)?.[field] || "";
     }
     return val;
+  };
+
+  const getArrayValue = (field: string, fallback: any[] = []): any[] => {
+    const val = formData.sections?.[selectedSection]?.[field];
+    if (Array.isArray(val)) return val;
+    const def = (defaultSections[selectedSection] as any)?.[field];
+    if (Array.isArray(def)) return def;
+    return fallback;
+  };
+
+  const updateArrayValue = (field: string, newArray: any[]) => {
+    setFormData((prev: any) => {
+      const sections = prev.sections ? { ...prev.sections } : {};
+      const section = sections[selectedSection] ? { ...sections[selectedSection] } : {};
+      section[field] = newArray;
+      sections[selectedSection] = section;
+      return {
+        ...prev,
+        sections
+      };
+    });
+  };
+
+  const handleArrayItemChange = (field: string, index: number, key: string, value: any) => {
+    const current = [...getArrayValue(field)];
+    if (typeof current[index] === "object" && current[index] !== null) {
+      current[index] = { ...current[index], [key]: value };
+    } else {
+      current[index] = value;
+    }
+    updateArrayValue(field, current);
+  };
+
+  const handleAddArrayItem = (field: string, template: any) => {
+    const current = [...getArrayValue(field)];
+    current.push(template);
+    updateArrayValue(field, current);
+  };
+
+  const handleRemoveArrayItem = (field: string, index: number) => {
+    const current = [...getArrayValue(field)];
+    current.splice(index, 1);
+    updateArrayValue(field, current);
   };
 
   const sectionsList = [
@@ -2395,6 +2598,84 @@ function SectionsTab({ settings, loadData }: SectionsTabProps) {
                   onChange={(e) => updateSectionField("imageUrl", e.target.value)}
                   className="w-full h-11 px-4 bg-slate-50 border border-slate-200 text-sm rounded-xl outline-none focus:bg-white focus:border-gold font-semibold"
                 />
+              </div>
+              <div className="space-y-1.5 md:col-span-2">
+                <label className="text-[10px] font-black uppercase text-slate-400">Bottom Blue Strip Text *</label>
+                <textarea
+                  rows={2}
+                  value={getFieldValue("stripText")}
+                  onChange={(e) => updateSectionField("stripText", e.target.value)}
+                  placeholder="Without the right guidance and structure, the entire process becomes [gold]emotionally exhausting.[/gold]"
+                  className="w-full p-3 bg-slate-50 border border-slate-200 text-xs rounded-xl outline-none focus:bg-white focus:border-gold font-semibold"
+                />
+              </div>
+
+              <div className="md:col-span-2 space-y-4 pt-4 border-t border-slate-100">
+                <div className="flex items-center justify-between">
+                  <h4 className="text-xs font-black uppercase text-slate-700 tracking-wider">Noise & Solution Cards</h4>
+                  <button
+                    type="button"
+                    onClick={() => handleAddArrayItem("items", { title: "Problem Title", body: "Problem description...", solTitle: "Solution Title", solBody: "Solution description..." })}
+                    className="px-3 py-1.5 bg-gold text-slate-900 rounded-lg text-[10px] font-black uppercase tracking-wider hover:bg-gold/90 transition-all cursor-pointer flex items-center gap-1"
+                  >
+                    <Plus size={12} /> Add Card
+                  </button>
+                </div>
+                <div className="space-y-3">
+                  {getArrayValue("items").map((it: any, idx: number) => (
+                    <div key={idx} className="p-4 bg-slate-50 border border-slate-200/70 rounded-xl space-y-3 relative group">
+                      <div className="flex items-center justify-between">
+                        <span className="text-[10px] font-black text-gold uppercase tracking-wider">Card #{idx + 1}</span>
+                        <button
+                          type="button"
+                          onClick={() => handleRemoveArrayItem("items", idx)}
+                          className="p-1 text-slate-400 hover:text-rose-500 rounded transition-colors cursor-pointer"
+                          title="Remove card"
+                        >
+                          <Trash2 size={14} />
+                        </button>
+                      </div>
+                      <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+                        <div className="space-y-1">
+                          <label className="text-[9px] font-black uppercase text-rose-500">Problem Title</label>
+                          <input
+                            type="text"
+                            value={it.title || ""}
+                            onChange={(e) => handleArrayItemChange("items", idx, "title", e.target.value)}
+                            className="w-full h-9 px-3 bg-white border border-slate-200 text-xs rounded-lg font-semibold"
+                          />
+                        </div>
+                        <div className="space-y-1">
+                          <label className="text-[9px] font-black uppercase text-emerald-600">Solution Title</label>
+                          <input
+                            type="text"
+                            value={it.solTitle || ""}
+                            onChange={(e) => handleArrayItemChange("items", idx, "solTitle", e.target.value)}
+                            className="w-full h-9 px-3 bg-white border border-slate-200 text-xs rounded-lg font-semibold"
+                          />
+                        </div>
+                        <div className="space-y-1">
+                          <label className="text-[9px] font-black uppercase text-slate-400">Problem Body</label>
+                          <textarea
+                            rows={2}
+                            value={it.body || ""}
+                            onChange={(e) => handleArrayItemChange("items", idx, "body", e.target.value)}
+                            className="w-full p-2 bg-white border border-slate-200 text-xs rounded-lg font-semibold"
+                          />
+                        </div>
+                        <div className="space-y-1">
+                          <label className="text-[9px] font-black uppercase text-slate-400">Solution Body</label>
+                          <textarea
+                            rows={2}
+                            value={it.solBody || ""}
+                            onChange={(e) => handleArrayItemChange("items", idx, "solBody", e.target.value)}
+                            className="w-full p-2 bg-white border border-slate-200 text-xs rounded-lg font-semibold"
+                          />
+                        </div>
+                      </div>
+                    </div>
+                  ))}
+                </div>
               </div>
             </>
           )}
@@ -2537,6 +2818,68 @@ function SectionsTab({ settings, loadData }: SectionsTabProps) {
                   className="w-full h-10 px-4 bg-slate-50 border border-slate-200 text-sm rounded-xl outline-none focus:bg-white focus:border-gold font-semibold"
                 />
               </div>
+
+              <div className="md:col-span-2 grid grid-cols-1 md:grid-cols-2 gap-6 pt-4 border-t border-slate-100">
+                <div className="space-y-3">
+                  <div className="flex items-center justify-between">
+                    <h4 className="text-xs font-black uppercase text-rose-500 tracking-wider">Confusion Points (Left)</h4>
+                    <button
+                      type="button"
+                      onClick={() => handleAddArrayItem("leftPoints", "New confusion point")}
+                      className="px-2.5 py-1 bg-rose-50 text-rose-600 rounded-lg text-[10px] font-black uppercase tracking-wider hover:bg-rose-100 transition-all cursor-pointer flex items-center gap-1"
+                    >
+                      <Plus size={12} /> Add
+                    </button>
+                  </div>
+                  {getArrayValue("leftPoints").map((pt: string, idx: number) => (
+                    <div key={idx} className="flex items-center gap-2">
+                      <input
+                        type="text"
+                        value={pt || ""}
+                        onChange={(e) => handleArrayItemChange("leftPoints", idx, "", e.target.value)}
+                        className="w-full h-9 px-3 bg-slate-50 border border-slate-200 text-xs rounded-lg font-semibold"
+                      />
+                      <button
+                        type="button"
+                        onClick={() => handleRemoveArrayItem("leftPoints", idx)}
+                        className="p-1.5 text-slate-400 hover:text-rose-500 rounded transition-colors cursor-pointer shrink-0"
+                      >
+                        <Trash2 size={14} />
+                      </button>
+                    </div>
+                  ))}
+                </div>
+
+                <div className="space-y-3">
+                  <div className="flex items-center justify-between">
+                    <h4 className="text-xs font-black uppercase text-emerald-600 tracking-wider">Confidence Points (Right)</h4>
+                    <button
+                      type="button"
+                      onClick={() => handleAddArrayItem("rightPoints", "New confidence point")}
+                      className="px-2.5 py-1 bg-emerald-50 text-emerald-600 rounded-lg text-[10px] font-black uppercase tracking-wider hover:bg-emerald-100 transition-all cursor-pointer flex items-center gap-1"
+                    >
+                      <Plus size={12} /> Add
+                    </button>
+                  </div>
+                  {getArrayValue("rightPoints").map((pt: string, idx: number) => (
+                    <div key={idx} className="flex items-center gap-2">
+                      <input
+                        type="text"
+                        value={pt || ""}
+                        onChange={(e) => handleArrayItemChange("rightPoints", idx, "", e.target.value)}
+                        className="w-full h-slate-50 bg-slate-50 border border-slate-200 text-xs rounded-lg font-semibold"
+                      />
+                      <button
+                        type="button"
+                        onClick={() => handleRemoveArrayItem("rightPoints", idx)}
+                        className="p-1.5 text-slate-400 hover:text-rose-500 rounded transition-colors cursor-pointer shrink-0"
+                      >
+                        <Trash2 size={14} />
+                      </button>
+                    </div>
+                  ))}
+                </div>
+              </div>
             </>
           )}
 
@@ -2568,6 +2911,58 @@ function SectionsTab({ settings, loadData }: SectionsTabProps) {
                   onChange={(e) => updateSectionField("imageUrl", e.target.value)}
                   className="w-full h-11 px-4 bg-slate-50 border border-slate-200 text-sm rounded-xl outline-none focus:bg-white focus:border-gold font-semibold"
                 />
+              </div>
+              <div className="space-y-1.5 md:col-span-2">
+                <label className="text-[10px] font-black uppercase text-slate-400">Perspective Strip Heading *</label>
+                <input
+                  type="text"
+                  value={getFieldValue("stripHeading")}
+                  onChange={(e) => updateSectionField("stripHeading", e.target.value)}
+                  placeholder="Our Perspective"
+                  className="w-full h-11 px-4 bg-slate-50 border border-slate-200 text-sm rounded-xl outline-none focus:bg-white focus:border-gold font-semibold"
+                />
+              </div>
+              <div className="space-y-1.5 md:col-span-2">
+                <label className="text-[10px] font-black uppercase text-slate-400">Bottom Statement Strip Text *</label>
+                <textarea
+                  rows={2}
+                  value={getFieldValue("stripText")}
+                  onChange={(e) => updateSectionField("stripText", e.target.value)}
+                  placeholder="We don't just show you properties. We help you choose [gold]the right one.[/gold]"
+                  className="w-full p-3 bg-slate-50 border border-slate-200 text-xs rounded-xl outline-none focus:bg-white focus:border-gold font-semibold"
+                />
+              </div>
+
+              <div className="md:col-span-2 space-y-4 pt-4 border-t border-slate-100">
+                <div className="flex items-center justify-between">
+                  <h4 className="text-xs font-black uppercase text-slate-700 tracking-wider">Site Visit Features / Highlights</h4>
+                  <button
+                    type="button"
+                    onClick={() => handleAddArrayItem("features", "New feature highlight")}
+                    className="px-3 py-1.5 bg-gold text-slate-900 rounded-lg text-[10px] font-black uppercase tracking-wider hover:bg-gold/90 transition-all cursor-pointer flex items-center gap-1"
+                  >
+                    <Plus size={12} /> Add Feature
+                  </button>
+                </div>
+                <div className="space-y-2">
+                  {getArrayValue("features").map((ft: string, idx: number) => (
+                    <div key={idx} className="flex items-center gap-2">
+                      <input
+                        type="text"
+                        value={ft || ""}
+                        onChange={(e) => handleArrayItemChange("features", idx, "", e.target.value)}
+                        className="w-full h-9 px-3 bg-slate-50 border border-slate-200 text-xs rounded-lg font-semibold"
+                      />
+                      <button
+                        type="button"
+                        onClick={() => handleRemoveArrayItem("features", idx)}
+                        className="p-1.5 text-slate-400 hover:text-rose-500 rounded transition-colors cursor-pointer shrink-0"
+                      >
+                        <Trash2 size={14} />
+                      </button>
+                    </div>
+                  ))}
+                </div>
               </div>
             </>
           )}
@@ -2619,6 +3014,59 @@ function SectionsTab({ settings, loadData }: SectionsTabProps) {
                   className="w-full h-11 px-4 bg-slate-50 border border-slate-200 text-sm rounded-xl outline-none focus:bg-white focus:border-gold font-semibold"
                 />
               </div>
+
+              <div className="md:col-span-2 space-y-4 pt-4 border-t border-slate-100">
+                <div className="flex items-center justify-between">
+                  <h4 className="text-xs font-black uppercase text-slate-700 tracking-wider">Service Cards</h4>
+                  <button
+                    type="button"
+                    onClick={() => handleAddArrayItem("items", { title: "New Service", description: "Service details...", bullets: "Feature 1 | Feature 2 | Feature 3" })}
+                    className="px-3 py-1.5 bg-gold text-slate-900 rounded-lg text-[10px] font-black uppercase tracking-wider hover:bg-gold/90 transition-all cursor-pointer flex items-center gap-1"
+                  >
+                    <Plus size={12} /> Add Service Card
+                  </button>
+                </div>
+                <div className="space-y-3">
+                  {getArrayValue("items").map((it: any, idx: number) => (
+                    <div key={idx} className="p-4 bg-slate-50 border border-slate-200/70 rounded-xl space-y-3 relative group">
+                      <div className="flex items-center justify-between">
+                        <span className="text-[10px] font-black text-gold uppercase tracking-wider">Service #{idx + 1}</span>
+                        <button
+                          type="button"
+                          onClick={() => handleRemoveArrayItem("items", idx)}
+                          className="p-1 text-slate-400 hover:text-rose-500 rounded transition-colors cursor-pointer"
+                          title="Remove service"
+                        >
+                          <Trash2 size={14} />
+                        </button>
+                      </div>
+                      <div className="space-y-2">
+                        <input
+                          type="text"
+                          placeholder="Service Title"
+                          value={it.title || ""}
+                          onChange={(e) => handleArrayItemChange("items", idx, "title", e.target.value)}
+                          className="w-full h-9 px-3 bg-white border border-slate-200 text-xs rounded-lg font-semibold"
+                        />
+                        <textarea
+                          rows={2}
+                          placeholder="Service Description"
+                          value={it.description || ""}
+                          onChange={(e) => handleArrayItemChange("items", idx, "description", e.target.value)}
+                          className="w-full p-2 bg-white border border-slate-200 text-xs rounded-lg font-semibold"
+                        />
+                        <input
+                          type="text"
+                          placeholder="Bullets (separated by | )"
+                          value={it.bullets || ""}
+                          onChange={(e) => handleArrayItemChange("items", idx, "bullets", e.target.value)}
+                          className="w-full h-9 px-3 bg-white border border-slate-200 text-xs rounded-lg font-semibold"
+                        />
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </div>
             </>
           )}
 
@@ -2669,6 +3117,59 @@ function SectionsTab({ settings, loadData }: SectionsTabProps) {
                   className="w-full h-11 px-4 bg-slate-50 border border-slate-200 text-sm rounded-xl outline-none focus:bg-white focus:border-gold font-semibold"
                 />
               </div>
+
+              <div className="md:col-span-2 space-y-4 pt-4 border-t border-slate-100">
+                <div className="flex items-center justify-between">
+                  <h4 className="text-xs font-black uppercase text-slate-700 tracking-wider">Stat Counter Badges</h4>
+                  <button
+                    type="button"
+                    onClick={() => handleAddArrayItem("stats", { title: "Metric Title", value: "100+", subtitle: "Metric description" })}
+                    className="px-3 py-1.5 bg-gold text-slate-900 rounded-lg text-[10px] font-black uppercase tracking-wider hover:bg-gold/90 transition-all cursor-pointer flex items-center gap-1"
+                  >
+                    <Plus size={12} /> Add Stat
+                  </button>
+                </div>
+                <div className="space-y-3">
+                  {getArrayValue("stats").map((st: any, idx: number) => (
+                    <div key={idx} className="p-4 bg-slate-50 border border-slate-200/70 rounded-xl space-y-3 relative group">
+                      <div className="flex items-center justify-between">
+                        <span className="text-[10px] font-black text-gold uppercase tracking-wider">Stat #{idx + 1}</span>
+                        <button
+                          type="button"
+                          onClick={() => handleRemoveArrayItem("stats", idx)}
+                          className="p-1 text-slate-400 hover:text-rose-500 rounded transition-colors cursor-pointer"
+                          title="Remove stat"
+                        >
+                          <Trash2 size={14} />
+                        </button>
+                      </div>
+                      <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
+                        <input
+                          type="text"
+                          placeholder="Stat Value (e.g. 150+)"
+                          value={st.value || ""}
+                          onChange={(e) => handleArrayItemChange("stats", idx, "value", e.target.value)}
+                          className="w-full h-9 px-3 bg-white border border-slate-200 text-xs rounded-lg font-semibold"
+                        />
+                        <input
+                          type="text"
+                          placeholder="Stat Label / Title"
+                          value={st.title || ""}
+                          onChange={(e) => handleArrayItemChange("stats", idx, "title", e.target.value)}
+                          className="w-full h-9 px-3 bg-white border border-slate-200 text-xs rounded-lg font-semibold"
+                        />
+                        <input
+                          type="text"
+                          placeholder="Subtitle"
+                          value={st.subtitle || ""}
+                          onChange={(e) => handleArrayItemChange("stats", idx, "subtitle", e.target.value)}
+                          className="w-full h-9 px-3 bg-white border border-slate-200 text-xs rounded-lg font-semibold"
+                        />
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </div>
             </>
           )}
 
@@ -2700,6 +3201,52 @@ function SectionsTab({ settings, loadData }: SectionsTabProps) {
                   onChange={(e) => updateSectionField("imageUrl", e.target.value)}
                   className="w-full h-11 px-4 bg-slate-50 border border-slate-200 text-sm rounded-xl outline-none focus:bg-white focus:border-gold font-semibold"
                 />
+              </div>
+
+              <div className="md:col-span-2 space-y-4 pt-4 border-t border-slate-100">
+                <div className="flex items-center justify-between">
+                  <h4 className="text-xs font-black uppercase text-slate-700 tracking-wider">Why Choose Cards</h4>
+                  <button
+                    type="button"
+                    onClick={() => handleAddArrayItem("items", { title: "New Item", desc: "Item description..." })}
+                    className="px-3 py-1.5 bg-gold text-slate-900 rounded-lg text-[10px] font-black uppercase tracking-wider hover:bg-gold/90 transition-all cursor-pointer flex items-center gap-1"
+                  >
+                    <Plus size={12} /> Add Card
+                  </button>
+                </div>
+                <div className="space-y-3">
+                  {getArrayValue("items").map((it: any, idx: number) => (
+                    <div key={idx} className="p-4 bg-slate-50 border border-slate-200/70 rounded-xl space-y-3 relative group">
+                      <div className="flex items-center justify-between">
+                        <span className="text-[10px] font-black text-gold uppercase tracking-wider">Card #{idx + 1}</span>
+                        <button
+                          type="button"
+                          onClick={() => handleRemoveArrayItem("items", idx)}
+                          className="p-1 text-slate-400 hover:text-rose-500 rounded transition-colors cursor-pointer"
+                          title="Remove card"
+                        >
+                          <Trash2 size={14} />
+                        </button>
+                      </div>
+                      <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+                        <input
+                          type="text"
+                          placeholder="Card Title"
+                          value={it.title || ""}
+                          onChange={(e) => handleArrayItemChange("items", idx, "title", e.target.value)}
+                          className="w-full h-9 px-3 bg-white border border-slate-200 text-xs rounded-lg font-semibold"
+                        />
+                        <input
+                          type="text"
+                          placeholder="Card Description"
+                          value={it.desc || ""}
+                          onChange={(e) => handleArrayItemChange("items", idx, "desc", e.target.value)}
+                          className="w-full h-9 px-3 bg-white border border-slate-200 text-xs rounded-lg font-semibold"
+                        />
+                      </div>
+                    </div>
+                  ))}
+                </div>
               </div>
             </>
           )}
@@ -2747,6 +3294,52 @@ function SectionsTab({ settings, loadData }: SectionsTabProps) {
                   className="w-full p-3 bg-slate-50 border border-slate-200 text-xs rounded-xl outline-none focus:bg-white focus:border-gold font-semibold leading-relaxed"
                 />
               </div>
+
+              <div className="md:col-span-2 space-y-4 pt-4 border-t border-slate-100">
+                <div className="flex items-center justify-between">
+                  <h4 className="text-xs font-black uppercase text-slate-700 tracking-wider">Evaluation Pillars / Cards</h4>
+                  <button
+                    type="button"
+                    onClick={() => handleAddArrayItem("pillars", { title: "Pillar Title", desc: "Pillar details..." })}
+                    className="px-3 py-1.5 bg-gold text-slate-900 rounded-lg text-[10px] font-black uppercase tracking-wider hover:bg-gold/90 transition-all cursor-pointer flex items-center gap-1"
+                  >
+                    <Plus size={12} /> Add Pillar
+                  </button>
+                </div>
+                <div className="space-y-3">
+                  {getArrayValue("pillars").map((pil: any, idx: number) => (
+                    <div key={idx} className="p-4 bg-slate-50 border border-slate-200/70 rounded-xl space-y-3 relative group">
+                      <div className="flex items-center justify-between">
+                        <span className="text-[10px] font-black text-gold uppercase tracking-wider">Pillar #{idx + 1}</span>
+                        <button
+                          type="button"
+                          onClick={() => handleRemoveArrayItem("pillars", idx)}
+                          className="p-1 text-slate-400 hover:text-rose-500 rounded transition-colors cursor-pointer"
+                          title="Remove pillar"
+                        >
+                          <Trash2 size={14} />
+                        </button>
+                      </div>
+                      <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+                        <input
+                          type="text"
+                          placeholder="Pillar Title"
+                          value={pil.title || ""}
+                          onChange={(e) => handleArrayItemChange("pillars", idx, "title", e.target.value)}
+                          className="w-full h-9 px-3 bg-white border border-slate-200 text-xs rounded-lg font-semibold"
+                        />
+                        <input
+                          type="text"
+                          placeholder="Pillar Description"
+                          value={pil.desc || ""}
+                          onChange={(e) => handleArrayItemChange("pillars", idx, "desc", e.target.value)}
+                          className="w-full h-9 px-3 bg-white border border-slate-200 text-xs rounded-lg font-semibold"
+                        />
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </div>
             </>
           )}
 
@@ -2779,6 +3372,82 @@ function SectionsTab({ settings, loadData }: SectionsTabProps) {
                   className="w-full h-11 px-4 bg-slate-50 border border-slate-200 text-sm rounded-xl outline-none focus:bg-white focus:border-gold font-semibold"
                 />
               </div>
+              <div className="space-y-1.5">
+                <label className="text-[10px] font-black uppercase text-slate-400">Badge Title *</label>
+                <input
+                  type="text"
+                  value={getFieldValue("stripTitle")}
+                  onChange={(e) => updateSectionField("stripTitle", e.target.value)}
+                  placeholder="Powerful Technology."
+                  className="w-full h-11 px-4 bg-slate-50 border border-slate-200 text-sm rounded-xl outline-none focus:bg-white focus:border-gold font-semibold"
+                />
+              </div>
+              <div className="space-y-1.5">
+                <label className="text-[10px] font-black uppercase text-slate-400">Badge Subtitle *</label>
+                <input
+                  type="text"
+                  value={getFieldValue("stripSubtitle")}
+                  onChange={(e) => updateSectionField("stripSubtitle", e.target.value)}
+                  placeholder="Trusted People."
+                  className="w-full h-11 px-4 bg-slate-50 border border-slate-200 text-sm rounded-xl outline-none focus:bg-white focus:border-gold font-semibold"
+                />
+              </div>
+              <div className="space-y-1.5 md:col-span-2">
+                <label className="text-[10px] font-black uppercase text-slate-400">Bottom Gold Strip Text *</label>
+                <textarea
+                  rows={2}
+                  value={getFieldValue("stripText")}
+                  onChange={(e) => updateSectionField("stripText", e.target.value)}
+                  placeholder="Smart Technology. Real Expertise. [gold]Better Decisions.[/gold]"
+                  className="w-full p-3 bg-slate-50 border border-slate-200 text-xs rounded-xl outline-none focus:bg-white focus:border-gold font-semibold"
+                />
+              </div>
+
+              <div className="md:col-span-2 space-y-4 pt-4 border-t border-slate-100">
+                <div className="flex items-center justify-between">
+                  <h4 className="text-xs font-black uppercase text-slate-700 tracking-wider">Tech Feature Cards</h4>
+                  <button
+                    type="button"
+                    onClick={() => handleAddArrayItem("features", { title: "Feature Title", desc: "Feature details..." })}
+                    className="px-3 py-1.5 bg-gold text-slate-900 rounded-lg text-[10px] font-black uppercase tracking-wider hover:bg-gold/90 transition-all cursor-pointer flex items-center gap-1"
+                  >
+                    <Plus size={12} /> Add Feature Card
+                  </button>
+                </div>
+                <div className="space-y-3">
+                  {getArrayValue("features").map((ft: any, idx: number) => (
+                    <div key={idx} className="p-4 bg-slate-50 border border-slate-200/70 rounded-xl space-y-3 relative group">
+                      <div className="flex items-center justify-between">
+                        <span className="text-[10px] font-black text-gold uppercase tracking-wider">Feature #{idx + 1}</span>
+                        <button
+                          type="button"
+                          onClick={() => handleRemoveArrayItem("features", idx)}
+                          className="p-1 text-slate-400 hover:text-rose-500 rounded transition-colors cursor-pointer"
+                          title="Remove feature"
+                        >
+                          <Trash2 size={14} />
+                        </button>
+                      </div>
+                      <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+                        <input
+                          type="text"
+                          placeholder="Feature Title"
+                          value={ft.title || ""}
+                          onChange={(e) => handleArrayItemChange("features", idx, "title", e.target.value)}
+                          className="w-full h-9 px-3 bg-white border border-slate-200 text-xs rounded-lg font-semibold"
+                        />
+                        <input
+                          type="text"
+                          placeholder="Feature Description"
+                          value={ft.desc || ""}
+                          onChange={(e) => handleArrayItemChange("features", idx, "desc", e.target.value)}
+                          className="w-full h-9 px-3 bg-white border border-slate-200 text-xs rounded-lg font-semibold"
+                        />
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </div>
             </>
           )}
 
@@ -2810,6 +3479,69 @@ function SectionsTab({ settings, loadData }: SectionsTabProps) {
                   onChange={(e) => updateSectionField("imageUrl", e.target.value)}
                   className="w-full h-11 px-4 bg-slate-50 border border-slate-200 text-sm rounded-xl outline-none focus:bg-white focus:border-gold font-semibold"
                 />
+              </div>
+              <div className="space-y-1.5 md:col-span-2">
+                <label className="text-[10px] font-black uppercase text-slate-400">Bottom Pill Heading (What You Gain) *</label>
+                <input
+                  type="text"
+                  value={getFieldValue("stripHeading")}
+                  onChange={(e) => updateSectionField("stripHeading", e.target.value)}
+                  placeholder="What You Gain at Every Step"
+                  className="w-full h-11 px-4 bg-slate-50 border border-slate-200 text-sm rounded-xl outline-none focus:bg-white focus:border-gold font-semibold"
+                />
+              </div>
+
+              <div className="md:col-span-2 space-y-4 pt-4 border-t border-slate-100">
+                <div className="flex items-center justify-between">
+                  <h4 className="text-xs font-black uppercase text-slate-700 tracking-wider">Journey Roadmap Steps</h4>
+                  <button
+                    type="button"
+                    onClick={() => handleAddArrayItem("steps", { stepNumber: `0${getArrayValue("steps").length + 1}`, title: "New Step", desc: "Step details..." })}
+                    className="px-3 py-1.5 bg-gold text-slate-900 rounded-lg text-[10px] font-black uppercase tracking-wider hover:bg-gold/90 transition-all cursor-pointer flex items-center gap-1"
+                  >
+                    <Plus size={12} /> Add Step
+                  </button>
+                </div>
+                <div className="space-y-3">
+                  {getArrayValue("steps").map((st: any, idx: number) => (
+                    <div key={idx} className="p-4 bg-slate-50 border border-slate-200/70 rounded-xl space-y-3 relative group">
+                      <div className="flex items-center justify-between">
+                        <span className="text-[10px] font-black text-gold uppercase tracking-wider">Step #{st.stepNumber || idx + 1}</span>
+                        <button
+                          type="button"
+                          onClick={() => handleRemoveArrayItem("steps", idx)}
+                          className="p-1 text-slate-400 hover:text-rose-500 rounded transition-colors cursor-pointer"
+                          title="Remove step"
+                        >
+                          <Trash2 size={14} />
+                        </button>
+                      </div>
+                      <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
+                        <input
+                          type="text"
+                          placeholder="Step No. (e.g. 01)"
+                          value={st.stepNumber || ""}
+                          onChange={(e) => handleArrayItemChange("steps", idx, "stepNumber", e.target.value)}
+                          className="w-full h-9 px-3 bg-white border border-slate-200 text-xs rounded-lg font-semibold"
+                        />
+                        <input
+                          type="text"
+                          placeholder="Step Title"
+                          value={st.title || ""}
+                          onChange={(e) => handleArrayItemChange("steps", idx, "title", e.target.value)}
+                          className="w-full h-9 px-3 bg-white border border-slate-200 text-xs rounded-lg font-semibold md:col-span-2"
+                        />
+                        <textarea
+                          rows={2}
+                          placeholder="Step Description"
+                          value={st.desc || ""}
+                          onChange={(e) => handleArrayItemChange("steps", idx, "desc", e.target.value)}
+                          className="w-full p-2 bg-white border border-slate-200 text-xs rounded-lg font-semibold md:col-span-3"
+                        />
+                      </div>
+                    </div>
+                  ))}
+                </div>
               </div>
             </>
           )}
@@ -2851,6 +3583,69 @@ function SectionsTab({ settings, loadData }: SectionsTabProps) {
                   onChange={(e) => updateSectionField("imageUrl", e.target.value)}
                   className="w-full h-11 px-4 bg-slate-50 border border-slate-200 text-sm rounded-xl outline-none focus:bg-white focus:border-gold font-semibold"
                 />
+              </div>
+              <div className="space-y-1.5 md:col-span-2">
+                <label className="text-[10px] font-black uppercase text-slate-400">Callout Quote Box Text *</label>
+                <textarea
+                  rows={2}
+                  value={getFieldValue("stripQuote")}
+                  onChange={(e) => updateSectionField("stripQuote", e.target.value)}
+                  placeholder="Guided by [gold]Intelligence.[/gold] Evaluated with [gold]Clarity.[/gold] Decided with [gold]Confidence.[/gold]"
+                  className="w-full p-3 bg-slate-50 border border-slate-200 text-xs rounded-xl outline-none focus:bg-white focus:border-gold font-semibold"
+                />
+              </div>
+
+              <div className="md:col-span-2 space-y-4 pt-4 border-t border-slate-100">
+                <div className="flex items-center justify-between">
+                  <h4 className="text-xs font-black uppercase text-slate-700 tracking-wider">Client Reviews / Testimonials</h4>
+                  <button
+                    type="button"
+                    onClick={() => handleAddArrayItem("items", { name: "Client Name", role: "Designation, Location", quote: "Client feedback quote...", rating: 5 })}
+                    className="px-3 py-1.5 bg-gold text-slate-900 rounded-lg text-[10px] font-black uppercase tracking-wider hover:bg-gold/90 transition-all cursor-pointer flex items-center gap-1"
+                  >
+                    <Plus size={12} /> Add Review
+                  </button>
+                </div>
+                <div className="space-y-3">
+                  {getArrayValue("items").map((it: any, idx: number) => (
+                    <div key={idx} className="p-4 bg-slate-50 border border-slate-200/70 rounded-xl space-y-3 relative group">
+                      <div className="flex items-center justify-between">
+                        <span className="text-[10px] font-black text-gold uppercase tracking-wider">Review #{idx + 1}</span>
+                        <button
+                          type="button"
+                          onClick={() => handleRemoveArrayItem("items", idx)}
+                          className="p-1 text-slate-400 hover:text-rose-500 rounded transition-colors cursor-pointer"
+                          title="Remove review"
+                        >
+                          <Trash2 size={14} />
+                        </button>
+                      </div>
+                      <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+                        <input
+                          type="text"
+                          placeholder="Client Name"
+                          value={it.name || ""}
+                          onChange={(e) => handleArrayItemChange("items", idx, "name", e.target.value)}
+                          className="w-full h-9 px-3 bg-white border border-slate-200 text-xs rounded-lg font-semibold"
+                        />
+                        <input
+                          type="text"
+                          placeholder="Client Role / Location"
+                          value={it.role || ""}
+                          onChange={(e) => handleArrayItemChange("items", idx, "role", e.target.value)}
+                          className="w-full h-9 px-3 bg-white border border-slate-200 text-xs rounded-lg font-semibold"
+                        />
+                        <textarea
+                          rows={2}
+                          placeholder="Review Quote"
+                          value={it.quote || ""}
+                          onChange={(e) => handleArrayItemChange("items", idx, "quote", e.target.value)}
+                          className="w-full p-2 bg-white border border-slate-200 text-xs rounded-lg font-semibold md:col-span-2"
+                        />
+                      </div>
+                    </div>
+                  ))}
+                </div>
               </div>
             </>
           )}
@@ -2915,6 +3710,123 @@ function SectionsTab({ settings, loadData }: SectionsTabProps) {
                   onChange={(e) => updateSectionField("imageUrl", e.target.value)}
                   className="w-full h-11 px-4 bg-slate-50 border border-slate-200 text-sm rounded-xl outline-none focus:bg-white focus:border-gold font-semibold"
                 />
+              </div>
+              <div className="space-y-1.5">
+                <label className="text-[10px] font-black uppercase text-slate-400">Social Strip Heading *</label>
+                <input
+                  type="text"
+                  value={getFieldValue("stripHeading")}
+                  onChange={(e) => updateSectionField("stripHeading", e.target.value)}
+                  placeholder="Follow Us On"
+                  className="w-full h-11 px-4 bg-slate-50 border border-slate-200 text-sm rounded-xl outline-none focus:bg-white focus:border-gold font-semibold"
+                />
+              </div>
+              <div className="space-y-1.5">
+                <label className="text-[10px] font-black uppercase text-slate-400">Social Strip Subtitle *</label>
+                <input
+                  type="text"
+                  value={getFieldValue("stripDescription")}
+                  onChange={(e) => updateSectionField("stripDescription", e.target.value)}
+                  placeholder="Stay connected for real estate insights & expert perspectives."
+                  className="w-full h-11 px-4 bg-slate-50 border border-slate-200 text-sm rounded-xl outline-none focus:bg-white focus:border-gold font-semibold"
+                />
+              </div>
+
+              <div className="md:col-span-2 space-y-4 pt-4 border-t border-slate-100">
+                <div className="flex items-center justify-between">
+                  <h4 className="text-xs font-black uppercase text-slate-700 tracking-wider">Contact Detail Cards</h4>
+                  <button
+                    type="button"
+                    onClick={() => handleAddArrayItem("contactItems", { label: "Label", value: "Value" })}
+                    className="px-3 py-1.5 bg-gold text-slate-900 rounded-lg text-[10px] font-black uppercase tracking-wider hover:bg-gold/90 transition-all cursor-pointer flex items-center gap-1"
+                  >
+                    <Plus size={12} /> Add Detail
+                  </button>
+                </div>
+                <div className="space-y-3">
+                  {getArrayValue("contactItems").map((ci: any, idx: number) => (
+                    <div key={idx} className="p-3 bg-slate-50 border border-slate-200/70 rounded-xl space-y-2 relative group">
+                      <div className="flex items-center justify-between">
+                        <span className="text-[10px] font-black text-gold uppercase tracking-wider">Detail #{idx + 1}</span>
+                        <button
+                          type="button"
+                          onClick={() => handleRemoveArrayItem("contactItems", idx)}
+                          className="p-1 text-slate-400 hover:text-rose-500 rounded transition-colors cursor-pointer"
+                        >
+                          <Trash2 size={14} />
+                        </button>
+                      </div>
+                      <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+                        <input
+                          type="text"
+                          placeholder="Label (e.g. Phone, Email)"
+                          value={ci.label || ""}
+                          onChange={(e) => handleArrayItemChange("contactItems", idx, "label", e.target.value)}
+                          className="w-full h-9 px-3 bg-white border border-slate-200 text-xs rounded-lg font-semibold"
+                        />
+                        <input
+                          type="text"
+                          placeholder="Value"
+                          value={ci.value || ""}
+                          onChange={(e) => handleArrayItemChange("contactItems", idx, "value", e.target.value)}
+                          className="w-full h-9 px-3 bg-white border border-slate-200 text-xs rounded-lg font-semibold"
+                        />
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </div>
+
+              <div className="md:col-span-2 space-y-4 pt-4 border-t border-slate-100">
+                <div className="flex items-center justify-between">
+                  <h4 className="text-xs font-black uppercase text-slate-700 tracking-wider">Social Links</h4>
+                  <button
+                    type="button"
+                    onClick={() => handleAddArrayItem("socialLinks", { name: "Platform", handle: "@handle", url: "https://" })}
+                    className="px-3 py-1.5 bg-gold text-slate-900 rounded-lg text-[10px] font-black uppercase tracking-wider hover:bg-gold/90 transition-all cursor-pointer flex items-center gap-1"
+                  >
+                    <Plus size={12} /> Add Social Link
+                  </button>
+                </div>
+                <div className="space-y-3">
+                  {getArrayValue("socialLinks").map((sl: any, idx: number) => (
+                    <div key={idx} className="p-3 bg-slate-50 border border-slate-200/70 rounded-xl space-y-2 relative group">
+                      <div className="flex items-center justify-between">
+                        <span className="text-[10px] font-black text-gold uppercase tracking-wider">Social #{idx + 1}</span>
+                        <button
+                          type="button"
+                          onClick={() => handleRemoveArrayItem("socialLinks", idx)}
+                          className="p-1 text-slate-400 hover:text-rose-500 rounded transition-colors cursor-pointer"
+                        >
+                          <Trash2 size={14} />
+                        </button>
+                      </div>
+                      <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
+                        <input
+                          type="text"
+                          placeholder="Platform (e.g. Instagram)"
+                          value={sl.name || ""}
+                          onChange={(e) => handleArrayItemChange("socialLinks", idx, "name", e.target.value)}
+                          className="w-full h-9 px-3 bg-white border border-slate-200 text-xs rounded-lg font-semibold"
+                        />
+                        <input
+                          type="text"
+                          placeholder="Handle (e.g. @propertyworks)"
+                          value={sl.handle || ""}
+                          onChange={(e) => handleArrayItemChange("socialLinks", idx, "handle", e.target.value)}
+                          className="w-full h-9 px-3 bg-white border border-slate-200 text-xs rounded-lg font-semibold"
+                        />
+                        <input
+                          type="text"
+                          placeholder="URL"
+                          value={sl.url || ""}
+                          onChange={(e) => handleArrayItemChange("socialLinks", idx, "url", e.target.value)}
+                          className="w-full h-9 px-3 bg-white border border-slate-200 text-xs rounded-lg font-semibold"
+                        />
+                      </div>
+                    </div>
+                  ))}
+                </div>
               </div>
             </>
           )}

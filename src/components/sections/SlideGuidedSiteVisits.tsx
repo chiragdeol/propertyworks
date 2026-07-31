@@ -167,7 +167,7 @@ export default function SlideGuidedSiteVisits() {
       >
         <div className="max-w-[1760px] mx-auto w-full">
           <h3 className="font-heading text-lg text-gold text-center font-extrabold pb-4 border-b border-white/20 uppercase tracking-[0.2em] mb-8 drop-shadow-md">
-            Our Perspective
+            {formatDynamicText(visitsData?.stripHeading || "Our Perspective", GOLD)}
           </h3>
           <motion.div
             variants={staggerContainer(0.08, 0.2)}
@@ -176,9 +176,16 @@ export default function SlideGuidedSiteVisits() {
             viewport={{ once: true }}
             className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-6 lg:gap-8"
           >
-            {T.map((e, i) => (
+            {(Array.isArray(visitsData?.features) && visitsData.features.length > 0
+              ? visitsData.features.map((f: any, i: number) => ({
+                  icon: [y.scalesGold, y.vastu, y.location, y.rupeeCircle, y.handshake][i % 5],
+                  title: f.title || "",
+                  desc: f.desc || ""
+                }))
+              : T
+            ).map((e: any, i: number) => (
               <motion.div
-                key={e.title}
+                key={e.title || i}
                 variants={fadeInUp(0, 0.5)}
                 whileHover={{ y: -5, scale: 1.02 }}
                 className="flex items-start gap-3.5 cursor-default group"
@@ -206,8 +213,7 @@ export default function SlideGuidedSiteVisits() {
       {/* Bottom Statement strip */}
       <div className="w-full text-center py-4 px-5 bg-white border-b-2">
         <p className="font-sans text-[#001B4F] text-[15px] sm:text-base">
-          We don't just show you properties. We help you choose{" "}
-          <span className="italic font-bold" style={{ color: GOLD }}>the right one.</span>
+          {formatDynamicText(visitsData?.stripText || "We don't just show you properties. We help you choose [gold]the right one.[/gold]", GOLD)}
         </p>
       </div>
     </section>

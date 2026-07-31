@@ -38,7 +38,39 @@
     },
     "noise": {
       "heading": "The Real Estate Market Is Filled With [gold]Noise, Pressure & Confusion.[/gold]",
-      "description": "Most buyers do not lack options. They lack structured [gold]guidance,[/gold] comparison [gold]clarity,[/gold], project [gold]intelligence[/gold] and coordinated [gold]support.[/gold]"
+      "description": "Most buyers do not lack options. They lack structured [gold]guidance,[/gold] comparison [gold]clarity,[/gold], project [gold]intelligence[/gold] and coordinated [gold]support.[/gold]",
+      "items": [
+        {
+          "title": "Conflicting Information & Hype",
+          "body": "Every project claims to be the best. Unverified claims and marketing pitch make it hard to separate facts from hype.",
+          "solTitle": "Objective Evaluation",
+          "solBody": "We strip away the marketing noise and analyze projects against real data, verified facts, and your actual priorities."
+        },
+        {
+          "title": "High-Pressure Sales Tactics",
+          "body": "Urgency tactics and limited-time offers force buyers into rushed decisions without proper due diligence.",
+          "solTitle": "No-Pressure Decision Space",
+          "solBody": "We give you the structure, time, and clarity needed to evaluate choices calmly and make confident decisions."
+        },
+        {
+          "title": "Hidden Surprises & Omissions",
+          "body": "Critical details about floor plans, possession dates, hidden costs, and infrastructure issues often surface too late.",
+          "solTitle": "Complete Transparency",
+          "solBody": "Get complete visibility into pricing structures, possession timelines, layout pros & cons, and micro-market factors."
+        },
+        {
+          "title": "Overwhelming Options",
+          "body": "Comparing dozens of projects across different localities without a structured framework leads to analysis paralysis.",
+          "solTitle": "Curated Shortlisting",
+          "solBody": "We narrow down the market to top matching options tailored to your budget, connectivity, and lifestyle needs."
+        },
+        {
+          "title": "Uncoordinated Site Visits",
+          "body": "Visiting multiple sales galleries randomly without structured checklists results in wasted time and confusion.",
+          "solTitle": "Guided Site Coordination",
+          "solBody": "We plan, schedule, and accompany you on site visits with key evaluation checklists to maximize clarity."
+        }
+      ]
     },
     "clarity": {
       "headingLeft": "FROM [gold]CONFUSION[/gold]\nTO CLARITY",
@@ -48,29 +80,118 @@
       "centerTitle": "The Right Guidance\n[gold]Changes Everything[/gold]",
       "centerSubtitle": "Your Partner in Better Decisions",
       "imageLeftUrl": "/images/clarity-confused.webp",
-      "imageRightUrl": "/images/clarity-confident.webp"
+      "imageRightUrl": "/images/clarity-confident.webp",
+      "leftPoints": [
+        "Multiple random site visits",
+        "Conflicting sales promises",
+        "Fragmented brochure comparisons",
+        "Anxiety & fear of wrong choice"
+      ],
+      "rightPoints": [
+        "Targeted matching shortlist",
+        "Unbiased factual analysis",
+        "Guided site walkthroughs",
+        "100% clarity & transaction comfort"
+      ]
     },
     "siteVisits": {
       "heading": "Guided Site Visits.\n[gold]Informed Impressions.[/gold]",
       "description": "We coordinate and guide site visits that go beyond a walkthrough. See what [gold]matters.[/gold] Ask the [gold]right questions.[/gold] Get [gold]real clarity.[/gold]",
-      "imageUrl": "/images/Guidedsite_img.webp"
+      "imageUrl": "/images/Guidedsite_img.webp",
+      "features": [
+        "Pre-visit briefing & custom checklist",
+        "Objective on-site walkthrough support",
+        "Post-visit comparative analysis report"
+      ]
     },
     "services": {
       "heading": "Our [gold]Services[/gold]",
       "subheading": "Real Estate Intelligence & Advisory Services",
       "paragraph1": "At Property[gold]Works[/gold], our services are designed to simplify the traditionally fragmented and confusing real estate evaluation journey through [gold]structured guidance[/gold], [gold]project intelligence, comparative analysis[/gold] and [gold]practical advisory support.[/gold]",
-      "paragraph2": "Whether you are exploring a [gold]residential[/gold] opportunity for your [gold]family[/gold] or evaluating a [gold]commercial[/gold] property for [gold]business[/gold] or investment purposes, our objective is to help you make more informed and strategically aligned decisions with greater [gold]clarity[/gold] and [gold]confidence[/gold]."
+      "paragraph2": "Whether you are exploring a [gold]residential[/gold] opportunity for your [gold]family[/gold] or evaluating a [gold]commercial[/gold] property for [gold]business[/gold] or investment purposes, our objective is to help you make more informed and strategically aligned decisions with greater [gold]clarity[/gold] and [gold]confidence[/gold].",
+      "items": [
+        {
+          "title": "Residential Property Advisory",
+          "description": "Helping families find the right home through objective evaluation, project comparison, and guided coordination.",
+          "bullets": "Personalized Shortlisting | Layout Analysis | Unbiased Evaluation"
+        },
+        {
+          "title": "Commercial Real Estate Intelligence",
+          "description": "Empowering businesses and investors with strategic commercial insights, office space alignment, and yield potential.",
+          "bullets": "Office Space Advisory | Yield Analysis | Location Assessment"
+        },
+        {
+          "title": "Guided Site Visit Coordination",
+          "description": "Structured site visits designed to help you evaluate real estate beyond superficial walkthroughs.",
+          "bullets": "Pre-Visit Briefing | Guided On-Site Evaluation | Post-Visit Report"
+        }
+      ]
     },
     "about": {
       "heading": "About Property[gold]Works[/gold]",
       "subheading": "Real Estate Intelligence & Advisory Services",
       "description": "We simplify the real estate evaluation journey through [gold]intelligence, structure, transparency[/gold] and [gold]human guidance.[/gold]",
       "quote": "Helping You Evaluate Real Estate with Greater [gold]Clarity, Structure & Confidence.[/gold]",
-      "imageUrl": "/images/About Property Works bg.webp"
+      "imageUrl": "/images/About Property Works bg.webp",
+      "stats": [
+        {
+          "title": "Verified Projects",
+          "value": "150+",
+          "subtitle": "Across MMR & top growth corridors"
+        },
+        {
+          "title": "Happy Clients",
+          "value": "500+",
+          "subtitle": "Families & businesses guided"
+        },
+        {
+          "title": "Evaluation Clarity",
+          "value": "100%",
+          "subtitle": "Unbiased & objective advisory"
+        }
+      ]
     },
     "whyChoose": {
       "heading": "Why Choose Property[gold]Works?[/gold]",
-      "description": "Because real estate decisions deserve more than just listings. They deserve [gold]intelligence, structure[/gold] and [gold]unbiased guidance.[/gold]"
+      "description": "Because real estate decisions deserve more than just listings. They deserve [gold]intelligence, structure[/gold] and [gold]unbiased guidance.[/gold]",
+      "items": [
+        {
+          "title": "Buyer First Always",
+          "desc": "Your goals come first. Every recommendation is designed solely in your best interest."
+        },
+        {
+          "title": "Structured & Objective",
+          "desc": "We follow a proven evaluation framework to compare projects across parameters objectively."
+        },
+        {
+          "title": "Comprehensive Intelligence",
+          "desc": "Access verified, real-time information across developers, projects, amenities, and infrastructure."
+        },
+        {
+          "title": "Independent & Unbiased",
+          "desc": "We are not tied to any developer. Our only commitment is to your best decision."
+        },
+        {
+          "title": "Data + Experience Driven",
+          "desc": "Powerful data, local market insights and deep domain expertise lead to better outcomes."
+        },
+        {
+          "title": "Lifestyle & Location",
+          "desc": "We evaluate connectivity, social infrastructure, lifestyle fit and future readiness."
+        },
+        {
+          "title": "Vastu & Wellness",
+          "desc": "Vastu alignment and wellness-focused living factors are part of our evaluation process."
+        },
+        {
+          "title": "Future Value Focus",
+          "desc": "We assess appreciation potential, rental yields, and area growth drivers."
+        },
+        {
+          "title": "End-to-End Support",
+          "desc": "From initial search to final possession, we guide you through every milestone."
+        }
+      ]
     },
     "developerNetwork": {
       "heading": "Active Developer & [gold]Channel Partner Network[/gold]",
@@ -78,20 +199,91 @@
     },
     "independentEvaluation": {
       "heading": "Independent\nEvaluation Across\n[gold]Multiple Developers[/gold]",
-      "description": "We evaluate [gold]opportunities[/gold] across the market objectively. We do not push developer inventory. Our only focus is helping you find the [gold]right property[/gold] that matches your [gold]criteria[/gold] and [gold]interests.[/gold]"
+      "description": "We evaluate [gold]opportunities[/gold] across the market objectively. We do not push developer inventory. Our only focus is helping you find the [gold]right property[/gold] that matches your [gold]criteria[/gold] and [gold]interests.[/gold]",
+      "pillars": [
+        {
+          "title": "Unbiased Perspective",
+          "desc": "We work for you, not the developer. No forced sales or developer bias."
+        },
+        {
+          "title": "Comparative Benchmarking",
+          "desc": "Evaluate carpet area, price per sq.ft., amenities, and connectivity side by side."
+        },
+        {
+          "title": "Risk & Due Diligence",
+          "desc": "Verify RERA status, legal approvals, possession records, and builder track record."
+        }
+      ]
     },
     "technologyAdvisory": {
       "heading": "Technology Assisted.\n[gold]Human Guided.[/gold]",
-      "description": "We combine smart technology with real expertise to deliver [gold]clarity, confidence[/gold] and better [gold]decisions.[/gold]"
+      "description": "We combine smart technology with real expertise to deliver [gold]clarity, confidence[/gold] and better [gold]decisions.[/gold]",
+      "features": [
+        {
+          "title": "Smart Comparison Engine",
+          "desc": "Compare properties across 25+ parameters instantly with data-backed reports."
+        },
+        {
+          "title": "Expert Advisory Support",
+          "desc": "Dedicated domain advisors to guide your evaluation from start to possession."
+        }
+      ]
     },
     "yourJourney": {
       "heading": "Your Journey. \n[gold]Our Guidance.[/gold]\n[gold]Better Decisions.[/gold]",
-      "description": "We simplify your real estate journey with a proven process designed to [gold]save time, reduce risk[/gold] and deliver [gold]confidence[/gold] at every step."
+      "description": "We simplify your real estate journey with a proven process designed to [gold]save time, reduce risk[/gold] and deliver [gold]confidence[/gold] at every step.",
+      "steps": [
+        {
+          "stepNumber": "01",
+          "title": "Understand Priorities",
+          "desc": "We start by understanding your goals, budget, preferred localities, and lifestyle or business needs."
+        },
+        {
+          "stepNumber": "02",
+          "title": "Structured Shortlist",
+          "desc": "We generate a curated shortlist of verified projects matching your exact criteria, free of noise."
+        },
+        {
+          "stepNumber": "03",
+          "title": "Comparative Intelligence",
+          "desc": "Analyze layouts, pricing, amenities, and micro-market growth drivers side-by-side."
+        },
+        {
+          "stepNumber": "04",
+          "title": "Guided Site Visits",
+          "desc": "We schedule and accompany you on site visits with objective evaluation checklists."
+        },
+        {
+          "stepNumber": "05",
+          "title": "Confident Decision",
+          "desc": "Make an informed choice with complete clarity, pre-negotiated transparency, and total confidence."
+        }
+      ]
     },
     "testimonials": {
       "heading": "What Our [gold]Clients Say[/gold]",
       "description": "Real Experiences. Better Decisions.",
-      "paragraph": "At Property[gold]Works[/gold], every evaluation is guided by [gold]clarity, structure[/gold] and your [gold]best interests.[/gold] Here's what clients have shared about their journey with us."
+      "paragraph": "At Property[gold]Works[/gold], every evaluation is guided by [gold]clarity, structure[/gold] and your [gold]best interests.[/gold] Here's what clients have shared about their journey with us.",
+      "items": [
+        {
+          "name": "Rajesh & Sunita Sharma",
+          "role": "IT Executive & Architect, Thane",
+          "quote": "PropertyWorks helped us compare 6 different projects objectively. We saved months of confusion and found our dream home with total confidence.",
+          "rating": 5
+        },
+        {
+          "name": "Amit Patel",
+          "role": "Business Owner, Mumbai",
+          "quote": "Evaluating commercial office spaces was overwhelming until we worked with PropertyWorks. Their intelligence report made the choice clear.",
+          "rating": 5
+        },
+        {
+          "name": "Vikram & Neha Malhotra",
+          "role": "NRI Investors, Singapore",
+          "quote": "Managing real estate evaluation remotely is tough. PropertyWorks provided transparent site visit reports and unbiased guidance.",
+          "rating": 5
+        }
+      ]
     },
     "faq": {
       "heading": "[gold]Frequently Asked[/gold] Questions",
@@ -100,7 +292,47 @@
     "contact": {
       "heading": "Contact [gold]Us[/gold]",
       "subheading": "Real Estate Intelligence & Advisory Services",
-      "description": "We’re here to help you make [gold] confident, well-informed[/gold]  real estate decisions. [gold] Get in touch[/gold]  with our team."
+      "description": "We’re here to help you make [gold] confident, well-informed[/gold]  real estate decisions. [gold] Get in touch[/gold]  with our team.",
+      "contactItems": [
+        {
+          "label": "Phone",
+          "value": "+91-8433826365"
+        },
+        {
+          "label": "Email",
+          "value": "support@propertyworks.in"
+        },
+        {
+          "label": "Service Locations",
+          "value": "Mumbai | Thane | Navi Mumbai | Emerging Growth Corridors"
+        },
+        {
+          "label": "Operating Hours",
+          "value": "11:00 AM – 7:00 PM"
+        }
+      ],
+      "socialLinks": [
+        {
+          "name": "Facebook",
+          "handle": "PropertyWorksIndia",
+          "url": "https://www.facebook.com/PropertyWorksIndia"
+        },
+        {
+          "name": "Instagram",
+          "handle": "@propertyworks.in",
+          "url": "https://www.instagram.com/propertyworks.in/"
+        },
+        {
+          "name": "YouTube",
+          "handle": "@PropertyWorksOfficial",
+          "url": "https://www.youtube.com/@PropertyWorksOfficial"
+        },
+        {
+          "name": "LinkedIn",
+          "handle": "propertyworksindia",
+          "url": "https://linkedin.com/company/propertyworksindia"
+        }
+      ]
     },
     "residential": {
       "description": "We help families evaluate more than just properties. We help you choose a lifestyle that fits [gold]your values, plans[/gold] and [gold]future.[/gold]"

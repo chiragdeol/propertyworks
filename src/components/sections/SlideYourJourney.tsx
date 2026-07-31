@@ -15,6 +15,26 @@ export default function SlideYourJourney() {
   const { settings } = useSettings();
   const journeyData = settings?.sections?.yourJourney;
 
+  const defaultStepIcons = [y.usersGroup, y.searchBuilding, y.barChart, y.mapNav, y.handshake, y.shieldCheck];
+  const defaultStepImgs = [
+    "/images/Yourjourney_img_1.webp",
+    "/images/Yourjourney_img_2.webp",
+    "/images/Yourjourney_img_3.webp",
+    "/images/Yourjourney_img_4.webp",
+    "/images/Yourjourney_img_5.webp",
+    "/images/Yourjourney_img_6.webp",
+  ];
+
+  const displaySteps = Array.isArray(journeyData?.steps) && journeyData.steps.length > 0
+    ? journeyData.steps.map((st: any, idx: number) => ({
+        num: st.stepNumber || `0${idx + 1}`,
+        icon: defaultStepIcons[idx % defaultStepIcons.length],
+        title: st.title || "",
+        desc: st.desc || "",
+        img: defaultStepImgs[idx % defaultStepImgs.length]
+      }))
+    : de;
+
   return (
     <section className="slide-section w-full overflow-visible lg:overflow-hidden bg-[#F8FAFC]">
       {/* MOBILE LAYOUT */}
@@ -75,7 +95,7 @@ export default function SlideYourJourney() {
             </h3>
 
             <motion.div variants={staggerContainer(0.08, 0.2)} className="grid grid-cols-1 md:grid-cols-2 gap-6 sm:gap-8">
-              {de.map((e) => (
+              {displaySteps.map((e: any) => (
                 <motion.div
                   key={e.num}
                   variants={fadeInUp(0, 0.55)}
@@ -210,14 +230,14 @@ export default function SlideYourJourney() {
           viewport={{ once: true, margin: "0px" }}
           className="absolute inset-x-[2.5%] top-[53%] h-[29%] flex justify-between items-stretch z-10"
         >
-          {de.map((e, t) => (
+          {displaySteps.map((e: any, t: number) => (
             <motion.div
               key={e.num}
               variants={fadeInUp(0, 0.55)}
               whileHover={{ y: -6 }}
               className="relative w-[15.5%] flex flex-col justify-start gap-2 cursor-pointer group bg-white/70 hover:bg-white border border-[#001B4F]/5 hover:border-gold/30 rounded-[14px] shadow-[0_4px_16px_rgba(0,0,0,0.02)] hover:shadow-[0_8px_24px_rgba(0,27,79,0.06)] p-3 transition-all duration-300"
             >
-              {t < de.length - 1 && (
+              {t < displaySteps.length - 1 && (
                 <motion.div
                   initial={{ opacity: 0, x: -10 }}
                   whileInView={{ opacity: 1, x: 0 }}
@@ -269,7 +289,7 @@ export default function SlideYourJourney() {
           {/* Labeled Pill overlapping the top edge */}
           <div className="absolute top-0 left-1/2 -translate-x-1/2 -translate-y-1/2 bg-gold px-6 py-1 rounded-full shadow-md z-20 border border-white/20">
             <h3 className="text-white text-[clamp(11.5px,0.8vw,14px)] font-sans font-bold tracking-widest uppercase leading-none">
-              What You Gain at Every Step
+              {formatDynamicText(journeyData?.stripHeading || "What You Gain at Every Step", GOLD)}
             </h3>
           </div>
 

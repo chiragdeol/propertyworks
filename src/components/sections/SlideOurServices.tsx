@@ -91,12 +91,24 @@ export default function SlideOurServices() {
   const servicesData = settings?.sections?.services;
   const [activeCardIndex, setActiveCardIndex] = useState(0);
 
+  const defaultServiceIcons = [y.searchBuilding, y.commercialBuilding, y.guidedWalkthrough];
+
+  const displayServices = Array.isArray(servicesData?.items) && servicesData.items.length > 0
+    ? servicesData.items.map((it: any, i: number) => ({
+        num: `0${i + 1}`,
+        icon: defaultServiceIcons[i % defaultServiceIcons.length],
+        title: it.title || "",
+        subtitle: "",
+        points: typeof it.bullets === "string" ? it.bullets.split("|").map((s: string) => s.trim()).filter(Boolean) : (it.description ? [it.description] : [])
+      }))
+    : ge;
+
   useEffect(() => {
     const interval = setInterval(() => {
-      setActiveCardIndex((prev) => (prev + 1) % ge.length);
+      setActiveCardIndex((prev) => (prev + 1) % displayServices.length);
     }, 2500);
     return () => clearInterval(interval);
-  }, []);
+  }, [displayServices.length]);
 
   return (
     <section id="services" className="w-full bg-white border-t border-slate-100 overflow-hidden">
@@ -245,7 +257,7 @@ export default function SlideOurServices() {
               viewport={{ once: true, margin: "0px" }}
               className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-6"
             >
-              {ge.map((e, i) => (
+              {displayServices.map((e, i) => (
                 <motion.div key={e.num} variants={fadeInUp(0, 0.55)}>
                   <ServiceCard e={e} index={i} isActive={i === activeCardIndex} />
                 </motion.div>

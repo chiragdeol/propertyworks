@@ -64,10 +64,10 @@ export default function SlideTechnologyAdvisory() {
             </div>
             <div>
               <p className="text-white font-heading font-bold text-[14px] sm:text-[15px]">
-                Powerful Technology.
+                {formatDynamicText(techData?.stripTitle || "Powerful Technology.", GOLD)}
               </p>
               <p className="text-gold font-heading font-bold text-[12.5px] sm:text-[13.5px] mt-[1%]">
-                Trusted People.
+                {formatDynamicText(techData?.stripSubtitle || "Trusted People.", GOLD)}
               </p>
             </div>
           </motion.div>
@@ -220,10 +220,10 @@ export default function SlideTechnologyAdvisory() {
             </div>
             <div>
               <p className="text-white font-heading font-bold text-[clamp(14px,1.05vw,18px)]">
-                Powerful Technology.
+                {formatDynamicText(techData?.stripTitle || "Powerful Technology.", GOLD)}
               </p>
               <p className="text-gold font-heading font-bold text-[clamp(12px,0.95vw,16px)] mt-[1%] text-center">
-                Trusted People.
+                {formatDynamicText(techData?.stripSubtitle || "Trusted People.", GOLD)}
               </p>
           </div>
         </div>
@@ -273,7 +273,7 @@ export default function SlideTechnologyAdvisory() {
           className="absolute inset-x-0 bottom-0 h-[6%] bg-white flex items-center justify-center border-t border-b-2"
         >
           <p className="font-sans text-[#001B4F] text-[15px] sm:text-base">
-            Smart Technology. Real Expertise. <span className="italic font-bold text-gold">Better Decisions.</span>
+            {formatDynamicText(techData?.stripText || "Smart Technology. Real Expertise. [gold]Better Decisions.[/gold]", GOLD)}
           </p>
         </motion.div>
       </div>

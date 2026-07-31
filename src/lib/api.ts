@@ -52,6 +52,17 @@ export async function checkSession() {
   }
 }
 
+export async function resetAdminPassword({ data }: { data: { currentPassword?: string; newPassword: string; resetKey?: string } }) {
+  try {
+    return await fetchAPI<{ success: boolean; message?: string; error?: string }>("/api/auth/reset-password", {
+      method: "POST",
+      body: JSON.stringify(data),
+    });
+  } catch (err: any) {
+    return { success: false, error: err.message || "Failed to reset password" };
+  }
+}
+
 // PROJECTS CRUD APIs
 export async function getProjects() {
   return fetchAPI<any[]>("/api/projects");

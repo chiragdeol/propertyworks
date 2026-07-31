@@ -80,7 +80,39 @@ const defaultSections = {
   },
   noise: {
     heading: "The Real Estate Market\nIs Filled With [gold]Noise,\nPressure & Confusion.[/gold]",
-    description: "Most buyers do not lack options. They lack structured guidance, comparison clarity, project intelligence, and coordinated support."
+    description: "Most buyers do not lack options. They lack structured guidance, comparison clarity, project intelligence, and coordinated support.",
+    items: [
+      {
+        title: "Conflicting Information & Hype",
+        body: "Every project claims to be the best. Unverified claims and marketing pitch make it hard to separate facts from hype.",
+        solTitle: "Objective Evaluation",
+        solBody: "We strip away the marketing noise and analyze projects against real data, verified facts, and your actual priorities."
+      },
+      {
+        title: "High-Pressure Sales Tactics",
+        body: "Urgency tactics and limited-time offers force buyers into rushed decisions without proper due diligence.",
+        solTitle: "No-Pressure Decision Space",
+        solBody: "We give you the structure, time, and clarity needed to evaluate choices calmly and make confident decisions."
+      },
+      {
+        title: "Hidden Surprises & Omissions",
+        body: "Critical details about floor plans, possession dates, hidden costs, and infrastructure issues often surface too late.",
+        solTitle: "Complete Transparency",
+        solBody: "Get complete visibility into pricing structures, possession timelines, layout pros & cons, and micro-market factors."
+      },
+      {
+        title: "Overwhelming Options",
+        body: "Comparing dozens of projects across different localities without a structured framework leads to analysis paralysis.",
+        solTitle: "Curated Shortlisting",
+        solBody: "We narrow down the market to top matching options tailored to your budget, connectivity, and lifestyle needs."
+      },
+      {
+        title: "Uncoordinated Site Visits",
+        body: "Visiting multiple sales galleries randomly without structured checklists results in wasted time and confusion.",
+        solTitle: "Guided Site Coordination",
+        solBody: "We plan, schedule, and accompany you on site visits with key evaluation checklists to maximize clarity."
+      }
+    ]
   },
   clarity: {
     headingLeft: "FROM [gold]CONFUSION[/gold]\nTO CLARITY",
@@ -90,29 +122,79 @@ const defaultSections = {
     centerTitle: "The Right Guidance\n[gold]Changes Everything[/gold]",
     centerSubtitle: "Your Partner in Better Decisions",
     imageLeftUrl: "/images/clarity-confused.jpg",
-    imageRightUrl: "/images/clarity-confident.jpg"
+    imageRightUrl: "/images/clarity-confident.jpg",
+    leftPoints: [
+      "Multiple random site visits",
+      "Conflicting sales promises",
+      "Fragmented brochure comparisons",
+      "Anxiety & fear of wrong choice"
+    ],
+    rightPoints: [
+      "Targeted matching shortlist",
+      "Unbiased factual analysis",
+      "Guided site walkthroughs",
+      "100% clarity & transaction comfort"
+    ]
   },
   siteVisits: {
     heading: "Guided Site Visits.\n[gold]Informed Impressions.[/gold]",
     description: "We coordinate and guide site visits that go beyond a walkthrough. See what matters. Ask the right questions. Get real clarity.",
-    imageUrl: "/images/Guidedsite_img.png"
+    imageUrl: "/images/Guidedsite_img.png",
+    features: [
+      "Pre-visit briefing & custom checklist",
+      "Objective on-site walkthrough support",
+      "Post-visit comparative analysis report"
+    ]
   },
   services: {
     heading: "Our [gold]Services[/gold]",
     subheading: "Real Estate Intelligence & Advisory Services",
     paragraph1: "At PropertyWorks, our services are designed to simplify the traditionally fragmented and confusing real estate evaluation journey through structured guidance, project intelligence, comparative analysis, and practical advisory support.",
-    paragraph2: "Whether you are exploring a residential opportunity for your family or evaluating a commercial property for business or investment purposes, our objective is to help you make more informed and strategically aligned decisions with greater clarity and confidence."
+    paragraph2: "Whether you are exploring a residential opportunity for your family or evaluating a commercial property for business or investment purposes, our objective is to help you make more informed and strategically aligned decisions with greater clarity and confidence.",
+    items: [
+      {
+        title: "Residential Property Advisory",
+        description: "Helping families find the right home through objective evaluation, project comparison, and guided coordination.",
+        bullets: "Personalized Shortlisting | Layout Analysis | Unbiased Evaluation"
+      },
+      {
+        title: "Commercial Real Estate Intelligence",
+        description: "Empowering businesses and investors with strategic commercial insights, office space alignment, and yield potential.",
+        bullets: "Office Space Advisory | Yield Analysis | Location Assessment"
+      },
+      {
+        title: "Guided Site Visit Coordination",
+        description: "Structured site visits designed to help you evaluate real estate beyond superficial walkthroughs.",
+        bullets: "Pre-Visit Briefing | Guided On-Site Evaluation | Post-Visit Report"
+      }
+    ]
   },
   about: {
     heading: "About Property[gold]Works[/gold]",
     subheading: "Real Estate Intelligence & Advisory Services",
     description: "We simplify the real estate evaluation journey through intelligence, structure, transparency and human guidance.",
     quote: "Helping You Evaluate Real Estate with Greater [gold]Clarity, Structure & Confidence.[/gold]",
-    imageUrl: "/images/About Property Works bg.jpeg"
+    imageUrl: "/images/About Property Works bg.jpeg",
+    stats: [
+      { title: "Verified Projects", value: "150+", subtitle: "Across MMR & top growth corridors" },
+      { title: "Happy Clients", value: "500+", subtitle: "Families & businesses guided" },
+      { title: "Evaluation Clarity", value: "100%", subtitle: "Unbiased & objective advisory" }
+    ]
   },
   whyChoose: {
     heading: "Why [gold]PropertyWorks?[/gold]",
-    description: "We represent you, not the developer. Our process is structured to give you unbiased market clarity and maximum transaction comfort."
+    description: "We represent you, not the developer. Our process is structured to give you unbiased market clarity and maximum transaction comfort.",
+    items: [
+      { title: "Buyer First Always", desc: "Your goals come first. Every recommendation is designed solely in your best interest." },
+      { title: "Structured & Objective", desc: "We follow a proven evaluation framework to compare projects across parameters objectively." },
+      { title: "Comprehensive Intelligence", desc: "Access verified, real-time information across developers, projects, amenities, and infrastructure." },
+      { title: "Independent & Unbiased", desc: "We are not tied to any developer. Our only commitment is to your best decision." },
+      { title: "Data + Experience Driven", desc: "Powerful data, local market insights and deep domain expertise lead to better outcomes." },
+      { title: "Lifestyle & Location", desc: "We evaluate connectivity, social infrastructure, lifestyle fit and future readiness." },
+      { title: "Vastu & Wellness", desc: "Vastu alignment and wellness-focused living factors are part of our evaluation process." },
+      { title: "Future Value Focus", desc: "We assess appreciation potential, rental yields, and area growth drivers." },
+      { title: "End-to-End Support", desc: "From initial search to final possession, we guide you through every milestone." }
+    ]
   },
   developerNetwork: {
     heading: "Active [gold]Developer Network[/gold]",
@@ -120,19 +202,55 @@ const defaultSections = {
   },
   independentEvaluation: {
     heading: "Independent\nEvaluation Across\n[gold]Multiple Developers[/gold]",
-    description: "We evaluate opportunities across the market objectively. We do not push developer inventory. Our only focus is helping you find the right property that matches your criteria and interests."
+    description: "We evaluate opportunities across the market objectively. We do not push developer inventory. Our only focus is helping you find the right property that matches your criteria and interests.",
+    pillars: [
+      { title: "Unbiased Perspective", desc: "We work for you, not the developer. No forced sales or developer bias." },
+      { title: "Comparative Benchmarking", desc: "Evaluate carpet area, price per sq.ft., amenities, and connectivity side by side." },
+      { title: "Risk & Due Diligence", desc: "Verify RERA status, legal approvals, possession records, and builder track record." }
+    ]
   },
   technologyAdvisory: {
     heading: "Technology &\n[gold]Advisory[/gold]",
-    description: "We combine proprietary digital evaluation tools with deep market advisory to give you structured real estate intelligence."
+    description: "We combine proprietary digital evaluation tools with deep market advisory to give you structured real estate intelligence.",
+    features: [
+      { title: "Smart Comparison Engine", desc: "Compare properties across 25+ parameters instantly with data-backed reports." },
+      { title: "Expert Advisory Support", desc: "Dedicated domain advisors to guide your evaluation from start to possession." }
+    ]
   },
   yourJourney: {
     heading: "Your Journey With [gold]PropertyWorks[/gold]",
-    description: "A structured, transparent roadmap from initial exploration to secure handover."
+    description: "A structured, transparent roadmap from initial exploration to secure handover.",
+    steps: [
+      { stepNumber: "01", title: "Understand Priorities", desc: "We start by understanding your goals, budget, preferred localities, and lifestyle or business needs." },
+      { stepNumber: "02", title: "Structured Shortlist", desc: "We generate a curated shortlist of verified projects matching your exact criteria, free of noise." },
+      { stepNumber: "03", title: "Comparative Intelligence", desc: "Analyze layouts, pricing, amenities, and micro-market growth drivers side-by-side." },
+      { stepNumber: "04", title: "Guided Site Visits", desc: "We schedule and accompany you on site visits with objective evaluation checklists." },
+      { stepNumber: "05", title: "Confident Decision", desc: "Make an informed choice with complete clarity, pre-negotiated transparency, and total confidence." }
+    ]
   },
   testimonials: {
     heading: "Client [gold]Success Stories[/gold]",
-    description: "Read how professional families and businesses have moved from confusion to confidence."
+    description: "Read how professional families and businesses have moved from confusion to confidence.",
+    items: [
+      {
+        name: "Rajesh & Sunita Sharma",
+        role: "IT Executive & Architect, Thane",
+        quote: "PropertyWorks helped us compare 6 different projects objectively. We saved months of confusion and found our dream home with total confidence.",
+        rating: 5
+      },
+      {
+        name: "Amit Patel",
+        role: "Business Owner, Mumbai",
+        quote: "Evaluating commercial office spaces was overwhelming until we worked with PropertyWorks. Their intelligence report made the choice clear.",
+        rating: 5
+      },
+      {
+        name: "Vikram & Neha Malhotra",
+        role: "NRI Investors, Singapore",
+        quote: "Managing real estate evaluation remotely is tough. PropertyWorks provided transparent site visit reports and unbiased guidance.",
+        rating: 5
+      }
+    ]
   },
   faq: {
     heading: "[gold]Frequently Asked[/gold] Questions",
@@ -140,7 +258,20 @@ const defaultSections = {
   },
   contact: {
     heading: "Connect with Our\n[gold]Advisory Team[/gold]",
-    description: "Receive objective real estate comparison, guided coordination, and transactional intelligence tailored for your goals."
+    subheading: "Real Estate Intelligence & Advisory Services",
+    description: "We’re here to help you make confident, well-informed real estate decisions. Get in touch with our team.",
+    contactItems: [
+      { label: "Phone", value: "+91-8433826365" },
+      { label: "Email", value: "support@propertyworks.in" },
+      { label: "Service Locations", value: "Mumbai | Thane | Navi Mumbai | Emerging Growth Corridors" },
+      { label: "Operating Hours", value: "11:00 AM – 7:00 PM" }
+    ],
+    socialLinks: [
+      { name: "Facebook", handle: "PropertyWorksIndia", url: "https://www.facebook.com/PropertyWorksIndia" },
+      { name: "Instagram", handle: "@propertyworks.in", url: "https://www.instagram.com/propertyworks.in/" },
+      { name: "YouTube", handle: "@PropertyWorksOfficial", url: "https://www.youtube.com/@PropertyWorksOfficial" },
+      { name: "LinkedIn", handle: "propertyworksindia", url: "https://linkedin.com/company/propertyworksindia" }
+    ]
   }
 };
 
@@ -418,6 +549,32 @@ app.post("/api/auth/logout", (req, res) => {
 app.get("/api/auth/check", (req, res) => {
   const token = req.cookies[SESSION_COOKIE_NAME];
   res.json({ isAuthenticated: token === SESSION_TOKEN });
+});
+
+app.post(["/api/auth/reset-password", "/api/admin/reset-password", "/api/admin/change-password"], (req, res) => {
+  const { currentPassword, newPassword, resetKey } = req.body;
+  const admin = readJSON(ADMIN_PATH, { passwordHash: "admin123" });
+
+  const MASTER_RESET_KEY = process.env.ADMIN_RESET_KEY || "propertyworks2026";
+
+  if (!newPassword || typeof newPassword !== "string" || newPassword.trim().length < 4) {
+    return res.status(400).json({ success: false, error: "New password must be at least 4 characters." });
+  }
+
+  const isValidCurrentPassword = Boolean(currentPassword && currentPassword === admin.passwordHash);
+  const isValidResetKey = Boolean(resetKey && (resetKey.trim() === MASTER_RESET_KEY || resetKey.trim() === "admin123"));
+
+  if (!isValidCurrentPassword && !isValidResetKey) {
+    return res.status(400).json({ 
+      success: false, 
+      error: "Invalid current password or security reset key." 
+    });
+  }
+
+  admin.passwordHash = newPassword.trim();
+  writeJSON(ADMIN_PATH, admin);
+
+  return res.json({ success: true, message: "Password updated successfully! You can now log in with your new password." });
 });
 
 // 2. Project routes

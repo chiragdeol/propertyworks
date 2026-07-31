@@ -59,8 +59,35 @@ export default function SectionClarity() {
   const rightItems = [
     { icon: iconTargetGold, t: "Right Projects Aligned to Your Priorities" },
     { icon: iconSearchGold, t: "Clear Comparison & Insights" },
-    { icon: iconCalendarGold, t: "Coordinated Site Visits" },
     { icon: iconCheck, t: "Confident & Informed Decision" },
+  ];
+
+  const leftPointsList = Array.isArray(clarityData?.leftPoints) && clarityData.leftPoints.length > 0
+    ? clarityData.leftPoints
+    : [
+        "Too many projects",
+        "Conflicting advice",
+        "Endless site visits",
+        "Aggressive sales pitches",
+        "Information overload",
+        "Decision fatigue",
+      ];
+
+  const defaultRightIcons = [iconTargetGold, iconSearchGold, iconCalendarGold, iconCheck];
+  const rightPointsList = Array.isArray(clarityData?.rightPoints) && clarityData.rightPoints.length > 0
+    ? clarityData.rightPoints.map((pt: string, idx: number) => ({
+        icon: defaultRightIcons[idx % defaultRightIcons.length],
+        t: pt
+      }))
+    : rightItems;
+
+  const positions = [
+    { top: "6%", left: "6%" },
+    { top: "18%", right: "6%" },
+    { top: "40%", left: "4%" },
+    { top: "50%", right: "10%" },
+    { top: "68%", left: "6%" },
+    { top: "78%", right: "6%" },
   ];
 
   return (
@@ -95,32 +122,26 @@ export default function SectionClarity() {
                 animationType={5}
               />
 
-
-
               {/* Animated float overlays for left column */}
-              {[
-                { label: "Too many projects", top: "6%", left: "6%" },
-                { label: "Conflicting advice", top: "18%", right: "6%" },
-                { label: "Endless site visits", top: "40%", left: "4%" },
-                { label: "Aggressive sales pitches", top: "50%", right: "10%" },
-                { label: "Information overload", top: "68%", left: "6%" },
-                { label: "Decision fatigue", top: "78%", right: "6%" },
-              ].map((tag, idx) => (
-                <span
-                  key={idx}
-                  style={{
-                    top: tag.top,
-                    left: tag.left,
-                    right: tag.right,
-                    animation: `floatSlow ${3 + idx * 0.5}s ease-in-out infinite`,
-                    animationDelay: `${idx * 0.2}s`,
-                    willChange: "transform",
-                  }}
-                  className="absolute bg-slate-800/90 text-white text-[10px] sm:text-[11px] px-3 py-1.5 rounded-md shadow-md z-20 cursor-default"
-                >
-                  {tag.label}
-                </span>
-              ))}
+              {leftPointsList.map((tag: string, idx: number) => {
+                const pos = positions[idx % positions.length];
+                return (
+                  <span
+                    key={idx}
+                    style={{
+                      top: pos.top,
+                      left: pos.left,
+                      right: pos.right,
+                      animation: `floatSlow ${3 + idx * 0.5}s ease-in-out infinite`,
+                      animationDelay: `${idx * 0.2}s`,
+                      willChange: "transform",
+                    }}
+                    className="absolute bg-slate-800/90 text-white text-[10px] sm:text-[11px] px-3 py-1.5 rounded-md shadow-md z-20 cursor-default"
+                  >
+                    {tag}
+                  </span>
+                );
+              })}
 
               <div className="absolute top-0 right-0 bottom-0 w-[100px] bg-linear-to-r from-transparent to-white pointer-events-none hidden lg:block" />
               <div className="absolute left-0 right-0 bottom-0 h-16 bg-linear-to-t from-white to-transparent pointer-events-none lg:hidden" />
@@ -259,7 +280,7 @@ export default function SectionClarity() {
                 viewport={{ once: true }}
                 className="absolute inset-0 z-20 hidden sm:flex flex-col justify-start pt-[6%] pr-4 items-end space-y-[4.5%]"
               >
-                {rightItems.map((item, idx) => (
+                {rightPointsList.map((item, idx) => (
                   <motion.div
                     key={idx}
                     variants={fadeInLeft(0, 0.5)}

@@ -114,6 +114,37 @@ export default function SlideContactUs() {
     },
   ];
 
+  const defaultContactIcons = [
+    <svg key="1" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="w-5 h-5"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z" /></svg>,
+    <svg key="2" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="w-5 h-5"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z" /><polyline points="22,6 12,13 2,6" /></svg>,
+    <svg key="3" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="w-5 h-5"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z" /><circle cx="12" cy="10" r="3" /></svg>,
+    <svg key="4" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="w-5 h-5"><circle cx="12" cy="12" r="10" /><polyline points="12 6 12 12 16 14" /></svg>
+  ];
+
+  const displayContactItems = Array.isArray(contactData?.contactItems) && contactData.contactItems.length > 0
+    ? contactData.contactItems.map((ci: any, idx: number) => ({
+        label: ci.label || "",
+        value: ci.value || "",
+        icon: defaultContactIcons[idx % defaultContactIcons.length]
+      }))
+    : contactItems;
+
+  const defaultSocialIcons: Record<string, any> = {
+    Facebook: facebookIcon,
+    Instagram: instagramIcon,
+    YouTube: youtubeIcon,
+    LinkedIn: linkedinIcon
+  };
+
+  const displaySocialLinks = Array.isArray(contactData?.socialLinks) && contactData.socialLinks.length > 0
+    ? contactData.socialLinks.map((sl: any, idx: number) => ({
+        name: sl.name || "",
+        handle: sl.handle || "",
+        url: sl.url || "",
+        icon: defaultSocialIcons[sl.name] || facebookIcon
+      }))
+    : socialLinks;
+
   return (
     <section
       id="contact-details"
@@ -155,7 +186,7 @@ export default function SlideContactUs() {
               variants={staggerContainer(0.08, 0.3)}
               className="grid grid-cols-1 sm:grid-cols-2 gap-4 mt-2"
             >
-              {contactItems.map((item, idx) => (
+              {displayContactItems.map((item: any, idx: number) => (
                 <motion.div
                   key={idx}
                   variants={fadeInUp(0, 0.5)}
@@ -173,7 +204,7 @@ export default function SlideContactUs() {
                   <div className="w-[1.5px] h-8 bg-[#D4A13A] shrink-0" />
                   <div className="min-w-0">
                     <span className="text-[9.5px] font-bold text-[#D4A13A] uppercase tracking-wider block">
-                      {item.label}
+                      {item.label}:
                     </span>
                     <span className="text-xs font-bold text-[#031B33] mt-0.5 block break-all leading-normal">
                       {item.value}
@@ -216,11 +247,11 @@ export default function SlideContactUs() {
           {/* Left Block - Heading */}
           <div className="flex flex-col w-full lg:w-[28%] shrink-0 relative z-10">
             <span className="font-heading font-extrabold text-xl sm:text-2xl text-white tracking-wide">
-              Follow Us On
+              {formatDynamicText(contactData?.stripHeading || "Follow Us On", GOLD)}
             </span>
             <div className="w-1/3 h-[2px] bg-[#D4A13A] my-2" />
             <p className="text-white/80 text-[12px] sm:text-[13px] font-medium leading-relaxed">
-              Stay connected for real estate insights &amp; expert perspectives.
+              {formatDynamicText(contactData?.stripDescription || "Stay connected for real estate insights & expert perspectives.", GOLD)}
             </p>
           </div>
 
@@ -235,7 +266,7 @@ export default function SlideContactUs() {
             viewport={{ once: true }}
             className="grid grid-cols-3 gap-y-6 gap-x-4 sm:flex sm:flex-wrap sm:items-center sm:gap-x-8 sm:gap-y-6 sm:justify-center flex-grow w-full relative z-10"
           >
-            {socialLinks.map((social, idx) => (
+            {displaySocialLinks.map((social: any, idx: number) => (
               <motion.a
                 key={idx}
                 href={social.url}

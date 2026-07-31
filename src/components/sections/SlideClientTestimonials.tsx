@@ -59,12 +59,29 @@ export default function SlideClientTestimonials() {
       img: "/images/prop-2-img.webp",
     },
     {
-      name: "Karan Verma",
-      role: "Singapore | NRI Buyer",
-      text: "The insights on future growth, connectivity and township planning helped us evaluate the bigger picture, not just the property.",
       img: "/images/prop-6-img.webp",
     },
   ];
+
+  const defaultTestimonialImgs = [
+    "/images/prop-1-img.webp",
+    "/images/prop-5-img.webp",
+    "/images/prop-4-img.webp",
+    "/images/prop-3-img.webp",
+    "/images/prop-7-img.webp",
+    "/images/prop-8-img.webp",
+    "/images/prop-2-img.webp",
+    "/images/prop-6-img.webp",
+  ];
+
+  const displayTestimonials = Array.isArray(testimonialsData?.items) && testimonialsData.items.length > 0
+    ? testimonialsData.items.map((it: any, idx: number) => ({
+        name: it.name || "",
+        role: it.role || "",
+        text: it.quote || "",
+        img: defaultTestimonialImgs[idx % defaultTestimonialImgs.length]
+      }))
+    : testimonials;
 
   const pillars = [
     {
@@ -156,9 +173,7 @@ export default function SlideClientTestimonials() {
               "
             </div>
             <p className="font-heading text-[13.5px] font-semibold leading-relaxed text-[#001B4F]">
-              Guided by <span className="text-gold font-bold">Intelligence</span>. Evaluated with{" "}
-              <span className="text-gold font-bold">Clarity</span>. Decided with{" "}
-              <span className="text-gold font-bold">Confidence</span>.
+              {formatDynamicText(testimonialsData?.stripQuote || "Guided by [gold]Intelligence.[/gold] Evaluated with [gold]Clarity.[/gold] Decided with [gold]Confidence.[/gold]", GOLD)}
             </p>
             <div className="flex gap-1 items-center mt-3.5 pt-2 border-t border-slate-100">
               {[1, 2, 3, 4, 5].map((s) => (
@@ -173,7 +188,7 @@ export default function SlideClientTestimonials() {
         {/* Testimonials Marquee Mobile */}
         <div className="mt-6 w-screen relative left-1/2 -translate-x-1/2">
           <Marquee speed={35} pauseOnHover={true} gradient={false}>
-            {testimonials.map((t, idx) => (
+            {displayTestimonials.map((t: any, idx: number) => (
               <div key={`${t.name}-${idx}`} className="w-[320px] md:w-[400px] px-2 py-2 shrink-0">
                 <div
                   className="bg-white p-4.5 rounded-2xl shadow-[0_4px_20px_rgba(0,0,0,0.02)] border border-slate-100 flex gap-4 cursor-pointer h-full hover:border-[#D4A13A] transition-colors duration-300"
@@ -318,9 +333,7 @@ export default function SlideClientTestimonials() {
                   "
                 </div>
                 <p className="font-heading text-[clamp(11.5px,1.05vw,14px)] font-semibold leading-snug text-[#001B4F]">
-                  Guided by <span className="text-gold font-bold">Intelligence</span>. Evaluated
-                  with <span className="text-gold font-bold">Clarity</span>. Decided with{" "}
-                  <span className="text-gold font-bold">Confidence</span>.
+                  {formatDynamicText(testimonialsData?.stripQuote || "Guided by [gold]Intelligence.[/gold] Evaluated with [gold]Clarity.[/gold] Decided with [gold]Confidence.[/gold]", GOLD)}
                 </p>
                 <div className="flex gap-0.5 items-center mt-2.5 pt-2 border-t border-slate-100">
                   {[1, 2, 3, 4, 5].map((s) => (
@@ -336,7 +349,7 @@ export default function SlideClientTestimonials() {
         {/* ── Row 2: Marquee for Testimonials ── */}
         <div className="w-full mt-4 relative">
           <Marquee speed={40} pauseOnHover={true} gradient={false} className="py-4">
-            {testimonials.map((t, idx) => (
+            {displayTestimonials.map((t: any, idx: number) => (
               <div key={`${t.name}-${idx}`} className="w-[380px] xl:w-[420px] px-3 shrink-0">
                 <div
                   className="bg-white rounded-2xl border border-slate-100 shadow-[0_8px_30px_rgba(0,0,0,0.02)] transition-all duration-300 flex flex-row gap-4.5 p-5 min-h-[190px] group relative overflow-hidden cursor-pointer h-full hover:-translate-y-1 hover:border-[#D4A13A] hover:shadow-[0_20px_40px_rgba(0,27,79,0.08)]"

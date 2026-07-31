@@ -297,10 +297,25 @@ export default function SectionNoise() {
       },
       bodyVariants: {
         hidden: { opacity: 0, y: 12 },
-        visible: { opacity: 1, y: 0, transition: { duration: 0.6, delay: 0.25, ease: "easeOut" as const } }
       }
     },
   ];
+
+  const defaultIcons = [iconCarCircle, iconMegaphoneGold, iconRupeeCircle, iconInfoCircle, iconCompassCircle];
+
+  const displayItems = Array.isArray(noiseData?.items) && noiseData.items.length > 0
+    ? noiseData.items.map((it: any, i: number) => ({
+        icon: defaultIcons[i % defaultIcons.length],
+        title: formatDynamicText(it.title || "", GOLD),
+        body: formatDynamicText(it.body || "", GOLD),
+        solTitle: it.solTitle || "",
+        solBody: it.solBody || "",
+        tags: it.tags,
+        solTags: it.solTags,
+        titleVariants: items[i % items.length]?.titleVariants || items[0].titleVariants,
+        bodyVariants: items[i % items.length]?.bodyVariants || items[0].bodyVariants,
+      }))
+    : items;
 
   return (
     <section className="w-full bg-white relative overflow-hidden">
@@ -332,7 +347,7 @@ export default function SectionNoise() {
               variants={staggerContainer(0.08, 0.3)}
               className="mt-6 grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-1 xl:grid-cols-2 gap-x-5 gap-y-4 xl:gap-y-5 max-w-xl md:max-w-none lg:max-w-xl"
             >
-              {items.map((it, i) => (
+              {displayItems.map((it: any, i: number) => (
                 <NoiseFlippingCard key={i} it={it} index={i} />
               ))}
             </motion.div>
@@ -378,8 +393,7 @@ export default function SectionNoise() {
             <RenderIcon icon={iconLightbulbCircle} className="h-5.5 w-5.5 object-contain transition-transform duration-500 group-hover/strip:scale-110" />
           </div>
           <p className="text-white font-serif text-[16px] sm:text-[18px] tracking-wide text-center sm:text-left leading-relaxed font-semibold">
-            Without the right guidance and structure, the entire process becomes{" "}
-            <span style={{ color: GOLD }} className="font-bold transition-colors duration-300">emotionally exhausting.</span>
+            {formatDynamicText(noiseData?.stripText || "Without the right guidance and structure, the entire process becomes [gold]emotionally exhausting.[/gold]", GOLD)}
           </p>
         </div>
       </motion.div>

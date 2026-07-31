@@ -12,13 +12,6 @@ export default function SlideWhyChoose() {
   const [activeIndex, setActiveIndex] = useState(0);
   const [hoverIndex, setHoverIndex] = useState<number | null>(null);
 
-  useEffect(() => {
-    const interval = setInterval(() => {
-      setActiveIndex((prev) => (prev + 1) % 9); // 9 items in chooseItems
-    }, 2500);
-    return () => clearInterval(interval);
-  }, []);
-
   const chooseItems = [
     {
       icon: y.targetGold,
@@ -66,6 +59,23 @@ export default function SlideWhyChoose() {
       desc: "From defining your needs to final shortlist – we guide you at every step of the journey.",
     },
   ];
+
+  const defaultIcons = [y.targetGold, y.barChart, y.searchBuilding, y.shieldCheck, y.monitor, y.location, y.vastu, iconRupeeCircle, y.handshake];
+
+  const displayItems = Array.isArray(chooseData?.items) && chooseData.items.length > 0
+    ? chooseData.items.map((it: any, idx: number) => ({
+        icon: defaultIcons[idx % defaultIcons.length],
+        title: it.title || "",
+        desc: it.desc || "",
+      }))
+    : chooseItems;
+
+  useEffect(() => {
+    const interval = setInterval(() => {
+      setActiveIndex((prev) => (prev + 1) % displayItems.length);
+    }, 2500);
+    return () => clearInterval(interval);
+  }, [displayItems.length]);
 
   const bottomCard = [
     { icon: y.eye, title: "Better Clarity", desc: "See the full picture." },
@@ -165,7 +175,7 @@ export default function SlideWhyChoose() {
           viewport={{ once: true, margin: "0px" }}
           className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-9 divide-x divide-white/10"
         >
-          {chooseItems.map((item, index) => {
+          {displayItems.map((item: any, index: number) => {
             const isActive = activeIndex === index;
             const isFlipped = hoverIndex === index || (hoverIndex === null && isActive);
                 const iconUrl = typeof item.icon === "string" ? item.icon : (item.icon as any)?.src || "";
