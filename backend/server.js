@@ -691,18 +691,42 @@ app.get("/sitemap.xml", (req, res) => {
 });
 
 // Serve static frontend assets in production or welcome page in development
-let distPath = path.join(__dirname, "../dist");
-if (!fs.existsSync(distPath)) {
-  distPath = path.join(__dirname, "dist");
+const candidateDistPaths = [
+  path.join(__dirname, "../dist"),
+  path.join(__dirname, "dist"),
+  path.join(process.cwd(), "dist"),
+  path.join(process.cwd(), "backend/dist"),
+  path.join(process.cwd(), "public_html"),
+  path.join(process.cwd(), ".output/public"),
+  path.join(process.cwd(), "build")
+];
+
+let distPath = candidateDistPaths.find((p) => fs.existsSync(path.join(p, "index.html")));
+
+// Fallback to any directory that exists if index.html hasn't been found yet
+if (!distPath) {
+  distPath = candidateDistPaths.find((p) => fs.existsSync(p));
 }
 
-if (fs.existsSync(distPath)) {
+if (distPath) {
   app.use(express.static(distPath));
-    app.use((req, res, next) => {
+  app.use((req, res, next) => {
     if (req.path.startsWith("/api") || req.path === "/robots.txt" || req.path === "/sitemap.xml") {
       return next();
     }
-    res.sendFile(path.join(distPath, "index.html"));
+    const indexPath = path.join(distPath, "index.html");
+    if (fs.existsSync(indexPath)) {
+      return res.sendFile(indexPath, (err) => {
+        if (err && !res.headersSent) {
+          if (err.status === 404 || err.code === "ENOENT") {
+            res.status(404).send("Page not found");
+          } else {
+            next(err);
+          }
+        }
+      });
+    }
+    next();
   });
 } else {
   app.get("/", (req, res) => {
@@ -710,10 +734,21 @@ if (fs.existsSync(distPath)) {
   });
 }
 
+// 404 Handler for unhandled routes
+app.use((req, res, next) => {
+  res.status(404).json({ error: "Not Found" });
+});
+
 // Global Error Handler for debugging
 app.use((err, req, res, next) => {
+  if (err.status === 404 || err.statusCode === 404 || err.name === "NotFoundError" || err.code === "ENOENT") {
+    return res.status(404).json({ error: "Not Found" });
+  }
   console.error("SERVER ERROR:", err);
-  res.status(500).json({ error: err.message, stack: err.stack });
+  res.status(err.status || err.statusCode || 500).json({
+    error: err.message || "Internal Server Error",
+    ...(process.env.NODE_ENV !== "production" && { stack: err.stack })
+  });
 });
 
 // Start Server
