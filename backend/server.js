@@ -717,28 +717,40 @@ app.get("/sitemap.xml", (req, res) => {
   }
 });
 
-// Serve static frontend assets in production or welcome page in development
-const candidateDistPaths = [
-  path.join(__dirname, "../dist"),
-  path.join(__dirname, "dist"),
-  path.join(__dirname, "../public_html"),
-  path.join(__dirname, "../../public_html"),
-  path.join(process.cwd(), "dist"),
-  path.join(process.cwd(), "backend/dist"),
-  path.join(process.cwd(), "public_html"),
-  path.join(process.cwd(), ".output/public"),
-  path.join(process.cwd(), "build"),
-  process.cwd()
-];
+// Helper to locate index.html across all possible Hostinger deployment directories
+function getIndexHtmlPath() {
+  const candidates = [
+    path.resolve(__dirname, "../dist/index.html"),
+    path.resolve(__dirname, "dist/index.html"),
+    path.resolve(__dirname, "../backend/dist/index.html"),
+    path.resolve(__dirname, "../public_html/index.html"),
+    path.resolve(__dirname, "../../public_html/index.html"),
+    path.resolve(__dirname, "../../../public_html/index.html"),
+    path.resolve(__dirname, "../build/index.html"),
+    path.resolve(__dirname, "../.output/public/index.html"),
+    path.resolve(__dirname, "../index.html"),
+    path.resolve(process.cwd(), "dist/index.html"),
+    path.resolve(process.cwd(), "backend/dist/index.html"),
+    path.resolve(process.cwd(), "public_html/index.html"),
+    path.resolve(process.cwd(), "../public_html/index.html"),
+    path.resolve(process.cwd(), "../dist/index.html"),
+    path.resolve(process.cwd(), ".output/public/index.html"),
+    path.resolve(process.cwd(), "build/index.html"),
+    path.resolve(process.cwd(), "index.html")
+  ];
 
-let distPath = candidateDistPaths.find((p) => fs.existsSync(path.join(p, "index.html")));
-
-if (!distPath) {
-  distPath = candidateDistPaths.find((p) => fs.existsSync(p));
+  for (const candidate of candidates) {
+    if (fs.existsSync(candidate)) {
+      return candidate;
+    }
+  }
+  return null;
 }
 
-if (distPath) {
-  app.use(express.static(distPath));
+const distDir = getIndexHtmlPath() ? path.dirname(getIndexHtmlPath()) : null;
+
+if (distDir) {
+  app.use(express.static(distDir));
 }
 
 // Fallback for SPA routing: serve index.html for all non-API GET requests
@@ -751,20 +763,17 @@ app.use((req, res, next) => {
     return next();
   }
 
-  // Find index.html across candidate paths
-  const targetIndex = candidateDistPaths
-    .map((p) => path.join(p, "index.html"))
-    .find((p) => fs.existsSync(p));
-
-  if (targetIndex) {
-    return res.sendFile(targetIndex, (err) => {
+  const indexPath = getIndexHtmlPath();
+  if (indexPath) {
+    return res.sendFile(indexPath, (err) => {
       if (err && !res.headersSent) {
-        console.error("Error sending index.html:", err);
+        console.error("Error sending index.html from path:", indexPath, err);
         res.status(500).send("Error loading application page");
       }
     });
   }
 
+  console.error("index.html not found in any candidate directory. __dirname:", __dirname, "cwd:", process.cwd());
   next();
 });
 
