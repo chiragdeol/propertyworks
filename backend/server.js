@@ -765,12 +765,14 @@ app.use((req, res, next) => {
 
   const indexPath = getIndexHtmlPath();
   if (indexPath) {
-    return res.sendFile(indexPath, (err) => {
-      if (err && !res.headersSent) {
-        console.error("Error sending index.html from path:", indexPath, err);
-        res.status(500).send("Error loading application page");
-      }
-    });
+    try {
+      const htmlContent = fs.readFileSync(indexPath, "utf-8");
+      res.setHeader("Content-Type", "text/html; charset=utf-8");
+      return res.send(htmlContent);
+    } catch (err) {
+      console.error("Error reading index.html from path:", indexPath, err);
+      return res.status(500).send("Error loading application page");
+    }
   }
 
   console.error("index.html not found in any candidate directory. __dirname:", __dirname, "cwd:", process.cwd());
