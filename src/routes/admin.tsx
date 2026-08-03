@@ -1,5 +1,5 @@
 import { createFileRoute, useNavigate, Link } from "@tanstack/react-router";
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { 
   loginAdmin, logoutAdmin, checkSession, resetAdminPassword,
   getProjects, saveProject, deleteProject, 
@@ -130,7 +130,7 @@ function AdminRouteComponent() {
     });
 
     if (res.success) {
-      toast.success(res.message || "Password reset successfully!");
+      toast.success((res as any).message || "Password reset successfully!");
       setIsResetMode(false);
       setAuthPassword(newPass);
       setResetKeyOrOldPass("");
@@ -2429,6 +2429,12 @@ function SectionsTab({ settings, loadData }: SectionsTabProps) {
     }
   };
 
+  const fallbacksRef = useRef<Record<string, any[]>>({});
+
+  useEffect(() => {
+    fallbacksRef.current = {};
+  }, [selectedSection]);
+
   const getFieldValue = (field: string) => {
     const val = formData.sections?.[selectedSection]?.[field];
     if (val === undefined || val === null) {
@@ -2438,11 +2444,34 @@ function SectionsTab({ settings, loadData }: SectionsTabProps) {
   };
 
   const getArrayValue = (field: string, fallback: any[] = []): any[] => {
+    if (Array.isArray(fallback) && fallback.length > 0) {
+      fallbacksRef.current[field] = fallback;
+    }
+    const storedFallback = fallbacksRef.current[field] || [];
     const val = formData.sections?.[selectedSection]?.[field];
-    if (Array.isArray(val)) return val;
     const def = (defaultSections[selectedSection] as any)?.[field];
-    if (Array.isArray(def)) return def;
-    return fallback;
+    const baseFallback = (Array.isArray(def) && def.length > 0) ? def : (storedFallback.length > 0 ? storedFallback : fallback);
+
+    let result: any[] = [];
+    if (Array.isArray(val) && val.length > 0) {
+      result = val.map((item: any, idx: number) => {
+        const baseItem = baseFallback[idx];
+        if (typeof item === "object" && item !== null && typeof baseItem === "object" && baseItem !== null) {
+          return { ...baseItem, ...item };
+        }
+        return item !== undefined && item !== null ? item : baseItem;
+      });
+    } else if (Array.isArray(baseFallback) && baseFallback.length > 0) {
+      result = [...baseFallback];
+    }
+
+    if (Array.isArray(baseFallback) && baseFallback.length > result.length) {
+      for (let i = result.length; i < baseFallback.length; i++) {
+        result.push(baseFallback[i]);
+      }
+    }
+
+    return result;
   };
 
   const updateArrayValue = (field: string, newArray: any[]) => {
@@ -2458,24 +2487,33 @@ function SectionsTab({ settings, loadData }: SectionsTabProps) {
     });
   };
 
-  const handleArrayItemChange = (field: string, index: number, key: string, value: any) => {
-    const current = [...getArrayValue(field)];
-    if (typeof current[index] === "object" && current[index] !== null) {
-      current[index] = { ...current[index], [key]: value };
+  const handleArrayItemChange = (field: string, index: number, key: string, value: any, explicitFallback?: any[]) => {
+    const fallback = explicitFallback || fallbacksRef.current[field] || [];
+    const current = [...getArrayValue(field, fallback)];
+    const fallbackItem = fallback[index] || (defaultSections[selectedSection] as any)?.[field]?.[index] || {};
+
+    if (key === "" || key === undefined || key === null) {
+      current[index] = value;
+    } else if (typeof current[index] === "object" && current[index] !== null) {
+      current[index] = { ...fallbackItem, ...current[index], [key]: value };
+    } else if (typeof fallbackItem === "object" && fallbackItem !== null && Object.keys(fallbackItem).length > 0) {
+      current[index] = { ...fallbackItem, [key]: value };
     } else {
       current[index] = value;
     }
     updateArrayValue(field, current);
   };
 
-  const handleAddArrayItem = (field: string, template: any) => {
-    const current = [...getArrayValue(field)];
+  const handleAddArrayItem = (field: string, template: any, explicitFallback?: any[]) => {
+    const fallback = explicitFallback || fallbacksRef.current[field] || [];
+    const current = [...getArrayValue(field, fallback)];
     current.push(template);
     updateArrayValue(field, current);
   };
 
-  const handleRemoveArrayItem = (field: string, index: number) => {
-    const current = [...getArrayValue(field)];
+  const handleRemoveArrayItem = (field: string, index: number, explicitFallback?: any[]) => {
+    const fallback = explicitFallback || fallbacksRef.current[field] || [];
+    const current = [...getArrayValue(field, fallback)];
     current.splice(index, 1);
     updateArrayValue(field, current);
   };
@@ -2565,6 +2603,56 @@ function SectionsTab({ settings, loadData }: SectionsTabProps) {
                   onChange={(e) => updateSectionField("imageUrl", e.target.value)}
                   className="w-full h-11 px-4 bg-slate-50 border border-slate-200 text-sm rounded-xl outline-none focus:bg-white focus:border-gold font-semibold"
                 />
+              </div>
+
+              <div className="md:col-span-2 space-y-4 pt-4 border-t border-slate-100">
+                <div className="flex items-center justify-between">
+                  <h4 className="text-xs font-black uppercase text-slate-700 tracking-wider">Bottom Blue Strip Feature Cards (3 Items)</h4>
+                  <button
+                    type="button"
+                    onClick={() => handleAddArrayItem("bottomStrip", { title: "Feature Title", sub: "Feature description" })}
+                    className="px-3 py-1.5 bg-gold text-slate-900 rounded-lg text-[10px] font-black uppercase tracking-wider hover:bg-gold/90 transition-all cursor-pointer flex items-center gap-1"
+                  >
+                    <Plus size={12} /> Add Item
+                  </button>
+                </div>
+                <div className="space-y-3">
+                  {getArrayValue("bottomStrip", [
+                    { title: "No [gold]Buyer-Side Fee[/gold]", sub: "We represent you, not the builder. 100% unbiased advisory." },
+                    { title: "Premium [gold]Guided Advisory[/gold]", sub: "Structured. Transparent. Practical." },
+                    { title: "Built For [gold]Decision Makers[/gold]", sub: "Designed for professionals and families. Better decisions." }
+                  ]).map((bs: any, idx: number) => (
+                    <div key={idx} className="p-4 bg-slate-50 border border-slate-200/70 rounded-xl space-y-3 relative group">
+                      <div className="flex items-center justify-between">
+                        <span className="text-[10px] font-black text-gold uppercase tracking-wider">Feature #{idx + 1}</span>
+                        <button
+                          type="button"
+                          onClick={() => handleRemoveArrayItem("bottomStrip", idx)}
+                          className="p-1 text-slate-400 hover:text-rose-500 rounded transition-colors cursor-pointer"
+                          title="Remove feature"
+                        >
+                          <Trash2 size={14} />
+                        </button>
+                      </div>
+                      <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+                        <input
+                          type="text"
+                          placeholder="Feature Title (e.g. No [gold]Buyer-Side Fee[/gold])"
+                          value={bs.title || bs.t || ""}
+                          onChange={(e) => handleArrayItemChange("bottomStrip", idx, "title", e.target.value)}
+                          className="w-full h-9 px-3 bg-white border border-slate-200 text-xs rounded-lg font-semibold"
+                        />
+                        <input
+                          type="text"
+                          placeholder="Feature Subtitle / Description"
+                          value={bs.sub || bs.desc || bs.s || ""}
+                          onChange={(e) => handleArrayItemChange("bottomStrip", idx, "sub", e.target.value)}
+                          className="w-full h-9 px-3 bg-white border border-slate-200 text-xs rounded-lg font-semibold"
+                        />
+                      </div>
+                    </div>
+                  ))}
+                </div>
               </div>
             </>
           )}
@@ -2708,6 +2796,118 @@ function SectionsTab({ settings, loadData }: SectionsTabProps) {
                   className="w-full h-11 px-4 bg-slate-50 border border-slate-200 text-sm rounded-xl outline-none focus:bg-white focus:border-gold font-semibold"
                 />
               </div>
+              <div className="space-y-1.5 md:col-span-2">
+                <label className="text-[10px] font-black uppercase text-slate-400">Side Callout Text *</label>
+                <textarea
+                  rows={2}
+                  value={getFieldValue("sideText")}
+                  onChange={(e) => updateSectionField("sideText", e.target.value)}
+                  placeholder="We help you build\nthe [gold]right life[/gold], not just\nfind the right property."
+                  className="w-full p-3 bg-slate-50 border border-slate-200 text-xs rounded-xl outline-none focus:bg-white focus:border-gold font-semibold"
+                />
+              </div>
+              <div className="space-y-1.5 md:col-span-2">
+                <label className="text-[10px] font-black uppercase text-slate-400">Bottom Statement Text *</label>
+                <textarea
+                  rows={2}
+                  value={getFieldValue("bottomStatement")}
+                  onChange={(e) => updateSectionField("bottomStatement", e.target.value)}
+                  placeholder="Smarter evaluation. Better choices. [gold]A stronger future for your family.[/gold]"
+                  className="w-full p-3 bg-slate-50 border border-slate-200 text-xs rounded-xl outline-none focus:bg-white focus:border-gold font-semibold"
+                />
+              </div>
+
+              <div className="md:col-span-2 space-y-4 pt-4 border-t border-slate-100">
+                <div className="flex items-center justify-between">
+                  <h4 className="text-xs font-black uppercase text-slate-700 tracking-wider">Residential Intelligence Cards</h4>
+                  <button
+                    type="button"
+                    onClick={() => handleAddArrayItem("items", { title: "New Feature", body: "Feature description..." })}
+                    className="px-3 py-1.5 bg-gold text-slate-900 rounded-lg text-[10px] font-black uppercase tracking-wider hover:bg-gold/90 transition-all cursor-pointer flex items-center gap-1"
+                  >
+                    <Plus size={12} /> Add Card
+                  </button>
+                </div>
+                <div className="space-y-3">
+                  {getArrayValue("items", [
+                    { title: "Township Ecosystem", body: "We evaluate the overall planning, community design, and future development." },
+                    { title: "Lifestyle Alignment", body: "We match your lifestyle preferences with the right communities." },
+                    { title: "Family Requirements", body: "We consider schools, safety, healthcare, recreation, and everyday convenience." },
+                    { title: "Vastu & Orientation", body: "We factor in vastu preferences, orientation, and energy flow for peace of mind." },
+                    { title: "Future Growth Corridors", body: "We identify locations with strong infrastructure growth and long-term value potential." },
+                    { title: "Long-Term Usability", body: "We look at resale potential, liquidity, rental demand, and long-term suitability." }
+                  ]).map((it: any, idx: number) => (
+                    <div key={idx} className="p-4 bg-slate-50 border border-slate-200/70 rounded-xl space-y-3 relative group">
+                      <div className="flex items-center justify-between">
+                        <span className="text-[10px] font-black text-gold uppercase tracking-wider">Card #{idx + 1}</span>
+                        <button
+                          type="button"
+                          onClick={() => handleRemoveArrayItem("items", idx)}
+                          className="p-1 text-slate-400 hover:text-rose-500 rounded transition-colors cursor-pointer"
+                          title="Remove card"
+                        >
+                          <Trash2 size={14} />
+                        </button>
+                      </div>
+                      <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+                        <input
+                          type="text"
+                          placeholder="Card Title"
+                          value={it.title || ""}
+                          onChange={(e) => handleArrayItemChange("items", idx, "title", e.target.value)}
+                          className="w-full h-9 px-3 bg-white border border-slate-200 text-xs rounded-lg font-semibold"
+                        />
+                        <input
+                          type="text"
+                          placeholder="Card Body Description"
+                          value={it.body || ""}
+                          onChange={(e) => handleArrayItemChange("items", idx, "body", e.target.value)}
+                          className="w-full h-9 px-3 bg-white border border-slate-200 text-xs rounded-lg font-semibold"
+                        />
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </div>
+
+              <div className="md:col-span-2 space-y-4 pt-4 border-t border-slate-100">
+                <div className="flex items-center justify-between">
+                  <h4 className="text-xs font-black uppercase text-slate-700 tracking-wider">Bottom Blue Strip Features (5 Items)</h4>
+                  <button
+                    type="button"
+                    onClick={() => handleAddArrayItem("blueStrip", { title: "Feature Title" })}
+                    className="px-3 py-1.5 bg-gold text-slate-900 rounded-lg text-[10px] font-black uppercase tracking-wider hover:bg-gold/90 transition-all cursor-pointer flex items-center gap-1"
+                  >
+                    <Plus size={12} /> Add Item
+                  </button>
+                </div>
+                <div className="space-y-2">
+                  {getArrayValue("blueStrip", [
+                    { title: "The Right Location" },
+                    { title: "The Right Community" },
+                    { title: "The Right Environment" },
+                    { title: "The Right Future" },
+                    { title: "The Right Choice" }
+                  ]).map((bs: any, idx: number) => (
+                    <div key={idx} className="flex items-center gap-2">
+                      <input
+                        type="text"
+                        placeholder="Feature Title (e.g. Location Infrastructure)"
+                        value={typeof bs === "string" ? bs : bs.title || bs.t || ""}
+                        onChange={(e) => handleArrayItemChange("blueStrip", idx, "title", e.target.value)}
+                        className="w-full h-9 px-3 bg-slate-50 border border-slate-200 text-xs rounded-lg font-semibold"
+                      />
+                      <button
+                        type="button"
+                        onClick={() => handleRemoveArrayItem("blueStrip", idx)}
+                        className="p-1.5 text-slate-400 hover:text-rose-500 rounded transition-colors cursor-pointer shrink-0"
+                      >
+                        <Trash2 size={14} />
+                      </button>
+                    </div>
+                  ))}
+                </div>
+              </div>
             </>
           )}
 
@@ -2739,6 +2939,129 @@ function SectionsTab({ settings, loadData }: SectionsTabProps) {
                   onChange={(e) => updateSectionField("imageUrl", e.target.value)}
                   className="w-full h-11 px-4 bg-slate-50 border border-slate-200 text-sm rounded-xl outline-none focus:bg-white focus:border-gold font-semibold"
                 />
+              </div>
+              <div className="space-y-1.5 md:col-span-2">
+                <label className="text-[10px] font-black uppercase text-slate-400">Side Callout Text *</label>
+                <textarea
+                  rows={2}
+                  value={getFieldValue("sideText")}
+                  onChange={(e) => updateSectionField("sideText", e.target.value)}
+                  placeholder="Aligning space with strategy,\nyield with vision."
+                  className="w-full p-3 bg-slate-50 border border-slate-200 text-xs rounded-xl outline-none focus:bg-white focus:border-gold font-semibold"
+                />
+              </div>
+              <div className="space-y-1.5 md:col-span-2">
+                <label className="text-[10px] font-black uppercase text-slate-400">Bottom Statement Text *</label>
+                <textarea
+                  rows={2}
+                  value={getFieldValue("bottomStatement")}
+                  onChange={(e) => updateSectionField("bottomStatement", e.target.value)}
+                  placeholder="Strategic evaluation. Smart choices. [gold]Sustainable growth for your business.[/gold]"
+                  className="w-full p-3 bg-slate-50 border border-slate-200 text-xs rounded-xl outline-none focus:bg-white focus:border-gold font-semibold"
+                />
+              </div>
+
+              <div className="md:col-span-2 space-y-4 pt-4 border-t border-slate-100">
+                <div className="flex items-center justify-between">
+                  <h4 className="text-xs font-black uppercase text-slate-700 tracking-wider">Commercial Intelligence Cards</h4>
+                  <button
+                    type="button"
+                    onClick={() => handleAddArrayItem("items", { title: "New Commercial Feature", body: "Feature description..." })}
+                    className="px-3 py-1.5 bg-gold text-slate-900 rounded-lg text-[10px] font-black uppercase tracking-wider hover:bg-gold/90 transition-all cursor-pointer flex items-center gap-1"
+                  >
+                    <Plus size={12} /> Add Card
+                  </button>
+                </div>
+                <div className="space-y-3">
+                  {getArrayValue("items", [
+                    { title: "Office Spaces", body: "Find the right spaces to attract talent, improve productivity, and scale faster." },
+                    { title: "Commercial Investments", body: "Analyze opportunities with strong rental yields, capital appreciation, and risk-adjusted returns." },
+                    { title: "Retail & High Street", body: "Identify high visibility locations with strong footfalls and business potential." },
+                    { title: "Business Expansion", body: "Assess locations that support your expansion strategy and future growth plans." },
+                    { title: "Industrial & Warehousing", body: "Evaluate infrastructure, connectivity, and operational efficiency for long-term advantage." },
+                    { title: "Market Intelligence", body: "Access real-time market insights, demand trends, and micro-market data for better decisions." }
+                  ]).map((it: any, idx: number) => (
+                    <div key={idx} className="p-4 bg-slate-50 border border-slate-200/70 rounded-xl space-y-3 relative group">
+                      <div className="flex items-center justify-between">
+                        <span className="text-[10px] font-black text-gold uppercase tracking-wider">Card #{idx + 1}</span>
+                        <button
+                          type="button"
+                          onClick={() => handleRemoveArrayItem("items", idx)}
+                          className="p-1 text-slate-400 hover:text-rose-500 rounded transition-colors cursor-pointer"
+                          title="Remove card"
+                        >
+                          <Trash2 size={14} />
+                        </button>
+                      </div>
+                      <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+                        <input
+                          type="text"
+                          placeholder="Card Title"
+                          value={it.title || ""}
+                          onChange={(e) => handleArrayItemChange("items", idx, "title", e.target.value)}
+                          className="w-full h-9 px-3 bg-white border border-slate-200 text-xs rounded-lg font-semibold"
+                        />
+                        <input
+                          type="text"
+                          placeholder="Card Body Description"
+                          value={it.body || ""}
+                          onChange={(e) => handleArrayItemChange("items", idx, "body", e.target.value)}
+                          className="w-full h-9 px-3 bg-white border border-slate-200 text-xs rounded-lg font-semibold"
+                        />
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </div>
+
+              <div className="md:col-span-2 space-y-4 pt-4 border-t border-slate-100">
+                <div className="flex items-center justify-between">
+                  <h4 className="text-xs font-black uppercase text-slate-700 tracking-wider">Bottom Blue Strip Features (4 Items)</h4>
+                  <button
+                    type="button"
+                    onClick={() => handleAddArrayItem("blueStrip", { title: "Strategic Locations.", sub: "Stronger Business Impact." })}
+                    className="px-3 py-1.5 bg-gold text-slate-900 rounded-lg text-[10px] font-black uppercase tracking-wider hover:bg-gold/90 transition-all cursor-pointer flex items-center gap-1"
+                  >
+                    <Plus size={12} /> Add Item
+                  </button>
+                </div>
+                <div className="space-y-3">
+                  {getArrayValue("blueStrip", [
+                    { title: "Strategic Locations.", sub: "Stronger Business Impact." },
+                    { title: "Data-Backed Decisions.", sub: "Lower Risk. Higher Returns." },
+                    { title: "Expert Guidance.", sub: "End-to-End Support." },
+                    { title: "Future-Ready Investments.", sub: "Sustainable Growth." }
+                  ]).map((bs: any, idx: number) => (
+                    <div key={idx} className="p-3 bg-slate-50 border border-slate-200/70 rounded-xl space-y-2 relative group">
+                      <div className="flex items-center justify-between">
+                        <span className="text-[10px] font-black text-gold uppercase tracking-wider">Item #{idx + 1}</span>
+                        <button
+                          type="button"
+                          onClick={() => handleRemoveArrayItem("blueStrip", idx)}
+                          className="p-1 text-slate-400 hover:text-rose-500 rounded transition-colors cursor-pointer"
+                        >
+                          <Trash2 size={14} />
+                        </button>
+                      </div>
+                      <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+                        <input
+                          type="text"
+                          placeholder="Main Title"
+                          value={bs.title || bs.t || ""}
+                          onChange={(e) => handleArrayItemChange("blueStrip", idx, "title", e.target.value)}
+                          className="w-full h-9 px-3 bg-white border border-slate-200 text-xs rounded-lg font-semibold"
+                        />
+                        <input
+                          type="text"
+                          placeholder="Subtitle"
+                          value={bs.sub || bs.s || ""}
+                          onChange={(e) => handleArrayItemChange("blueStrip", idx, "sub", e.target.value)}
+                          className="w-full h-9 px-3 bg-white border border-slate-200 text-xs rounded-lg font-semibold"
+                        />
+                      </div>
+                    </div>
+                  ))}
+                </div>
               </div>
             </>
           )}
@@ -2921,6 +3244,26 @@ function SectionsTab({ settings, loadData }: SectionsTabProps) {
                   className="w-full h-11 px-4 bg-slate-50 border border-slate-200 text-sm rounded-xl outline-none focus:bg-white focus:border-gold font-semibold"
                 />
               </div>
+              <div className="space-y-1.5">
+                <label className="text-[10px] font-black uppercase text-slate-400">Floating Badge Line 1 *</label>
+                <input
+                  type="text"
+                  value={getFieldValue("badgeTitle")}
+                  onChange={(e) => updateSectionField("badgeTitle", e.target.value)}
+                  placeholder="See Beyond. Understand Deeply."
+                  className="w-full h-11 px-4 bg-slate-50 border border-slate-200 text-sm rounded-xl outline-none focus:bg-white focus:border-gold font-semibold"
+                />
+              </div>
+              <div className="space-y-1.5">
+                <label className="text-[10px] font-black uppercase text-slate-400">Floating Badge Line 2 *</label>
+                <input
+                  type="text"
+                  value={getFieldValue("badgeSubtitle")}
+                  onChange={(e) => updateSectionField("badgeSubtitle", e.target.value)}
+                  placeholder="Decide Confidently."
+                  className="w-full h-11 px-4 bg-slate-50 border border-slate-200 text-sm rounded-xl outline-none focus:bg-white focus:border-gold font-semibold"
+                />
+              </div>
               <div className="space-y-1.5 md:col-span-2">
                 <label className="text-[10px] font-black uppercase text-slate-400">Bottom Statement Strip Text *</label>
                 <textarea
@@ -2934,31 +3277,125 @@ function SectionsTab({ settings, loadData }: SectionsTabProps) {
 
               <div className="md:col-span-2 space-y-4 pt-4 border-t border-slate-100">
                 <div className="flex items-center justify-between">
-                  <h4 className="text-xs font-black uppercase text-slate-700 tracking-wider">Site Visit Features / Highlights</h4>
+                  <h4 className="text-xs font-black uppercase text-slate-700 tracking-wider">Spotlight Cards (4 Items)</h4>
                   <button
                     type="button"
-                    onClick={() => handleAddArrayItem("features", "New feature highlight")}
+                    onClick={() => handleAddArrayItem("spotlightCards", { title: "Card Title", desc: "Card description..." })}
+                    className="px-3 py-1.5 bg-gold text-slate-900 rounded-lg text-[10px] font-black uppercase tracking-wider hover:bg-gold/90 transition-all cursor-pointer flex items-center gap-1"
+                  >
+                    <Plus size={12} /> Add Spotlight Card
+                  </button>
+                </div>
+                <div className="space-y-3">
+                  {getArrayValue("spotlightCards", [
+                    { title: "Planned with Purpose", desc: "We schedule visits based on your priorities and evaluation checklist." },
+                    { title: "Expert Accompaniment", desc: "Our advisors accompany you to provide context, answer questions, and highlight key factors." },
+                    { title: "On-Site Evaluation", desc: "We help you assess location, amenities, quality, and overall suitability on the ground." },
+                    { title: "Document & Compare", desc: "We capture insights and help you compare options objectively." }
+                  ]).map((sc: any, idx: number) => (
+                    <div key={idx} className="p-4 bg-slate-50 border border-slate-200/70 rounded-xl space-y-3 relative group">
+                      <div className="flex items-center justify-between">
+                        <span className="text-[10px] font-black text-gold uppercase tracking-wider">Spotlight #{idx + 1}</span>
+                        <button
+                          type="button"
+                          onClick={() => handleRemoveArrayItem("spotlightCards", idx)}
+                          className="p-1 text-slate-400 hover:text-rose-500 rounded transition-colors cursor-pointer"
+                        >
+                          <Trash2 size={14} />
+                        </button>
+                      </div>
+                      <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+                        <input
+                          type="text"
+                          placeholder="Card Title"
+                          value={sc.title || ""}
+                          onChange={(e) => handleArrayItemChange("spotlightCards", idx, "title", e.target.value)}
+                          className="w-full h-9 px-3 bg-white border border-slate-200 text-xs rounded-lg font-semibold"
+                        />
+                        <input
+                          type="text"
+                          placeholder="Card Description"
+                          value={sc.desc || ""}
+                          onChange={(e) => handleArrayItemChange("spotlightCards", idx, "desc", e.target.value)}
+                          className="w-full h-9 px-3 bg-white border border-slate-200 text-xs rounded-lg font-semibold"
+                        />
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </div>
+
+              <div className="md:col-span-2 space-y-4 pt-4 border-t border-slate-100">
+                <div className="flex items-center justify-between">
+                  <h4 className="text-xs font-black uppercase text-slate-700 tracking-wider">Bottom Blue Strip Features (5 Items)</h4>
+                  <button
+                    type="button"
+                    onClick={() => handleAddArrayItem("features", { title: "Feature Title", desc: "Feature description" })}
                     className="px-3 py-1.5 bg-gold text-slate-900 rounded-lg text-[10px] font-black uppercase tracking-wider hover:bg-gold/90 transition-all cursor-pointer flex items-center gap-1"
                   >
                     <Plus size={12} /> Add Feature
                   </button>
                 </div>
-                <div className="space-y-2">
-                  {getArrayValue("features").map((ft: string, idx: number) => (
-                    <div key={idx} className="flex items-center gap-2">
-                      <input
-                        type="text"
-                        value={ft || ""}
-                        onChange={(e) => handleArrayItemChange("features", idx, "", e.target.value)}
-                        className="w-full h-9 px-3 bg-slate-50 border border-slate-200 text-xs rounded-lg font-semibold"
-                      />
-                      <button
-                        type="button"
-                        onClick={() => handleRemoveArrayItem("features", idx)}
-                        className="p-1.5 text-slate-400 hover:text-rose-500 rounded transition-colors cursor-pointer shrink-0"
-                      >
-                        <Trash2 size={14} />
-                      </button>
+                <div className="space-y-3">
+                  {(() => {
+                    const defaults = [
+                      { title: "Right Questions", desc: "We help you ask what truly matters." },
+                      { title: "Local Insights", desc: "On-ground perspective you can trust." },
+                      { title: "Risk Awareness", desc: "Identify potential red flags before you decide." },
+                      { title: "Objective View", desc: "Unbiased guidance for clearer decisions." },
+                      { title: "Better Decisions", desc: "Real clarity comes from seeing what counts." }
+                    ];
+                    const raw = getArrayValue("features", defaults);
+                    const list = defaults.map((def, idx) => {
+                      const cur = raw[idx];
+                      if (!cur) return def;
+                      if (typeof cur === "string") {
+                        return { title: cur, desc: def.desc };
+                      }
+                      return {
+                        title: cur.title || cur.t || def.title,
+                        desc: cur.desc || cur.s || def.desc
+                      };
+                    });
+                    if (raw.length > defaults.length) {
+                      for (let i = defaults.length; i < raw.length; i++) {
+                        const cur = raw[i];
+                        if (typeof cur === "string") {
+                          list.push({ title: cur, desc: "" });
+                        } else if (cur) {
+                          list.push({ title: cur.title || cur.t || "", desc: cur.desc || cur.s || "" });
+                        }
+                      }
+                    }
+                    return list;
+                  })().map((ft: any, idx: number) => (
+                    <div key={idx} className="p-3 bg-slate-50 border border-slate-200/70 rounded-xl space-y-2 relative group">
+                      <div className="flex items-center justify-between">
+                        <span className="text-[10px] font-black text-gold uppercase tracking-wider">Feature #{idx + 1}</span>
+                        <button
+                          type="button"
+                          onClick={() => handleRemoveArrayItem("features", idx)}
+                          className="p-1 text-slate-400 hover:text-rose-500 rounded transition-colors cursor-pointer"
+                        >
+                          <Trash2 size={14} />
+                        </button>
+                      </div>
+                      <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+                        <input
+                          type="text"
+                          placeholder="Feature Title"
+                          value={ft.title}
+                          onChange={(e) => handleArrayItemChange("features", idx, "title", e.target.value)}
+                          className="w-full h-9 px-3 bg-white border border-slate-200 text-xs rounded-lg font-semibold"
+                        />
+                        <input
+                          type="text"
+                          placeholder="Feature Description"
+                          value={ft.desc}
+                          onChange={(e) => handleArrayItemChange("features", idx, "desc", e.target.value)}
+                          className="w-full h-9 px-3 bg-white border border-slate-200 text-xs rounded-lg font-semibold"
+                        />
+                      </div>
                     </div>
                   ))}
                 </div>
@@ -3013,23 +3450,162 @@ function SectionsTab({ settings, loadData }: SectionsTabProps) {
                   className="w-full h-11 px-4 bg-slate-50 border border-slate-200 text-sm rounded-xl outline-none focus:bg-white focus:border-gold font-semibold"
                 />
               </div>
+              <div className="space-y-1.5 border-t border-slate-100 pt-4 md:col-span-2">
+                <label className="text-[10px] font-black uppercase text-slate-400">Our Approach Card Title *</label>
+                <input
+                  type="text"
+                  value={getFieldValue("approachHeading")}
+                  onChange={(e) => updateSectionField("approachHeading", e.target.value)}
+                  placeholder="Our Approach"
+                  className="w-full h-11 px-4 bg-slate-50 border border-slate-200 text-sm rounded-xl outline-none focus:bg-white focus:border-gold font-semibold"
+                />
+              </div>
+              <div className="space-y-1.5 md:col-span-2">
+                <label className="text-[10px] font-black uppercase text-slate-400">Our Approach Card Footer Text *</label>
+                <textarea
+                  rows={2}
+                  value={getFieldValue("approachFooter")}
+                  onChange={(e) => updateSectionField("approachFooter", e.target.value)}
+                  placeholder="through a [gold]guided, intelligence-driven[/gold] approach."
+                  className="w-full p-3 bg-slate-50 border border-slate-200 text-xs rounded-xl outline-none focus:bg-white focus:border-gold font-semibold"
+                />
+              </div>
+
+              <div className="md:col-span-2 space-y-4 pt-2">
+                <div className="flex items-center justify-between">
+                  <h4 className="text-xs font-black uppercase text-slate-700 tracking-wider">Our Approach Points (5 Items)</h4>
+                  <button
+                    type="button"
+                    onClick={() => handleAddArrayItem("approachPoints", "New approach point")}
+                    className="px-3 py-1.5 bg-gold text-slate-900 rounded-lg text-[10px] font-black uppercase tracking-wider hover:bg-gold/90 transition-all cursor-pointer flex items-center gap-1"
+                  >
+                    <Plus size={12} /> Add Approach Point
+                  </button>
+                </div>
+                <div className="space-y-2">
+                  {getArrayValue("approachPoints", [
+                    "Understanding your actual priorities",
+                    "Simplifying project comparison complexity",
+                    "Improving evaluation clarity",
+                    "Coordinating suitable opportunities",
+                    "Assisting with structured decision-making"
+                  ]).map((pt: any, idx: number) => (
+                    <div key={idx} className="flex items-center gap-2">
+                      <input
+                        type="text"
+                        value={typeof pt === "string" ? pt : pt.title || pt.text || ""}
+                        onChange={(e) => handleArrayItemChange("approachPoints", idx, "", e.target.value)}
+                        className="w-full h-9 px-3 bg-slate-50 border border-slate-200 text-xs rounded-lg font-semibold"
+                      />
+                      <button
+                        type="button"
+                        onClick={() => handleRemoveArrayItem("approachPoints", idx)}
+                        className="p-1.5 text-slate-400 hover:text-rose-500 rounded transition-colors cursor-pointer shrink-0"
+                      >
+                        <Trash2 size={14} />
+                      </button>
+                    </div>
+                  ))}
+                </div>
+              </div>
 
               <div className="md:col-span-2 space-y-4 pt-4 border-t border-slate-100">
                 <div className="flex items-center justify-between">
-                  <h4 className="text-xs font-black uppercase text-slate-700 tracking-wider">Service Cards</h4>
+                  <h4 className="text-xs font-black uppercase text-slate-700 tracking-wider">Service Cards (10 Cards)</h4>
                   <button
                     type="button"
-                    onClick={() => handleAddArrayItem("items", { title: "New Service", description: "Service details...", bullets: "Feature 1 | Feature 2 | Feature 3" })}
+                    onClick={() => handleAddArrayItem("items", { title: "New Service", subtitle: "Subtitle...", bullets: "Point 1 | Point 2 | Point 3" })}
                     className="px-3 py-1.5 bg-gold text-slate-900 rounded-lg text-[10px] font-black uppercase tracking-wider hover:bg-gold/90 transition-all cursor-pointer flex items-center gap-1"
                   >
                     <Plus size={12} /> Add Service Card
                   </button>
                 </div>
                 <div className="space-y-3">
-                  {getArrayValue("items").map((it: any, idx: number) => (
+                  {(() => {
+                    const defaults = [
+                      {
+                        title: "Residential Property\nIntelligence & Evaluation",
+                        subtitle: "Helping Families Evaluate Beyond\nJust Price & Location",
+                        bullets: "Structured requirement understanding | Project shortlisting assistance | Comparative evaluation support | Township ecosystem analysis | Site visit coordination support"
+                      },
+                      {
+                        title: "Commercial Property\nEvaluation & Advisory",
+                        subtitle: "Strategic Commercial Space\nEvaluation Assistance",
+                        bullets: "Commercial requirement understanding | Location & accessibility analysis | Project comparison support | Inventory coordination assistance | Scalability-oriented evaluation"
+                      },
+                      {
+                        title: "Guided Project\nShortlisting",
+                        subtitle: "Structured Alignment-Based\nRecommendations",
+                        bullets: "Alignment-based shortlisting | Lifestyle & connectivity compatibility | Future growth & investment potential | Vastu preferences consideration | Focused & relevant evaluation"
+                      },
+                      {
+                        title: "Comparative Project\nEvaluation Support",
+                        subtitle: "Simplifying Complex\nReal Estate Decisions",
+                        bullets: "Location & ecosystem evaluation | Connectivity & infrastructure analysis | Configuration & usability review | Investment outlook assessment | Objective comparison support"
+                      },
+                      {
+                        title: "Inventory Coordination\nAssistance",
+                        subtitle: "Helping Align Buyer Requirements\nwith Available Opportunities",
+                        bullets: "Configuration & floor availability | Orientation & inventory feasibility | Budget alignment support | Practical suitability coordination | Developer inventory coordination"
+                      },
+                      {
+                        title: "Strategic Transaction\nCoordination Support",
+                        subtitle: "Helping Simplify the Commercial\nEvaluation Process",
+                        bullets: "Payment flexibility opportunities | Transaction convenience support | Phased payment structures | Developer schemes & offers | Commercial feasibility assistance"
+                      },
+                      {
+                        title: "Vastu & Lifestyle-\nOriented Evaluation Support",
+                        subtitle: "Because Real Estate Decisions\nAre Also Personal Decisions",
+                        bullets: "Vastu alignment consideration | Orientation & natural lighting | Wellness-focused living evaluation | Township & community fit | Long-term lifestyle suitability"
+                      },
+                      {
+                        title: "Site Visit Coordination\nSupport",
+                        subtitle: "Guided Project Evaluation\nAssistance",
+                        bullets: "Guided site visits | Developer appointments | Project walkthrough scheduling | Evaluation sequencing | Comparative exploration support"
+                      },
+                      {
+                        title: "Technology-Assisted\nReal Estate Intelligence",
+                        subtitle: "Combining Structured Guidance\nwith Modern Workflows",
+                        bullets: "Project intelligence & insights | Structured evaluation workflows | Comparative analysis support | Tech-enabled recommendation | Practical coordination assistance"
+                      },
+                      {
+                        title: "Our Focus. Your Confidence.",
+                        subtitle: "Intelligent Evaluation.\nBetter Decisions.",
+                        bullets: "Improving evaluation clarity | Reducing confusion | Simplifying project comparison | Helping buyers make more informed decisions"
+                      }
+                    ];
+                    const raw = getArrayValue("items", defaults);
+                    const list = defaults.map((def, idx) => {
+                      const cur = raw[idx];
+                      if (!cur) return def;
+                      let b = cur.bullets;
+                      if (!b && Array.isArray(cur.points) && cur.points.length > 0) {
+                        b = cur.points.join(" | ");
+                      } else if (!b && cur.description) {
+                        b = cur.description;
+                      }
+                      return {
+                        title: cur.title || def.title,
+                        subtitle: cur.subtitle || def.subtitle,
+                        bullets: b !== undefined && b !== "" ? b : def.bullets
+                      };
+                    });
+                    if (raw.length > defaults.length) {
+                      for (let i = defaults.length; i < raw.length; i++) {
+                        const cur = raw[i];
+                        if (cur) {
+                          let b = cur.bullets;
+                          if (!b && Array.isArray(cur.points)) b = cur.points.join(" | ");
+                          else if (!b && cur.description) b = cur.description;
+                          list.push({ title: cur.title || "", subtitle: cur.subtitle || "", bullets: b || "" });
+                        }
+                      }
+                    }
+                    return list;
+                  })().map((it: any, idx: number) => (
                     <div key={idx} className="p-4 bg-slate-50 border border-slate-200/70 rounded-xl space-y-3 relative group">
                       <div className="flex items-center justify-between">
-                        <span className="text-[10px] font-black text-gold uppercase tracking-wider">Service #{idx + 1}</span>
+                        <span className="text-[10px] font-black text-gold uppercase tracking-wider">Service Card #{idx + 1}</span>
                         <button
                           type="button"
                           onClick={() => handleRemoveArrayItem("items", idx)}
@@ -3040,25 +3616,124 @@ function SectionsTab({ settings, loadData }: SectionsTabProps) {
                         </button>
                       </div>
                       <div className="space-y-2">
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+                          <div>
+                            <label className="text-[9px] font-black uppercase text-slate-400">Card Title</label>
+                            <input
+                              type="text"
+                              value={it.title || ""}
+                              onChange={(e) => handleArrayItemChange("items", idx, "title", e.target.value)}
+                              className="w-full h-9 px-3 bg-white border border-slate-200 text-xs rounded-lg font-semibold"
+                            />
+                          </div>
+                          <div>
+                            <label className="text-[9px] font-black uppercase text-slate-400">Subtitle</label>
+                            <input
+                              type="text"
+                              value={it.subtitle || ""}
+                              onChange={(e) => handleArrayItemChange("items", idx, "subtitle", e.target.value)}
+                              className="w-full h-9 px-3 bg-white border border-slate-200 text-xs rounded-lg font-semibold"
+                            />
+                          </div>
+                        </div>
+                        <div>
+                          <label className="text-[9px] font-black uppercase text-slate-400">Bullet Points (Separate with | )</label>
+                          <textarea
+                            rows={2}
+                            value={it.bullets || ""}
+                            onChange={(e) => handleArrayItemChange("items", idx, "bullets", e.target.value)}
+                            className="w-full p-2 bg-white border border-slate-200 text-xs rounded-lg font-semibold"
+                          />
+                        </div>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </div>
+
+              <div className="space-y-1.5 md:col-span-2">
+                <label className="text-[10px] font-black uppercase text-slate-400">Bottom Blue Card Heading *</label>
+                <input
+                  type="text"
+                  value={getFieldValue("blueStripHeading")}
+                  onChange={(e) => updateSectionField("blueStripHeading", e.target.value)}
+                  placeholder="Begin Your Guided Evaluation Journey"
+                  className="w-full h-11 px-4 bg-slate-50 border border-slate-200 text-sm rounded-xl outline-none focus:bg-white focus:border-gold font-semibold"
+                />
+              </div>
+              <div className="space-y-1.5 md:col-span-2">
+                <label className="text-[10px] font-black uppercase text-slate-400">Bottom Blue Card Subheading *</label>
+                <textarea
+                  rows={2}
+                  value={getFieldValue("blueStripSubheading")}
+                  onChange={(e) => updateSectionField("blueStripSubheading", e.target.value)}
+                  placeholder="Residential or Commercial — Evaluate Real Estate With Greater Clarity & Confidence"
+                  className="w-full p-3 bg-slate-50 border border-slate-200 text-xs rounded-xl outline-none focus:bg-white focus:border-gold font-semibold"
+                />
+              </div>
+
+              <div className="md:col-span-2 space-y-4 pt-4 border-t border-slate-100">
+                <div className="flex items-center justify-between">
+                  <h4 className="text-xs font-black uppercase text-slate-700 tracking-wider">Bottom Moving Marquee Cards (6 Cards)</h4>
+                  <button
+                    type="button"
+                    onClick={() => handleAddArrayItem("movingCards", { title: "Card Title", desc: "Card description..." })}
+                    className="px-3 py-1.5 bg-gold text-slate-900 rounded-lg text-[10px] font-black uppercase tracking-wider hover:bg-gold/90 transition-all cursor-pointer flex items-center gap-1"
+                  >
+                    <Plus size={12} /> Add Marquee Card
+                  </button>
+                </div>
+                <div className="space-y-3">
+                  {(() => {
+                    const defaults = [
+                      { title: "Buyer-Focused", desc: "Your goals come first." },
+                      { title: "Transparent", desc: "Honest guidance. No hidden agenda." },
+                      { title: "Data-Backed", desc: "Insights for smarter evaluation." },
+                      { title: "Structured Process", desc: "From clarity to confident decisions." },
+                      { title: "End-to-End Support", desc: "We're with you at every step." },
+                      { title: "Better Outcomes", desc: "Better properties. Better returns. Better life." }
+                    ];
+                    const raw = getArrayValue("movingCards", defaults);
+                    const list = defaults.map((def, idx) => {
+                      const cur = raw[idx];
+                      if (!cur) return def;
+                      return {
+                        title: cur.title || def.title,
+                        desc: cur.desc || def.desc
+                      };
+                    });
+                    if (raw.length > defaults.length) {
+                      for (let i = defaults.length; i < raw.length; i++) {
+                        const cur = raw[i];
+                        if (cur) list.push({ title: cur.title || "", desc: cur.desc || "" });
+                      }
+                    }
+                    return list;
+                  })().map((mc: any, idx: number) => (
+                    <div key={idx} className="p-3 bg-slate-50 border border-slate-200/70 rounded-xl space-y-2 relative group">
+                      <div className="flex items-center justify-between">
+                        <span className="text-[10px] font-black text-gold uppercase tracking-wider">Marquee Card #{idx + 1}</span>
+                        <button
+                          type="button"
+                          onClick={() => handleRemoveArrayItem("movingCards", idx)}
+                          className="p-1 text-slate-400 hover:text-rose-500 rounded transition-colors cursor-pointer"
+                        >
+                          <Trash2 size={14} />
+                        </button>
+                      </div>
+                      <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
                         <input
                           type="text"
-                          placeholder="Service Title"
-                          value={it.title || ""}
-                          onChange={(e) => handleArrayItemChange("items", idx, "title", e.target.value)}
+                          placeholder="Card Title"
+                          value={mc.title}
+                          onChange={(e) => handleArrayItemChange("movingCards", idx, "title", e.target.value)}
                           className="w-full h-9 px-3 bg-white border border-slate-200 text-xs rounded-lg font-semibold"
                         />
-                        <textarea
-                          rows={2}
-                          placeholder="Service Description"
-                          value={it.description || ""}
-                          onChange={(e) => handleArrayItemChange("items", idx, "description", e.target.value)}
-                          className="w-full p-2 bg-white border border-slate-200 text-xs rounded-lg font-semibold"
-                        />
                         <input
                           type="text"
-                          placeholder="Bullets (separated by | )"
-                          value={it.bullets || ""}
-                          onChange={(e) => handleArrayItemChange("items", idx, "bullets", e.target.value)}
+                          placeholder="Card Description"
+                          value={mc.desc}
+                          onChange={(e) => handleArrayItemChange("movingCards", idx, "desc", e.target.value)}
                           className="w-full h-9 px-3 bg-white border border-slate-200 text-xs rounded-lg font-semibold"
                         />
                       </div>
@@ -3117,54 +3792,339 @@ function SectionsTab({ settings, loadData }: SectionsTabProps) {
                 />
               </div>
 
-              <div className="md:col-span-2 space-y-4 pt-4 border-t border-slate-100">
+              {/* Real Estate Challenge Card */}
+              <div className="space-y-1.5 border-t border-slate-100 pt-4 md:col-span-2">
+                <label className="text-[10px] font-black uppercase text-slate-400">Challenge Card Title *</label>
+                <input
+                  type="text"
+                  value={getFieldValue("challengeTitle")}
+                  onChange={(e) => updateSectionField("challengeTitle", e.target.value)}
+                  placeholder="The Real Estate [gold]Challenge Today[/gold]"
+                  className="w-full h-11 px-4 bg-slate-50 border border-slate-200 text-sm rounded-xl outline-none focus:bg-white focus:border-gold font-semibold"
+                />
+              </div>
+              <div className="space-y-1.5 md:col-span-2">
+                <label className="text-[10px] font-black uppercase text-slate-400">Challenge Card Subtext *</label>
+                <input
+                  type="text"
+                  value={getFieldValue("challengeSubtext")}
+                  onChange={(e) => updateSectionField("challengeSubtext", e.target.value)}
+                  placeholder="Buyers spend months evaluating projects without complete clarity or alignment."
+                  className="w-full h-11 px-4 bg-slate-50 border border-slate-200 text-sm rounded-xl outline-none focus:bg-white focus:border-gold font-semibold"
+                />
+              </div>
+              <div className="space-y-1.5 md:col-span-2">
+                <label className="text-[10px] font-black uppercase text-slate-400">Challenge Card Bottom Banner *</label>
+                <textarea
+                  rows={2}
+                  value={getFieldValue("challengeBanner")}
+                  onChange={(e) => updateSectionField("challengeBanner", e.target.value)}
+                  placeholder="We turn confusion into [gold]clarity.[/gold] Information into [gold]decisions.[/gold]"
+                  className="w-full p-3 bg-slate-50 border border-slate-200 text-xs rounded-xl outline-none focus:bg-white focus:border-gold font-semibold"
+                />
+              </div>
+
+              <div className="md:col-span-2 space-y-4 pt-2">
                 <div className="flex items-center justify-between">
-                  <h4 className="text-xs font-black uppercase text-slate-700 tracking-wider">Stat Counter Badges</h4>
+                  <h4 className="text-xs font-black uppercase text-slate-700 tracking-wider">Challenge Points (6 Items)</h4>
                   <button
                     type="button"
-                    onClick={() => handleAddArrayItem("stats", { title: "Metric Title", value: "100+", subtitle: "Metric description" })}
+                    onClick={() => handleAddArrayItem("challengePoints", "New challenge point")}
                     className="px-3 py-1.5 bg-gold text-slate-900 rounded-lg text-[10px] font-black uppercase tracking-wider hover:bg-gold/90 transition-all cursor-pointer flex items-center gap-1"
                   >
-                    <Plus size={12} /> Add Stat
+                    <Plus size={12} /> Add Point
                   </button>
                 </div>
-                <div className="space-y-3">
-                  {getArrayValue("stats").map((st: any, idx: number) => (
-                    <div key={idx} className="p-4 bg-slate-50 border border-slate-200/70 rounded-xl space-y-3 relative group">
-                      <div className="flex items-center justify-between">
-                        <span className="text-[10px] font-black text-gold uppercase tracking-wider">Stat #{idx + 1}</span>
-                        <button
-                          type="button"
-                          onClick={() => handleRemoveArrayItem("stats", idx)}
-                          className="p-1 text-slate-400 hover:text-rose-500 rounded transition-colors cursor-pointer"
-                          title="Remove stat"
-                        >
-                          <Trash2 size={14} />
-                        </button>
-                      </div>
-                      <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
-                        <input
-                          type="text"
-                          placeholder="Stat Value (e.g. 150+)"
-                          value={st.value || ""}
-                          onChange={(e) => handleArrayItemChange("stats", idx, "value", e.target.value)}
-                          className="w-full h-9 px-3 bg-white border border-slate-200 text-xs rounded-lg font-semibold"
-                        />
-                        <input
-                          type="text"
-                          placeholder="Stat Label / Title"
-                          value={st.title || ""}
-                          onChange={(e) => handleArrayItemChange("stats", idx, "title", e.target.value)}
-                          className="w-full h-9 px-3 bg-white border border-slate-200 text-xs rounded-lg font-semibold"
-                        />
-                        <input
-                          type="text"
-                          placeholder="Subtitle"
-                          value={st.subtitle || ""}
-                          onChange={(e) => handleArrayItemChange("stats", idx, "subtitle", e.target.value)}
-                          className="w-full h-9 px-3 bg-white border border-slate-200 text-xs rounded-lg font-semibold"
-                        />
-                      </div>
+                <div className="space-y-2">
+                  {getArrayValue("challengePoints", [
+                    "Endless listings",
+                    "Conflicting opinions",
+                    "Aggressive sales approaches",
+                    "Incomplete information",
+                    "Inventory confusion",
+                    "Project comparison challenges"
+                  ]).map((pt: any, idx: number) => (
+                    <div key={idx} className="flex items-center gap-2">
+                      <input
+                        type="text"
+                        value={typeof pt === "string" ? pt : pt.title || pt.text || ""}
+                        onChange={(e) => handleArrayItemChange("challengePoints", idx, "", e.target.value)}
+                        className="w-full h-9 px-3 bg-slate-50 border border-slate-200 text-xs rounded-lg font-semibold"
+                      />
+                      <button
+                        type="button"
+                        onClick={() => handleRemoveArrayItem("challengePoints", idx)}
+                        className="p-1.5 text-slate-400 hover:text-rose-500 rounded transition-colors cursor-pointer shrink-0"
+                      >
+                        <Trash2 size={14} />
+                      </button>
+                    </div>
+                  ))}
+                </div>
+              </div>
+
+              {/* Our Approach Moving Circle */}
+              <div className="space-y-1.5 border-t border-slate-100 pt-4 md:col-span-2">
+                <label className="text-[10px] font-black uppercase text-slate-400">Approach Center Circle Title *</label>
+                <input
+                  type="text"
+                  value={getFieldValue("approachCircleTitle")}
+                  onChange={(e) => updateSectionField("approachCircleTitle", e.target.value)}
+                  placeholder="Our [gold]Approach[/gold]"
+                  className="w-full h-11 px-4 bg-slate-50 border border-slate-200 text-sm rounded-xl outline-none focus:bg-white focus:border-gold font-semibold"
+                />
+              </div>
+              <div className="space-y-1.5 md:col-span-2">
+                <label className="text-[10px] font-black uppercase text-slate-400">Approach Center Circle Subtitle *</label>
+                <textarea
+                  rows={2}
+                  value={getFieldValue("approachCircleSub")}
+                  onChange={(e) => updateSectionField("approachCircleSub", e.target.value)}
+                  placeholder="Structured.&#10;Objective.&#10;Buyer-First."
+                  className="w-full p-3 bg-slate-50 border border-slate-200 text-xs rounded-xl outline-none focus:bg-white focus:border-gold font-semibold"
+                />
+              </div>
+
+              <div className="md:col-span-2 space-y-4 pt-2">
+                <div className="flex items-center justify-between">
+                  <h4 className="text-xs font-black uppercase text-slate-700 tracking-wider">Approach Orbiting Cards (6 Cards)</h4>
+                  <button
+                    type="button"
+                    onClick={() => handleAddArrayItem("movingCircle", { title: "Card Title" })}
+                    className="px-3 py-1.5 bg-gold text-slate-900 rounded-lg text-[10px] font-black uppercase tracking-wider hover:bg-gold/90 transition-all cursor-pointer flex items-center gap-1"
+                  >
+                    <Plus size={12} /> Add Orbit Card
+                  </button>
+                </div>
+                <div className="space-y-2">
+                  {getArrayValue("movingCircle", [
+                    { title: "Guided Consultation" },
+                    { title: "Project Intelligence" },
+                    { title: "Structured Comparison" },
+                    { title: "Alignment-Based Recommendations" },
+                    { title: "Inventory Coordination" },
+                    { title: "Decision Support" }
+                  ]).map((mc: any, idx: number) => (
+                    <div key={idx} className="flex items-center gap-2">
+                      <input
+                        type="text"
+                        placeholder="Orbit Card Title"
+                        value={typeof mc === "string" ? mc : mc.title || mc.label || ""}
+                        onChange={(e) => handleArrayItemChange("movingCircle", idx, "title", e.target.value)}
+                        className="w-full h-9 px-3 bg-slate-50 border border-slate-200 text-xs rounded-lg font-semibold"
+                      />
+                      <button
+                        type="button"
+                        onClick={() => handleRemoveArrayItem("movingCircle", idx)}
+                        className="p-1.5 text-slate-400 hover:text-rose-500 rounded transition-colors cursor-pointer shrink-0"
+                      >
+                        <Trash2 size={14} />
+                      </button>
+                    </div>
+                  ))}
+                </div>
+              </div>
+
+              {/* Structured Evaluation Experience */}
+              <div className="space-y-1.5 border-t border-slate-100 pt-4 md:col-span-2">
+                <label className="text-[10px] font-black uppercase text-slate-400">Structured Experience Card Title *</label>
+                <input
+                  type="text"
+                  value={getFieldValue("structuredTitle")}
+                  onChange={(e) => updateSectionField("structuredTitle", e.target.value)}
+                  placeholder="A More Structured Real Estate Evaluation Experience"
+                  className="w-full h-11 px-4 bg-slate-50 border border-slate-200 text-sm rounded-xl outline-none focus:bg-white focus:border-gold font-semibold"
+                />
+              </div>
+
+              <div className="md:col-span-2 space-y-4 pt-2">
+                <div className="flex items-center justify-between">
+                  <h4 className="text-xs font-black uppercase text-slate-700 tracking-wider">Structured Features (5 Items)</h4>
+                  <button
+                    type="button"
+                    onClick={() => handleAddArrayItem("structuredItems", { label: "Feature Label" })}
+                    className="px-3 py-1.5 bg-gold text-slate-900 rounded-lg text-[10px] font-black uppercase tracking-wider hover:bg-gold/90 transition-all cursor-pointer flex items-center gap-1"
+                  >
+                    <Plus size={12} /> Add Feature
+                  </button>
+                </div>
+                <div className="space-y-2">
+                  {getArrayValue("structuredItems", [
+                    { label: "Evaluation Frameworks" },
+                    { label: "Comparative Analysis" },
+                    { label: "Technology Workflows" },
+                    { label: "Multi-Developer Access" },
+                    { label: "Human Guidance" }
+                  ]).map((st: any, idx: number) => (
+                    <div key={idx} className="flex items-center gap-2">
+                      <input
+                        type="text"
+                        placeholder="Feature Label"
+                        value={typeof st === "string" ? st : st.label || st.title || ""}
+                        onChange={(e) => handleArrayItemChange("structuredItems", idx, "label", e.target.value)}
+                        className="w-full h-9 px-3 bg-slate-50 border border-slate-200 text-xs rounded-lg font-semibold"
+                      />
+                      <button
+                        type="button"
+                        onClick={() => handleRemoveArrayItem("structuredItems", idx)}
+                        className="p-1.5 text-slate-400 hover:text-rose-500 rounded transition-colors cursor-pointer shrink-0"
+                      >
+                        <Trash2 size={14} />
+                      </button>
+                    </div>
+                  ))}
+                </div>
+              </div>
+
+              {/* Multi-Developer Ecosystem */}
+              <div className="space-y-1.5 border-t border-slate-100 pt-4 md:col-span-2">
+                <label className="text-[10px] font-black uppercase text-slate-400">Ecosystem Card Title *</label>
+                <input
+                  type="text"
+                  value={getFieldValue("ecosystemTitle")}
+                  onChange={(e) => updateSectionField("ecosystemTitle", e.target.value)}
+                  placeholder="Multi-Developer Ecosystem"
+                  className="w-full h-11 px-4 bg-slate-50 border border-slate-200 text-sm rounded-xl outline-none focus:bg-white focus:border-gold font-semibold"
+                />
+              </div>
+
+              <div className="md:col-span-2 space-y-4 pt-2">
+                <div className="flex items-center justify-between">
+                  <h4 className="text-xs font-black uppercase text-slate-700 tracking-wider">Ecosystem Locations (4 Items)</h4>
+                  <button
+                    type="button"
+                    onClick={() => handleAddArrayItem("ecosystemItems", { label: "Location Name" })}
+                    className="px-3 py-1.5 bg-gold text-slate-900 rounded-lg text-[10px] font-black uppercase tracking-wider hover:bg-gold/90 transition-all cursor-pointer flex items-center gap-1"
+                  >
+                    <Plus size={12} /> Add Location
+                  </button>
+                </div>
+                <div className="space-y-2">
+                  {getArrayValue("ecosystemItems", [
+                    { label: "Mumbai" },
+                    { label: "Thane" },
+                    { label: "Navi Mumbai" },
+                    { label: "Growth Corridors" }
+                  ]).map((ec: any, idx: number) => (
+                    <div key={idx} className="flex items-center gap-2">
+                      <input
+                        type="text"
+                        placeholder="Location Name"
+                        value={typeof ec === "string" ? ec : ec.label || ec.title || ""}
+                        onChange={(e) => handleArrayItemChange("ecosystemItems", idx, "label", e.target.value)}
+                        className="w-full h-9 px-3 bg-slate-50 border border-slate-200 text-xs rounded-lg font-semibold"
+                      />
+                      <button
+                        type="button"
+                        onClick={() => handleRemoveArrayItem("ecosystemItems", idx)}
+                        className="p-1.5 text-slate-400 hover:text-rose-500 rounded transition-colors cursor-pointer shrink-0"
+                      >
+                        <Trash2 size={14} />
+                      </button>
+                    </div>
+                  ))}
+                </div>
+              </div>
+
+              {/* Our Vision Card */}
+              <div className="space-y-1.5 border-t border-slate-100 pt-4 md:col-span-2">
+                <label className="text-[10px] font-black uppercase text-slate-400">Our Vision Card Title *</label>
+                <input
+                  type="text"
+                  value={getFieldValue("visionTitle")}
+                  onChange={(e) => updateSectionField("visionTitle", e.target.value)}
+                  placeholder="Our Vision"
+                  className="w-full h-11 px-4 bg-slate-50 border border-slate-200 text-sm rounded-xl outline-none focus:bg-white focus:border-gold font-semibold"
+                />
+              </div>
+              <div className="space-y-1.5 md:col-span-2">
+                <label className="text-[10px] font-black uppercase text-slate-400">Our Vision Main Text *</label>
+                <textarea
+                  rows={2}
+                  value={getFieldValue("visionText")}
+                  onChange={(e) => updateSectionField("visionText", e.target.value)}
+                  placeholder="Smarter evaluation. Better decisions. [gold]Brighter futures.[/gold]"
+                  className="w-full p-3 bg-slate-50 border border-slate-200 text-xs rounded-xl outline-none focus:bg-white focus:border-gold font-semibold"
+                />
+              </div>
+              <div className="space-y-1.5 md:col-span-2">
+                <label className="text-[10px] font-black uppercase text-slate-400">Our Vision Sub Text *</label>
+                <input
+                  type="text"
+                  value={getFieldValue("visionSub")}
+                  onChange={(e) => updateSectionField("visionSub", e.target.value)}
+                  placeholder="Helping you find value with confidence."
+                  className="w-full h-11 px-4 bg-slate-50 border border-slate-200 text-sm rounded-xl outline-none focus:bg-white focus:border-gold font-semibold"
+                />
+              </div>
+
+              {/* Bottom Technology Ribbon & Focus Card */}
+              <div className="space-y-1.5 border-t border-slate-100 pt-4 md:col-span-2">
+                <label className="text-[10px] font-black uppercase text-slate-400">Technology Ribbon Heading *</label>
+                <input
+                  type="text"
+                  value={getFieldValue("techHeading")}
+                  onChange={(e) => updateSectionField("techHeading", e.target.value)}
+                  placeholder="Technology With [gold]Human Guidance[/gold]"
+                  className="w-full h-11 px-4 bg-slate-50 border border-slate-200 text-sm rounded-xl outline-none focus:bg-white focus:border-gold font-semibold"
+                />
+              </div>
+              <div className="space-y-1.5 md:col-span-2">
+                <label className="text-[10px] font-black uppercase text-slate-400">Technology Ribbon Description *</label>
+                <textarea
+                  rows={2}
+                  value={getFieldValue("techDesc")}
+                  onChange={(e) => updateSectionField("techDesc", e.target.value)}
+                  placeholder="Digital tools and intelligence systems to simplify evaluation — combined with expert human support."
+                  className="w-full p-3 bg-slate-50 border border-slate-200 text-xs rounded-xl outline-none focus:bg-white focus:border-gold font-semibold"
+                />
+              </div>
+              <div className="space-y-1.5 md:col-span-2">
+                <label className="text-[10px] font-black uppercase text-slate-400">Right Focus Banner Text *</label>
+                <textarea
+                  rows={2}
+                  value={getFieldValue("focusText")}
+                  onChange={(e) => updateSectionField("focusText", e.target.value)}
+                  placeholder="We focus on [gold]you[/gold]. Your needs. Your goals. [gold]Your future.[/gold]"
+                  className="w-full p-3 bg-slate-50 border border-slate-200 text-xs rounded-xl outline-none focus:bg-white focus:border-gold font-semibold"
+                />
+              </div>
+
+              <div className="md:col-span-2 space-y-4 pt-2">
+                <div className="flex items-center justify-between">
+                  <h4 className="text-xs font-black uppercase text-slate-700 tracking-wider">Technology Tools (6 Items)</h4>
+                  <button
+                    type="button"
+                    onClick={() => handleAddArrayItem("techTools", { label: "Tool Name" })}
+                    className="px-3 py-1.5 bg-gold text-slate-900 rounded-lg text-[10px] font-black uppercase tracking-wider hover:bg-gold/90 transition-all cursor-pointer flex items-center gap-1"
+                  >
+                    <Plus size={12} /> Add Tool
+                  </button>
+                </div>
+                <div className="space-y-2">
+                  {getArrayValue("techTools", [
+                    { label: "Structured Digital Workflows" },
+                    { label: "Guided WhatsApp Interactions" },
+                    { label: "Project Intelligence Systems" },
+                    { label: "Expert Guidance at Every Step" },
+                    { label: "Developer Coordination" },
+                    { label: "Practical Decision Assistance" }
+                  ]).map((tt: any, idx: number) => (
+                    <div key={idx} className="flex items-center gap-2">
+                      <input
+                        type="text"
+                        placeholder="Tool Name"
+                        value={typeof tt === "string" ? tt : tt.label || tt.title || ""}
+                        onChange={(e) => handleArrayItemChange("techTools", idx, "label", e.target.value)}
+                        className="w-full h-9 px-3 bg-slate-50 border border-slate-200 text-xs rounded-lg font-semibold"
+                      />
+                      <button
+                        type="button"
+                        onClick={() => handleRemoveArrayItem("techTools", idx)}
+                        className="p-1.5 text-slate-400 hover:text-rose-500 rounded transition-colors cursor-pointer shrink-0"
+                      >
+                        <Trash2 size={14} />
+                      </button>
                     </div>
                   ))}
                 </div>
@@ -3247,6 +4207,108 @@ function SectionsTab({ settings, loadData }: SectionsTabProps) {
                   ))}
                 </div>
               </div>
+
+              {/* Bottom Blue Strip Outcomes Card Controls */}
+              <div className="space-y-1.5 border-t border-slate-100 pt-4 md:col-span-2">
+                <label className="text-[10px] font-black uppercase text-slate-400">Blue Card Tagline Line 1 *</label>
+                <input
+                  type="text"
+                  value={getFieldValue("blueStripTagline1")}
+                  onChange={(e) => updateSectionField("blueStripTagline1", e.target.value)}
+                  placeholder="We Don't Just Show Properties."
+                  className="w-full h-11 px-4 bg-slate-50 border border-slate-200 text-sm rounded-xl outline-none focus:bg-white focus:border-gold font-semibold"
+                />
+              </div>
+              <div className="space-y-1.5 md:col-span-2">
+                <label className="text-[10px] font-black uppercase text-slate-400">Blue Card Tagline Line 2 *</label>
+                <input
+                  type="text"
+                  value={getFieldValue("blueStripTagline2")}
+                  onChange={(e) => updateSectionField("blueStripTagline2", e.target.value)}
+                  placeholder="We Help You Make the Right Decision."
+                  className="w-full h-11 px-4 bg-slate-50 border border-slate-200 text-sm rounded-xl outline-none focus:bg-white focus:border-gold font-semibold"
+                />
+              </div>
+
+              <div className="md:col-span-2 space-y-4 pt-2">
+                <div className="flex items-center justify-between">
+                  <h4 className="text-xs font-black uppercase text-slate-700 tracking-wider">Bottom Blue Card Outcome Cards (3 Cards)</h4>
+                  <button
+                    type="button"
+                    onClick={() => handleAddArrayItem("blueStripOutcomes", { title: "Title", desc: "Description..." })}
+                    className="px-3 py-1.5 bg-gold text-slate-900 rounded-lg text-[10px] font-black uppercase tracking-wider hover:bg-gold/90 transition-all cursor-pointer flex items-center gap-1"
+                  >
+                    <Plus size={12} /> Add Outcome
+                  </button>
+                </div>
+                <div className="space-y-3">
+                  {getArrayValue("blueStripOutcomes", [
+                    { title: "Better Clarity", desc: "See the full picture." },
+                    { title: "Greater Confidence", desc: "Decide with conviction." },
+                    { title: "Lasting Satisfaction", desc: "Invest in what's right for you." }
+                  ]).map((oc: any, idx: number) => (
+                    <div key={idx} className="p-3 bg-slate-50 border border-slate-200/70 rounded-xl space-y-2 relative group">
+                      <div className="flex items-center justify-between">
+                        <span className="text-[10px] font-black text-gold uppercase tracking-wider">Outcome #{idx + 1}</span>
+                        <button
+                          type="button"
+                          onClick={() => handleRemoveArrayItem("blueStripOutcomes", idx)}
+                          className="p-1 text-slate-400 hover:text-rose-500 rounded transition-colors cursor-pointer"
+                        >
+                          <Trash2 size={14} />
+                        </button>
+                      </div>
+                      <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+                        <input
+                          type="text"
+                          placeholder="Outcome Title"
+                          value={oc.title || ""}
+                          onChange={(e) => handleArrayItemChange("blueStripOutcomes", idx, "title", e.target.value)}
+                          className="w-full h-9 px-3 bg-white border border-slate-200 text-xs rounded-lg font-semibold"
+                        />
+                        <input
+                          type="text"
+                          placeholder="Outcome Description"
+                          value={oc.desc || ""}
+                          onChange={(e) => handleArrayItemChange("blueStripOutcomes", idx, "desc", e.target.value)}
+                          className="w-full h-9 px-3 bg-white border border-slate-200 text-xs rounded-lg font-semibold"
+                        />
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </div>
+
+              <div className="space-y-1.5 md:col-span-2 pt-2">
+                <label className="text-[10px] font-black uppercase text-slate-400">Guided Journey Title *</label>
+                <input
+                  type="text"
+                  value={getFieldValue("blueStripJourneyTitle")}
+                  onChange={(e) => updateSectionField("blueStripJourneyTitle", e.target.value)}
+                  placeholder="Guided Journey"
+                  className="w-full h-11 px-4 bg-slate-50 border border-slate-200 text-sm rounded-xl outline-none focus:bg-white focus:border-gold font-semibold"
+                />
+              </div>
+              <div className="space-y-1.5 md:col-span-2">
+                <label className="text-[10px] font-black uppercase text-slate-400">Guided Journey Description *</label>
+                <input
+                  type="text"
+                  value={getFieldValue("blueStripJourneyDesc")}
+                  onChange={(e) => updateSectionField("blueStripJourneyDesc", e.target.value)}
+                  placeholder="From first call to final decision."
+                  className="w-full h-11 px-4 bg-slate-50 border border-slate-200 text-sm rounded-xl outline-none focus:bg-white focus:border-gold font-semibold"
+                />
+              </div>
+              <div className="space-y-1.5 md:col-span-2">
+                <label className="text-[10px] font-black uppercase text-slate-400">Bottom Blue Card CTA Text *</label>
+                <textarea
+                  rows={2}
+                  value={getFieldValue("blueStripCtaText")}
+                  onChange={(e) => updateSectionField("blueStripCtaText", e.target.value)}
+                  placeholder="Let's make your next property decision your [gold]best decision.[/gold]"
+                  className="w-full p-3 bg-slate-50 border border-slate-200 text-xs rounded-xl outline-none focus:bg-white focus:border-gold font-semibold"
+                />
+              </div>
             </>
           )}
 
@@ -3268,6 +4330,152 @@ function SectionsTab({ settings, loadData }: SectionsTabProps) {
                   value={getFieldValue("description")}
                   onChange={(e) => updateSectionField("description", e.target.value)}
                   className="w-full p-3 bg-slate-50 border border-slate-200 text-xs rounded-xl outline-none focus:bg-white focus:border-gold font-semibold leading-relaxed"
+                />
+              </div>
+
+              {/* Center Hub Subtitle */}
+              <div className="space-y-1.5 md:col-span-2">
+                <label className="text-[10px] font-black uppercase text-slate-400">Center Hub Subtitle *</label>
+                <textarea
+                  rows={2}
+                  value={getFieldValue("centerSubtitle")}
+                  onChange={(e) => updateSectionField("centerSubtitle", e.target.value)}
+                  placeholder="INTELLIGENCE.&#10;EVALUATION.&#10;BETTER DECISIONS."
+                  className="w-full p-3 bg-slate-50 border border-slate-200 text-xs rounded-xl outline-none focus:bg-white focus:border-gold font-semibold"
+                />
+              </div>
+
+              {/* 8 Orbiting Spoke Cards */}
+              <div className="md:col-span-2 space-y-4 pt-2 border-t border-slate-100">
+                <div className="flex items-center justify-between">
+                  <h4 className="text-xs font-black uppercase text-slate-700 tracking-wider">Moving Circle Spoke Cards (8 Cards)</h4>
+                  <button
+                    type="button"
+                    onClick={() => handleAddArrayItem("spokes", { label: "NEW SPOKE CARD" })}
+                    className="px-3 py-1.5 bg-gold text-slate-900 rounded-lg text-[10px] font-black uppercase tracking-wider hover:bg-gold/90 transition-all cursor-pointer flex items-center gap-1"
+                  >
+                    <Plus size={12} /> Add Spoke
+                  </button>
+                </div>
+                <div className="space-y-2">
+                  {getArrayValue("spokes", [
+                    { label: "STRONG PARTNERSHIPS" },
+                    { label: "TRUSTED RELATIONSHIPS" },
+                    { label: "STRUCTURED COORDINATION" },
+                    { label: "INFORMED DECISIONS" },
+                    { label: "BUYER FIRST ALIGNMENT" },
+                    { label: "OPPORTUNITY CLARITY" },
+                    { label: "BETTER PROJECT EVALUATION" },
+                    { label: "LEADING DEVELOPERS" }
+                  ]).map((sp: any, idx: number) => (
+                    <div key={idx} className="flex items-center gap-2">
+                      <input
+                        type="text"
+                        placeholder="Spoke Card Title"
+                        value={typeof sp === "string" ? sp : sp.label || sp.title || ""}
+                        onChange={(e) => handleArrayItemChange("spokes", idx, "label", e.target.value)}
+                        className="w-full h-9 px-3 bg-slate-50 border border-slate-200 text-xs rounded-lg font-semibold"
+                      />
+                      <button
+                        type="button"
+                        onClick={() => handleRemoveArrayItem("spokes", idx)}
+                        className="p-1.5 text-slate-400 hover:text-rose-500 rounded transition-colors cursor-pointer shrink-0"
+                      >
+                        <Trash2 size={14} />
+                      </button>
+                    </div>
+                  ))}
+                </div>
+              </div>
+
+              {/* Developer & Channel Partner Associations Heading */}
+              <div className="space-y-1.5 border-t border-slate-100 pt-4 md:col-span-2">
+                <label className="text-[10px] font-black uppercase text-slate-400">Associations Section Heading *</label>
+                <input
+                  type="text"
+                  value={getFieldValue("associationsHeading")}
+                  onChange={(e) => updateSectionField("associationsHeading", e.target.value)}
+                  placeholder="Developer & Channel Partner Associations"
+                  className="w-full h-11 px-4 bg-slate-50 border border-slate-200 text-sm rounded-xl outline-none focus:bg-white focus:border-gold font-semibold"
+                />
+              </div>
+
+              {/* 10 Moving Developer Cards */}
+              <div className="md:col-span-2 space-y-4 pt-2">
+                <div className="flex items-center justify-between">
+                  <h4 className="text-xs font-black uppercase text-slate-700 tracking-wider">Developer Marquee Cards (10 Cards)</h4>
+                  <button
+                    type="button"
+                    onClick={() => handleAddArrayItem("developers", { name: "Developer Name" })}
+                    className="px-3 py-1.5 bg-gold text-slate-900 rounded-lg text-[10px] font-black uppercase tracking-wider hover:bg-gold/90 transition-all cursor-pointer flex items-center gap-1"
+                  >
+                    <Plus size={12} /> Add Developer
+                  </button>
+                </div>
+                <div className="space-y-2">
+                  {getArrayValue("developers", [
+                    { name: "Raymond Realty" },
+                    { name: "Hiranandani" },
+                    { name: "Lodha" },
+                    { name: "Kalpataru" },
+                    { name: "Godrej Properties" },
+                    { name: "Oberoi Realty" },
+                    { name: "Piramal Realty" },
+                    { name: "Runwal" },
+                    { name: "Rustomjee" },
+                    { name: "Dosti Realty" }
+                  ]).map((dev: any, idx: number) => (
+                    <div key={idx} className="flex items-center gap-2">
+                      <input
+                        type="text"
+                        placeholder="Developer Name"
+                        value={typeof dev === "string" ? dev : dev.name || dev.title || ""}
+                        onChange={(e) => handleArrayItemChange("developers", idx, "name", e.target.value)}
+                        className="w-full h-9 px-3 bg-slate-50 border border-slate-200 text-xs rounded-lg font-semibold"
+                      />
+                      <button
+                        type="button"
+                        onClick={() => handleRemoveArrayItem("developers", idx)}
+                        className="p-1.5 text-slate-400 hover:text-rose-500 rounded transition-colors cursor-pointer shrink-0"
+                      >
+                        <Trash2 size={14} />
+                      </button>
+                    </div>
+                  ))}
+                </div>
+              </div>
+
+              {/* Bottom Blue Card Controls */}
+              <div className="space-y-1.5 border-t border-slate-100 pt-4 md:col-span-2">
+                <label className="text-[10px] font-black uppercase text-slate-400">Bottom Blue Card Heading *</label>
+                <input
+                  type="text"
+                  value={getFieldValue("blueStripHeading")}
+                  onChange={(e) => updateSectionField("blueStripHeading", e.target.value)}
+                  placeholder="Access to Multiple Developers. Guidance Focused on Your Requirements."
+                  className="w-full h-11 px-4 bg-slate-50 border border-slate-200 text-sm rounded-xl outline-none focus:bg-white focus:border-gold font-semibold"
+                />
+              </div>
+              <div className="space-y-1.5 md:col-span-2">
+                <label className="text-[10px] font-black uppercase text-slate-400">Bottom Blue Card Subheading *</label>
+                <textarea
+                  rows={2}
+                  value={getFieldValue("blueStripSubheading")}
+                  onChange={(e) => updateSectionField("blueStripSubheading", e.target.value)}
+                  placeholder="PropertyWorks helps clients evaluate opportunities across multiple developer ecosystems through structured comparison and guided advisory support."
+                  className="w-full p-3 bg-slate-50 border border-slate-200 text-xs rounded-xl outline-none focus:bg-white focus:border-gold font-semibold"
+                />
+              </div>
+
+              {/* Bottom Gray Disclaimer Card */}
+              <div className="space-y-1.5 border-t border-slate-100 pt-4 md:col-span-2">
+                <label className="text-[10px] font-black uppercase text-slate-400">Bottom Gray Disclaimer Text *</label>
+                <textarea
+                  rows={2}
+                  value={getFieldValue("disclaimer")}
+                  onChange={(e) => updateSectionField("disclaimer", e.target.value)}
+                  placeholder="Developer names and logos are used solely to represent the broader project ecosystem and do not imply partnerships or endorsements."
+                  className="w-full p-3 bg-slate-50 border border-slate-200 text-xs rounded-xl outline-none focus:bg-white focus:border-gold font-semibold"
                 />
               </div>
             </>
@@ -3306,7 +4514,11 @@ function SectionsTab({ settings, loadData }: SectionsTabProps) {
                   </button>
                 </div>
                 <div className="space-y-3">
-                  {getArrayValue("pillars").map((pil: any, idx: number) => (
+                  {getArrayValue("pillars", [
+                    { title: "Multi-Developer Coverage", desc: "Compare projects across top developers neutrally" },
+                    { title: "Objective Frameworks", desc: "Evaluation based on location, pricing & ROI" },
+                    { title: "Buyer-Aligned Advice", desc: "Recommendations based purely on your needs" }
+                  ]).map((pil: any, idx: number) => (
                     <div key={idx} className="p-4 bg-slate-50 border border-slate-200/70 rounded-xl space-y-3 relative group">
                       <div className="flex items-center justify-between">
                         <span className="text-[10px] font-black text-gold uppercase tracking-wider">Pillar #{idx + 1}</span>
@@ -3338,6 +4550,156 @@ function SectionsTab({ settings, loadData }: SectionsTabProps) {
                     </div>
                   ))}
                 </div>
+              </div>
+
+              {/* Center Top Title & Subheading */}
+              <div className="space-y-1.5 border-t border-slate-100 pt-4 md:col-span-2">
+                <label className="text-[10px] font-black uppercase text-slate-400">Center Section Title *</label>
+                <input
+                  type="text"
+                  value={getFieldValue("centerHeading")}
+                  onChange={(e) => updateSectionField("centerHeading", e.target.value)}
+                  placeholder="A Wide Network. [gold]One Trusted Partner.[/gold]"
+                  className="w-full h-11 px-4 bg-slate-50 border border-slate-200 text-sm rounded-xl outline-none focus:bg-white focus:border-gold font-semibold"
+                />
+              </div>
+              <div className="space-y-1.5 md:col-span-2">
+                <label className="text-[10px] font-black uppercase text-slate-400">Center Section Subtitle *</label>
+                <input
+                  type="text"
+                  value={getFieldValue("centerSubheading")}
+                  onChange={(e) => updateSectionField("centerSubheading", e.target.value)}
+                  placeholder="Access to top developers. Evaluated through one intelligent framework."
+                  className="w-full h-11 px-4 bg-slate-50 border border-slate-200 text-sm rounded-xl outline-none focus:bg-white focus:border-gold font-semibold"
+                />
+              </div>
+
+              {/* YOU & SHORTLISTED Card Subtitles */}
+              <div className="space-y-1.5 md:col-span-2">
+                <label className="text-[10px] font-black uppercase text-slate-400">YOU Card Subtitle *</label>
+                <input
+                  type="text"
+                  value={getFieldValue("youSubtitle")}
+                  onChange={(e) => updateSectionField("youSubtitle", e.target.value)}
+                  placeholder="Your Goals & Priorities"
+                  className="w-full h-11 px-4 bg-slate-50 border border-slate-200 text-sm rounded-xl outline-none focus:bg-white focus:border-gold font-semibold"
+                />
+              </div>
+              <div className="space-y-1.5 md:col-span-2">
+                <label className="text-[10px] font-black uppercase text-slate-400">SHORTLISTED Card Subtitle *</label>
+                <input
+                  type="text"
+                  value={getFieldValue("shortlistedSubtitle")}
+                  onChange={(e) => updateSectionField("shortlistedSubtitle", e.target.value)}
+                  placeholder="Aligned Opportunities"
+                  className="w-full h-11 px-4 bg-slate-50 border border-slate-200 text-sm rounded-xl outline-none focus:bg-white focus:border-gold font-semibold"
+                />
+              </div>
+
+              {/* Center Diamond Hub Text */}
+              <div className="space-y-1.5 md:col-span-2">
+                <label className="text-[10px] font-black uppercase text-slate-400">Diamond Hub Badge Text *</label>
+                <input
+                  type="text"
+                  value={getFieldValue("hubBadge")}
+                  onChange={(e) => updateSectionField("hubBadge", e.target.value)}
+                  placeholder="Independent Evaluation"
+                  className="w-full h-11 px-4 bg-slate-50 border border-slate-200 text-sm rounded-xl outline-none focus:bg-white focus:border-gold font-semibold"
+                />
+              </div>
+              <div className="space-y-1.5 md:col-span-2">
+                <label className="text-[10px] font-black uppercase text-slate-400">Diamond Hub Subtext *</label>
+                <input
+                  type="text"
+                  value={getFieldValue("hubSubtext")}
+                  onChange={(e) => updateSectionField("hubSubtext", e.target.value)}
+                  placeholder="Intelligent Comparison • Informed Decisions"
+                  className="w-full h-11 px-4 bg-slate-50 border border-slate-200 text-sm rounded-xl outline-none focus:bg-white focus:border-gold font-semibold"
+                />
+              </div>
+
+              {/* No Bias Only Clarity Card */}
+              <div className="space-y-1.5 border-t border-slate-100 pt-4 md:col-span-2">
+                <label className="text-[10px] font-black uppercase text-slate-400">No Bias Card Title *</label>
+                <input
+                  type="text"
+                  value={getFieldValue("noBiasTitle")}
+                  onChange={(e) => updateSectionField("noBiasTitle", e.target.value)}
+                  placeholder="No Bias. [gold]Only Clarity.[/gold]"
+                  className="w-full h-11 px-4 bg-slate-50 border border-slate-200 text-sm rounded-xl outline-none focus:bg-white focus:border-gold font-semibold"
+                />
+              </div>
+
+              <div className="md:col-span-2 space-y-4 pt-2">
+                <div className="flex items-center justify-between">
+                  <h4 className="text-xs font-black uppercase text-slate-700 tracking-wider">No Bias Points (4 Items)</h4>
+                  <button
+                    type="button"
+                    onClick={() => handleAddArrayItem("noBiasPoints", "New Feature Point")}
+                    className="px-3 py-1.5 bg-gold text-slate-900 rounded-lg text-[10px] font-black uppercase tracking-wider hover:bg-gold/90 transition-all cursor-pointer flex items-center gap-1"
+                  >
+                    <Plus size={12} /> Add Point
+                  </button>
+                </div>
+                <div className="space-y-2">
+                  {getArrayValue("noBiasPoints", [
+                    "Market-wide Access",
+                    "Transparent Evaluation",
+                    "Unbiased Shortlisting",
+                    "Buyer-Centric Guidance"
+                  ]).map((pt: any, idx: number) => (
+                    <div key={idx} className="flex items-center gap-2">
+                      <input
+                        type="text"
+                        placeholder="Feature Point"
+                        value={typeof pt === "string" ? pt : pt.title || pt.label || ""}
+                        onChange={(e) => handleArrayItemChange("noBiasPoints", idx, "", e.target.value)}
+                        className="w-full h-9 px-3 bg-slate-50 border border-slate-200 text-xs rounded-lg font-semibold"
+                      />
+                      <button
+                        type="button"
+                        onClick={() => handleRemoveArrayItem("noBiasPoints", idx)}
+                        className="p-1.5 text-slate-400 hover:text-rose-500 rounded transition-colors cursor-pointer shrink-0"
+                      >
+                        <Trash2 size={14} />
+                      </button>
+                    </div>
+                  ))}
+                </div>
+              </div>
+
+              {/* Bottom Banner Row Cards */}
+              <div className="space-y-1.5 border-t border-slate-100 pt-4 md:col-span-2">
+                <label className="text-[10px] font-black uppercase text-slate-400">Bottom Blue Banner Card 1 Text *</label>
+                <textarea
+                  rows={2}
+                  value={getFieldValue("bottomCard1Text")}
+                  onChange={(e) => updateSectionField("bottomCard1Text", e.target.value)}
+                  placeholder="We bring the entire market to you. You make the right choice with [gold]confidence.[/gold]"
+                  className="w-full p-3 bg-slate-50 border border-slate-200 text-xs rounded-xl outline-none focus:bg-white focus:border-gold font-semibold"
+                />
+              </div>
+              <div className="space-y-1.5 md:col-span-2">
+                <label className="text-[10px] font-black uppercase text-slate-400">Bottom Blue Banner Card 2 Text *</label>
+                <textarea
+                  rows={2}
+                  value={getFieldValue("bottomCard2Text")}
+                  onChange={(e) => updateSectionField("bottomCard2Text", e.target.value)}
+                  placeholder="More options. Better insights. [gold]Stronger decisions.[/gold]"
+                  className="w-full p-3 bg-slate-50 border border-slate-200 text-xs rounded-xl outline-none focus:bg-white focus:border-gold font-semibold"
+                />
+              </div>
+
+              {/* Bottom Gray Disclaimer Card */}
+              <div className="space-y-1.5 border-t border-slate-100 pt-4 md:col-span-2">
+                <label className="text-[10px] font-black uppercase text-slate-400">Bottom Gray Disclaimer Text *</label>
+                <textarea
+                  rows={2}
+                  value={getFieldValue("disclaimer")}
+                  onChange={(e) => updateSectionField("disclaimer", e.target.value)}
+                  placeholder="Developer names and logos are used solely to represent the broader project ecosystem and do not imply partnerships or endorsements."
+                  className="w-full p-3 bg-slate-50 border border-slate-200 text-xs rounded-xl outline-none focus:bg-white focus:border-gold font-semibold"
+                />
               </div>
             </>
           )}
@@ -3414,7 +4776,10 @@ function SectionsTab({ settings, loadData }: SectionsTabProps) {
                   </button>
                 </div>
                 <div className="space-y-3">
-                  {getArrayValue("features").map((ft: any, idx: number) => (
+                  {getArrayValue("features", [
+                    { title: "Digital Workflows", desc: "Digital tools streamline evaluation, comparisons, and scheduling." },
+                    { title: "Human Guidance", desc: "Expert advisors provide local insights, objective comparisons, and trusted advice lead to confident outcomes." }
+                  ]).map((ft: any, idx: number) => (
                     <div key={idx} className="p-4 bg-slate-50 border border-slate-200/70 rounded-xl space-y-3 relative group">
                       <div className="flex items-center justify-between">
                         <span className="text-[10px] font-black text-gold uppercase tracking-wider">Feature #{idx + 1}</span>
@@ -3440,6 +4805,58 @@ function SectionsTab({ settings, loadData }: SectionsTabProps) {
                           placeholder="Feature Description"
                           value={ft.desc || ""}
                           onChange={(e) => handleArrayItemChange("features", idx, "desc", e.target.value)}
+                          className="w-full h-9 px-3 bg-white border border-slate-200 text-xs rounded-lg font-semibold"
+                        />
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </div>
+
+              {/* Bottom Blue Strip Outcomes Cards (What You Gain) */}
+              <div className="md:col-span-2 space-y-4 pt-4 border-t border-slate-100">
+                <div className="flex items-center justify-between">
+                  <h4 className="text-xs font-black uppercase text-slate-700 tracking-wider">Bottom Blue Strip Outcomes (What You Gain - 4 Items)</h4>
+                  <button
+                    type="button"
+                    onClick={() => handleAddArrayItem("outcomes", { title: "Outcome Title", desc: "Outcome description..." })}
+                    className="px-3 py-1.5 bg-gold text-slate-900 rounded-lg text-[10px] font-black uppercase tracking-wider hover:bg-gold/90 transition-all cursor-pointer flex items-center gap-1"
+                  >
+                    <Plus size={12} /> Add Outcome
+                  </button>
+                </div>
+                <div className="space-y-3">
+                  {getArrayValue("outcomes", [
+                    { title: "Save Time", desc: "Smart tools and expert support streamline your evaluation." },
+                    { title: "See Clearly", desc: "Data-backed insights reveal what truly matters." },
+                    { title: "Reduce Risk", desc: "Thorough evaluation helps you avoid costly mistakes." },
+                    { title: "Maximize Value", desc: "Make informed decisions that create long-term value and growth." }
+                  ]).map((oc: any, idx: number) => (
+                    <div key={idx} className="p-4 bg-slate-50 border border-slate-200/70 rounded-xl space-y-3 relative group">
+                      <div className="flex items-center justify-between">
+                        <span className="text-[10px] font-black text-gold uppercase tracking-wider">Outcome #{idx + 1}</span>
+                        <button
+                          type="button"
+                          onClick={() => handleRemoveArrayItem("outcomes", idx)}
+                          className="p-1 text-slate-400 hover:text-rose-500 rounded transition-colors cursor-pointer"
+                          title="Remove outcome"
+                        >
+                          <Trash2 size={14} />
+                        </button>
+                      </div>
+                      <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+                        <input
+                          type="text"
+                          placeholder="Outcome Title"
+                          value={oc.title || ""}
+                          onChange={(e) => handleArrayItemChange("outcomes", idx, "title", e.target.value)}
+                          className="w-full h-9 px-3 bg-white border border-slate-200 text-xs rounded-lg font-semibold"
+                        />
+                        <input
+                          type="text"
+                          placeholder="Outcome Description"
+                          value={oc.desc || ""}
+                          onChange={(e) => handleArrayItemChange("outcomes", idx, "desc", e.target.value)}
                           className="w-full h-9 px-3 bg-white border border-slate-200 text-xs rounded-lg font-semibold"
                         />
                       </div>
@@ -3492,7 +4909,7 @@ function SectionsTab({ settings, loadData }: SectionsTabProps) {
 
               <div className="md:col-span-2 space-y-4 pt-4 border-t border-slate-100">
                 <div className="flex items-center justify-between">
-                  <h4 className="text-xs font-black uppercase text-slate-700 tracking-wider">Journey Roadmap Steps</h4>
+                  <h4 className="text-xs font-black uppercase text-slate-700 tracking-wider">Journey Roadmap Steps (6 Steps)</h4>
                   <button
                     type="button"
                     onClick={() => handleAddArrayItem("steps", { stepNumber: `0${getArrayValue("steps").length + 1}`, title: "New Step", desc: "Step details..." })}
@@ -3502,7 +4919,14 @@ function SectionsTab({ settings, loadData }: SectionsTabProps) {
                   </button>
                 </div>
                 <div className="space-y-3">
-                  {getArrayValue("steps").map((st: any, idx: number) => (
+                  {getArrayValue("steps", [
+                    { stepNumber: "01", title: "Understand Your Goals", desc: "We listen, understand your needs, lifestyle, budget, and investment objectives in detail." },
+                    { stepNumber: "02", title: "In-Depth Research", desc: "We analyze market data, project details, developer track record, and location dynamics." },
+                    { stepNumber: "03", title: "Shortlist & Recommend", desc: "We create a personalized shortlist that matches your goals with the best opportunities." },
+                    { stepNumber: "04", title: "Site Visits & Evaluation", desc: "We accompany you on site visits and help evaluate projects objectively." },
+                    { stepNumber: "05", title: "Negotiate & Secure", desc: "We help you negotiate the best terms and ensure a smooth, transparent transaction." },
+                    { stepNumber: "06", title: "Move In With Confidence", desc: "From paperwork to possession, we support you until you move in with peace of mind." }
+                  ]).map((st: any, idx: number) => (
                     <div key={idx} className="p-4 bg-slate-50 border border-slate-200/70 rounded-xl space-y-3 relative group">
                       <div className="flex items-center justify-between">
                         <span className="text-[10px] font-black text-gold uppercase tracking-wider">Step #{st.stepNumber || idx + 1}</span>
@@ -3536,6 +4960,59 @@ function SectionsTab({ settings, loadData }: SectionsTabProps) {
                           value={st.desc || ""}
                           onChange={(e) => handleArrayItemChange("steps", idx, "desc", e.target.value)}
                           className="w-full p-2 bg-white border border-slate-200 text-xs rounded-lg font-semibold md:col-span-3"
+                        />
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </div>
+
+              {/* Bottom Blue Strip Outcomes (What You Gain at Every Step) */}
+              <div className="md:col-span-2 space-y-4 pt-4 border-t border-slate-100">
+                <div className="flex items-center justify-between">
+                  <h4 className="text-xs font-black uppercase text-slate-700 tracking-wider">Bottom Blue Strip Outcomes (5 Cards)</h4>
+                  <button
+                    type="button"
+                    onClick={() => handleAddArrayItem("outcomes", { title: "Outcome Title", desc: "Outcome details..." })}
+                    className="px-3 py-1.5 bg-gold text-slate-900 rounded-lg text-[10px] font-black uppercase tracking-wider hover:bg-gold/90 transition-all cursor-pointer flex items-center gap-1"
+                  >
+                    <Plus size={12} /> Add Outcome Card
+                  </button>
+                </div>
+                <div className="space-y-3">
+                  {getArrayValue("outcomes", [
+                    { title: "Save Time", desc: "We handle the heavy lifting for you." },
+                    { title: "Reduce Risk", desc: "Data-backed insights minimize uncertainty." },
+                    { title: "Make Informed Choices", desc: "Clear, objective guidance you can trust." },
+                    { title: "Better Outcomes", desc: "Stronger returns and lasting value." },
+                    { title: "Peace of Mind", desc: "You're never alone in the decision." }
+                  ]).map((oc: any, idx: number) => (
+                    <div key={idx} className="p-4 bg-slate-50 border border-slate-200/70 rounded-xl space-y-3 relative group">
+                      <div className="flex items-center justify-between">
+                        <span className="text-[10px] font-black text-gold uppercase tracking-wider">Outcome Card #{idx + 1}</span>
+                        <button
+                          type="button"
+                          onClick={() => handleRemoveArrayItem("outcomes", idx)}
+                          className="p-1 text-slate-400 hover:text-rose-500 rounded transition-colors cursor-pointer"
+                          title="Remove outcome card"
+                        >
+                          <Trash2 size={14} />
+                        </button>
+                      </div>
+                      <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+                        <input
+                          type="text"
+                          placeholder="Outcome Title"
+                          value={oc.title || ""}
+                          onChange={(e) => handleArrayItemChange("outcomes", idx, "title", e.target.value)}
+                          className="w-full h-9 px-3 bg-white border border-slate-200 text-xs rounded-lg font-semibold"
+                        />
+                        <input
+                          type="text"
+                          placeholder="Outcome Description"
+                          value={oc.desc || ""}
+                          onChange={(e) => handleArrayItemChange("outcomes", idx, "desc", e.target.value)}
+                          className="w-full h-9 px-3 bg-white border border-slate-200 text-xs rounded-lg font-semibold"
                         />
                       </div>
                     </div>
@@ -3596,17 +5073,26 @@ function SectionsTab({ settings, loadData }: SectionsTabProps) {
 
               <div className="md:col-span-2 space-y-4 pt-4 border-t border-slate-100">
                 <div className="flex items-center justify-between">
-                  <h4 className="text-xs font-black uppercase text-slate-700 tracking-wider">Client Reviews / Testimonials</h4>
+                  <h4 className="text-xs font-black uppercase text-slate-700 tracking-wider">Client Reviews / Testimonials (8 Items)</h4>
                   <button
                     type="button"
-                    onClick={() => handleAddArrayItem("items", { name: "Client Name", role: "Designation, Location", quote: "Client feedback quote...", rating: 5 })}
+                    onClick={() => handleAddArrayItem("items", { name: "Client Name", role: "Designation, Location", quote: "Client feedback quote..." })}
                     className="px-3 py-1.5 bg-gold text-slate-900 rounded-lg text-[10px] font-black uppercase tracking-wider hover:bg-gold/90 transition-all cursor-pointer flex items-center gap-1"
                   >
                     <Plus size={12} /> Add Review
                   </button>
                 </div>
                 <div className="space-y-3">
-                  {getArrayValue("items").map((it: any, idx: number) => (
+                  {getArrayValue("items", [
+                    { name: "Ritu Sharma", role: "Residential Buyer, Thane", quote: "We had already visited multiple projects before connecting with PropertyWorks, but eventually everything started feeling similar. PropertyWorks helped simplify the process and brought much better comparison clarity." },
+                    { name: "Vivek Menon", role: "Senior Corporate Professional, Powai", quote: "Instead of spending weekends randomly visiting projects, the process became much more focused and manageable." },
+                    { name: "Neha Iyer", role: "Commercial Client, Mumbai", quote: "Most interactions in the market felt extremely sales-driven. PropertyWorks felt more evaluation-focused and professionally structured." },
+                    { name: "Ajay & Sunita Patil", role: "Kalyan | Family Buyer", quote: "PropertyWorks helped us evaluate projects beyond just price and location. The structured guidance gave us confidence in our final decision." },
+                    { name: "Sandeep Iyer", role: "Navi Mumbai | Investor", quote: "The comparative evaluation support made a significant difference. We could clearly see which project truly aligned with our requirements." },
+                    { name: "Arjun Malhotra", role: "Andheri | Business Owner", quote: "From understanding our business needs to shortlisting the right commercial options, the entire experience was smooth and well-coordinated." },
+                    { name: "Meera Shah", role: "Mulund | Home Buyer", quote: "We appreciated the transparency and honest guidance throughout the evaluation process. No unnecessary pressure, just clarity." },
+                    { name: "Pooja & Rahul Verma", role: "Borivali | Home Buyer", quote: "PropertyWorks made our home evaluation completely stress-free. The comparative analysis helped us choose the right project." }
+                  ]).map((it: any, idx: number) => (
                     <div key={idx} className="p-4 bg-slate-50 border border-slate-200/70 rounded-xl space-y-3 relative group">
                       <div className="flex items-center justify-between">
                         <span className="text-[10px] font-black text-gold uppercase tracking-wider">Review #{idx + 1}</span>
@@ -3637,9 +5123,59 @@ function SectionsTab({ settings, loadData }: SectionsTabProps) {
                         <textarea
                           rows={2}
                           placeholder="Review Quote"
-                          value={it.quote || ""}
+                          value={it.quote || it.text || ""}
                           onChange={(e) => handleArrayItemChange("items", idx, "quote", e.target.value)}
                           className="w-full p-2 bg-white border border-slate-200 text-xs rounded-lg font-semibold md:col-span-2"
+                        />
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </div>
+
+              <div className="md:col-span-2 space-y-4 pt-4 border-t border-slate-100">
+                <div className="flex items-center justify-between">
+                  <h4 className="text-xs font-black uppercase text-slate-700 tracking-wider">Bottom Blue Strip Pillars (4 Items)</h4>
+                  <button
+                    type="button"
+                    onClick={() => handleAddArrayItem("pillars", { title: "Pillar Title", desc: "Pillar description" })}
+                    className="px-3 py-1.5 bg-gold text-slate-900 rounded-lg text-[10px] font-black uppercase tracking-wider hover:bg-gold/90 transition-all cursor-pointer flex items-center gap-1"
+                  >
+                    <Plus size={12} /> Add Pillar
+                  </button>
+                </div>
+                <div className="space-y-3">
+                  {getArrayValue("pillars", [
+                    { title: "Trusted Guidance", desc: "Your goals come first" },
+                    { title: "Proven Expertise", desc: "Backed by experience and intelligence" },
+                    { title: "Better Clarity", desc: "For smarter real estate decisions" },
+                    { title: "Long-Term Confidence", desc: "Building relationships that last" }
+                  ]).map((pil: any, idx: number) => (
+                    <div key={idx} className="p-3 bg-slate-50 border border-slate-200/70 rounded-xl space-y-2 relative group">
+                      <div className="flex items-center justify-between">
+                        <span className="text-[10px] font-black text-gold uppercase tracking-wider">Pillar #{idx + 1}</span>
+                        <button
+                          type="button"
+                          onClick={() => handleRemoveArrayItem("pillars", idx)}
+                          className="p-1 text-slate-400 hover:text-rose-500 rounded transition-colors cursor-pointer"
+                        >
+                          <Trash2 size={14} />
+                        </button>
+                      </div>
+                      <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+                        <input
+                          type="text"
+                          placeholder="Pillar Title (e.g. Trusted Guidance)"
+                          value={pil.title || ""}
+                          onChange={(e) => handleArrayItemChange("pillars", idx, "title", e.target.value)}
+                          className="w-full h-9 px-3 bg-white border border-slate-200 text-xs rounded-lg font-semibold"
+                        />
+                        <input
+                          type="text"
+                          placeholder="Pillar Subtitle / Description"
+                          value={pil.desc || ""}
+                          onChange={(e) => handleArrayItemChange("pillars", idx, "desc", e.target.value)}
+                          className="w-full h-9 px-3 bg-white border border-slate-200 text-xs rounded-lg font-semibold"
                         />
                       </div>
                     </div>
@@ -3668,6 +5204,118 @@ function SectionsTab({ settings, loadData }: SectionsTabProps) {
                   onChange={(e) => updateSectionField("description", e.target.value)}
                   className="w-full p-3 bg-slate-50 border border-slate-200 text-xs rounded-xl outline-none focus:bg-white focus:border-gold font-semibold leading-relaxed"
                 />
+              </div>
+
+              <div className="space-y-1.5 md:col-span-2 pt-2 border-t border-slate-100">
+                <label className="text-[10px] font-black uppercase text-slate-400">Bottom Blue Card Title *</label>
+                <input
+                  type="text"
+                  value={getFieldValue("blueStripHeading")}
+                  onChange={(e) => updateSectionField("blueStripHeading", e.target.value)}
+                  placeholder="Still have questions?"
+                  className="w-full h-11 px-4 bg-slate-50 border border-slate-200 text-sm rounded-xl outline-none focus:bg-white focus:border-gold font-semibold"
+                />
+              </div>
+
+              <div className="space-y-1.5 md:col-span-2">
+                <label className="text-[10px] font-black uppercase text-slate-400">Bottom Blue Card Description *</label>
+                <textarea
+                  rows={2}
+                  value={getFieldValue("blueStripSubheading")}
+                  onChange={(e) => updateSectionField("blueStripSubheading", e.target.value)}
+                  placeholder="Can't find the answers you're looking for? Reach out directly to our PropertyWorks advisory team on WhatsApp."
+                  className="w-full p-3 bg-slate-50 border border-slate-200 text-xs rounded-xl outline-none focus:bg-white focus:border-gold font-semibold"
+                />
+              </div>
+
+              <div className="space-y-1.5 md:col-span-2">
+                <label className="text-[10px] font-black uppercase text-slate-400">Bottom Blue Card Button CTA Text *</label>
+                <input
+                  type="text"
+                  value={getFieldValue("blueStripCtaText")}
+                  onChange={(e) => updateSectionField("blueStripCtaText", e.target.value)}
+                  placeholder="Chat on WhatsApp"
+                  className="w-full h-11 px-4 bg-slate-50 border border-slate-200 text-sm rounded-xl outline-none focus:bg-white focus:border-gold font-semibold"
+                />
+              </div>
+
+              <div className="md:col-span-2 space-y-4 pt-4 border-t border-slate-100">
+                <div className="flex items-center justify-between">
+                  <h4 className="text-xs font-black uppercase text-slate-700 tracking-wider">FAQ Q&amp;A Items</h4>
+                  <button
+                    type="button"
+                    onClick={() => handleAddArrayItem("items", { category: "general", question: "New Question?", answer: "Answer details..." })}
+                    className="px-3 py-1.5 bg-gold text-slate-900 rounded-lg text-[10px] font-black uppercase tracking-wider hover:bg-gold/90 transition-all cursor-pointer flex items-center gap-1"
+                  >
+                    <Plus size={12} /> Add FAQ Item
+                  </button>
+                </div>
+                <div className="space-y-3">
+                  {getArrayValue("items", [
+                    { category: "general", question: "What is PropertyWorks?", answer: "PropertyWorks is a Real Estate Intelligence & Advisory Services platform designed to simplify the residential and commercial property evaluation process.\n\nInstead of functioning like a traditional brokerage or listing portal, PropertyWorks helps buyers and investors make more structured, informed, and strategically aligned property decisions through guided evaluation, project intelligence, comparative analysis, and coordinated advisory support." },
+                    { category: "general", question: "How is PropertyWorks different from traditional brokers or property portals?", answer: "Traditional property platforms usually focus on:\n  • listing inventory\n  • generating leads\n  • promoting projects\n\nPropertyWorks focuses on:\n  • understanding your actual requirements\n  • evaluating alignment between your priorities and available projects\n  • simplifying comparison complexity\n  • coordinating inventory validation\n  • helping you make clearer and more confident decisions\n\nOur approach is advisory-driven rather than sales-driven." },
+                    { category: "services", question: "Does PropertyWorks charge buyers for property evaluation assistance?", answer: "Currently, PropertyWorks offers guided evaluation assistance and shortlisted recommendations at no direct cost to buyers for eligible residential and commercial opportunities.\n\nOur objective is to help simplify the decision-making process and improve evaluation clarity for prospects exploring suitable opportunities." },
+                    { category: "general", question: "Does PropertyWorks directly sell properties?", answer: "No.\n\nPropertyWorks does not function as a direct property seller or developer. We operate as a guided intelligence and advisory platform coordinating with developers, channel partner networks, and project teams to help prospects evaluate suitable opportunities more effectively." },
+                    { category: "process", question: "How does the PropertyWorks evaluation process work?", answer: "The general evaluation journey works as follows:\n  • Prospect shares their requirements through WhatsApp or guided interaction.\n  • PropertyWorks understands budget, location preferences, family needs, lifestyle expectations, investment goals, Vastu considerations, configuration requirements.\n  • Suitable projects are identified through structured evaluation.\n  • Feasibility of matching inventory is checked with developers.\n  • A guided shortlist and intelligence summary is shared with the prospect.\n  • Site visits and evaluation coordination are arranged." },
+                    { category: "process", question: "What type of requirements does PropertyWorks consider during evaluation?", answer: "PropertyWorks considers multiple parameters including budget range, preferred locations, office commute, family requirements, configuration preferences, township ecosystem, open spaces, investment outlook, future appreciation potential, Vastu alignment, wellness-focused living, and commercial utility requirements." },
+                    { category: "process", question: "Why does PropertyWorks ask detailed questions during the evaluation process?", answer: "The more accurately we understand your priorities, the better we can narrow suitable options, avoid irrelevant project recommendations, simplify comparison complexity, and coordinate aligned inventory opportunities." },
+                    { category: "services", question: "Does PropertyWorks provide only residential property recommendations?", answer: "No.\n\nPropertyWorks supports both Residential and Commercial Property Evaluation including apartments, township developments, premium residences, office spaces, commercial investments, retail opportunities, and business expansion requirements." },
+                    { category: "inventory", question: "Does PropertyWorks guarantee inventory availability?", answer: "No.\n\nInventory availability is dynamic and controlled by respective developers. However, before sharing final recommendations, PropertyWorks manually coordinates with developer teams to verify matching inventory feasibility." },
+                    { category: "inventory", question: "Does PropertyWorks recommend only one developer or multiple developers?", answer: "PropertyWorks works with multiple developers and evaluates projects across various locations and categories neutrally based on alignment suitability and stated priorities." },
+                    { category: "trust", question: "Does PropertyWorks provide legal or financial advice?", answer: "No.\n\nPropertyWorks does not provide legal, taxation, home loan approval, or financial planning services. Clients are advised to independently verify all legal and financial aspects before making final decisions." },
+                    { category: "process", question: "Can PropertyWorks help with Vastu-oriented property preferences?", answer: "Yes.\n\nPropertyWorks considers Vastu alignment, directional preferences, entrance orientation, natural light, spatial balance, and numerology considerations as important evaluation parameters." },
+                    { category: "services", question: "Does PropertyWorks help coordinate site visits?", answer: "Yes.\n\nPropertyWorks coordinates guided site evaluations, developer appointments, project walkthrough scheduling, and evaluation sequencing to streamline the decision-making journey." },
+                    { category: "inventory", question: "Is PropertyWorks associated with specific developers?", answer: "PropertyWorks works with multiple developers and channel partner networks across Mumbai Metropolitan Region and surrounding growth corridors, providing alignment-based recommendations." },
+                    { category: "general", question: "Why should I use PropertyWorks instead of directly visiting a developer sales office?", answer: "PropertyWorks eliminates information overload, conflicting opinions, and pressure-driven sales interactions through structured evaluation, guided comparison, project alignment support, and objective recommendations." },
+                    { category: "trust", question: "Does PropertyWorks maintain confidentiality of client information?", answer: "Yes.\n\nClient information shared during evaluation is treated with reasonable confidentiality and used only for evaluation, project coordination, and recommendation support." },
+                    { category: "services", question: "How do I begin my evaluation journey with PropertyWorks?", answer: "Select 'Get My FREE Residential Shortlist' or 'Get My FREE Commercial Shortlist' through our guided WhatsApp evaluation flow." },
+                    { category: "inventory", question: "Is PropertyWorks available only in Mumbai?", answer: "Currently, PropertyWorks primarily focuses on Mumbai, Thane, Navi Mumbai, and surrounding growth corridors." },
+                    { category: "trust", question: "Does PropertyWorks provide investment guarantees or return commitments?", answer: "No. All recommendations are intended purely as guided evaluation support without guaranteed return commitments." },
+                    { category: "general", question: "What is the core objective of PropertyWorks?", answer: "The core objective of PropertyWorks is to simplify the traditionally fragmented and confusing real estate evaluation process through structured guidance, real estate intelligence, practical comparison support, and advisory-driven assistance." },
+                    { category: "services", question: "Does PropertyWorks receive compensation or commission from developers?", answer: "Yes. PropertyWorks may receive compensation or commissions from developers or authorized partners for successful transactions. However, our focus remains strictly on buyer priorities and alignment-based recommendations." }
+                  ]).map((fq: any, idx: number) => (
+                    <div key={idx} className="p-4 bg-slate-50 border border-slate-200/70 rounded-xl space-y-3 relative group">
+                      <div className="flex items-center justify-between">
+                        <span className="text-[10px] font-black text-gold uppercase tracking-wider">FAQ #{idx + 1}</span>
+                        <button
+                          type="button"
+                          onClick={() => handleRemoveArrayItem("items", idx)}
+                          className="p-1 text-slate-400 hover:text-rose-500 rounded transition-colors cursor-pointer"
+                          title="Remove FAQ"
+                        >
+                          <Trash2 size={14} />
+                        </button>
+                      </div>
+                      <div className="space-y-2">
+                        <select
+                          value={fq.category || "general"}
+                          onChange={(e) => handleArrayItemChange("items", idx, "category", e.target.value)}
+                          className="w-full h-9 px-3 bg-white border border-slate-200 text-xs rounded-lg font-semibold cursor-pointer"
+                        >
+                          <option value="general">General &amp; Model</option>
+                          <option value="process">Process &amp; Vastu</option>
+                          <option value="services">Services &amp; Fees</option>
+                          <option value="inventory">Inventory &amp; Coverage</option>
+                          <option value="trust">Trust &amp; Compliance</option>
+                        </select>
+                        <input
+                          type="text"
+                          placeholder="Question"
+                          value={fq.question || fq.q || ""}
+                          onChange={(e) => handleArrayItemChange("items", idx, "question", e.target.value)}
+                          className="w-full h-9 px-3 bg-white border border-slate-200 text-xs rounded-lg font-semibold"
+                        />
+                        <textarea
+                          rows={3}
+                          placeholder="Answer"
+                          value={fq.answer || fq.a || ""}
+                          onChange={(e) => handleArrayItemChange("items", idx, "answer", e.target.value)}
+                          className="w-full p-2 bg-white border border-slate-200 text-xs rounded-lg font-semibold leading-relaxed"
+                        />
+                      </div>
+                    </div>
+                  ))}
+                </div>
               </div>
             </>
           )}

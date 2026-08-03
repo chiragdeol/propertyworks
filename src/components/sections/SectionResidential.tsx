@@ -162,9 +162,28 @@ export default function SectionResidential() {
     { icon: iconMapPinGold, t: "The Right Location" },
     { icon: iconUsersGold, t: "The Right Community" },
     { icon: iconShieldCheckGold, t: "The Right Environment" },
-    { icon: iconExpansionTrend, t: "The Right Future" },
+    { icon: iconGrowthTrend, t: "The Right Future" },
     { icon: iconHomeGold, t: "The Right Choice" },
   ];
+
+  const displayItems = items.map((defaultCard, i) => {
+    const dbItem = resData?.items?.[i] || resData?.cards?.[i];
+    if (!dbItem) return defaultCard;
+    return {
+      ...defaultCard,
+      title: dbItem.title || defaultCard.title,
+      body: dbItem.body || defaultCard.body,
+    };
+  });
+
+  const displayBottom = bottom.map((defaultItem, i) => {
+    const dbItem = resData?.blueStrip?.[i] || resData?.bottomFeatures?.[i];
+    if (!dbItem) return defaultItem;
+    return {
+      ...defaultItem,
+      t: dbItem.title || dbItem.t || defaultItem.t,
+    };
+  });
 
   return (
     <section id="residential" className="w-full bg-white overflow-hidden relative">
@@ -191,7 +210,7 @@ export default function SectionResidential() {
 
             {/* Interactive Grid Cards with hover scale & shadow */}
             <div className="mt-6 grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-1 xl:grid-cols-2 gap-4 max-w-xl md:max-w-none lg:max-w-xl">
-              {items.map((it, i) => (
+              {displayItems.map((it, i) => (
                 <ResidentialFlippingCard key={i} it={it} index={i} />
               ))}
             </div>
@@ -238,7 +257,7 @@ export default function SectionResidential() {
           }}
         >
           <div className="grid grid-cols-1 xs:grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 lg:divide-x divide-white/20 gap-y-5 gap-x-4 lg:gap-y-0 w-full">
-            {bottom.map((b, i) => {
+            {displayBottom.map((b, i) => {
               const words = b.t.split(" ");
               const t1 = words.slice(0, 2).join(" ");
               const t2 = words.slice(2).join(" ");
@@ -270,11 +289,7 @@ export default function SectionResidential() {
             className="text-white text-[15px] font-medium border-l-[4px] pl-4 lg:pl-6 w-full max-w-full lg:max-w-xs leading-relaxed shrink-0 drop-shadow-md"
             style={{ borderColor: GOLD }}
           >
-            We help you build{" "}
-            <br className="hidden lg:inline" />
-            the <span className="font-bold" style={{ color: GOLD }}>right life</span>, not just{" "}
-            <br className="hidden lg:inline" />
-            find the right property.
+            {formatDynamicText(resData?.sideText || "We help you build\nthe [gold]right life[/gold], not just\nfind the right property.", GOLD)}
           </motion.div>
         </motion.div>
       </div>
@@ -282,10 +297,7 @@ export default function SectionResidential() {
 
       <div className="w-full text-center py-4 px-5 bg-white border-b-2">
         <p className="font-sans text-[#001B4F] text-[15px] sm:text-base">
-          Smarter evaluation. Better choices.{" "}
-          <span className="italic font-bold" style={{ color: GOLD }}>
-            A stronger future for your family.
-          </span>
+          {formatDynamicText(resData?.bottomStatement || "Smarter evaluation. Better choices. [gold]A stronger future for your family.[/gold]", GOLD)}
         </p>
       </div>
     </section>

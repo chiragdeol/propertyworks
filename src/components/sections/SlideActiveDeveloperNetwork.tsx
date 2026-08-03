@@ -71,6 +71,20 @@ export default function SlideActiveDeveloperNetwork() {
     },
   ];
 
+  const displaySpokes = (devNetworkData?.spokes || devNetworkData?.movingCircle || []).length > 0
+    ? (devNetworkData?.spokes || devNetworkData?.movingCircle).map((s: any, idx: number) => ({
+        ...spokes[idx % spokes.length],
+        label: typeof s === "string" ? s : s.label || s.title || s.text || spokes[idx % spokes.length].label
+      }))
+    : spokes;
+
+  const displayDevelopers = (devNetworkData?.developers || devNetworkData?.items || []).length > 0
+    ? (devNetworkData?.developers || devNetworkData?.items).map((d: any, idx: number) => ({
+        ...developers[idx % developers.length],
+        name: typeof d === "string" ? d : d.name || d.title || developers[idx % developers.length].name
+      }))
+    : developers;
+
   return (
     <section
       id="developer-network"
@@ -203,7 +217,7 @@ export default function SlideActiveDeveloperNetwork() {
                   className="absolute inset-0 pointer-events-none"
                   style={{ width: 540, height: 540, zIndex: 0 }}
                 >
-                  {spokes.map((_, i) => {
+                  {displaySpokes.map((_: any, i: number) => {
                     const angleRad = (i * 45 * Math.PI) / 180;
                     const orbitR = 225;
                     const x2 = 270 + orbitR * Math.cos(angleRad);
@@ -226,7 +240,7 @@ export default function SlideActiveDeveloperNetwork() {
                 </svg>
 
                 {/* Nodes — rendered AFTER SVG so they appear on top */}
-                {spokes.map((s, i) => {
+                {displaySpokes.map((s: any, i: number) => {
                   const angleDeg = i * 45;
                   const angleRad = (angleDeg * Math.PI) / 180;
                   const orbitR = 225;
@@ -248,13 +262,9 @@ export default function SlideActiveDeveloperNetwork() {
                         {/* Cube node — border rotates anti-clockwise */}
                         <div className="relative w-[100px] h-[112px] flex items-center justify-center group-hover:scale-[1.1] transition-transform duration-300">
                           {/* Anti-clockwise spinning gradient border */}
-                          <div
-                            className="cube-border-spin-el absolute inset-[-3px] rounded-[12px] overflow-hidden"
-                            style={{
-                              background: "conic-gradient(from 0deg, #D4A13A, #f6d98e, #ffffff, #D4A13A, #001B4F, #D4A13A)",
-                              animation: "cube-border-anti 5s linear infinite",
-                              zIndex: 0,
-                            }}
+                          <div 
+                            className="absolute inset-0 border border-[#D4A13A] shadow-[0_4px_20px_rgba(212,161,58,0.25)] bg-[#001B4F]"
+                            style={{ animation: "cube-border-anti 25s linear infinite" }}
                           />
                           {/* Inner cube — content counter-rotates to stay upright */}
                           <div
@@ -309,8 +319,8 @@ export default function SlideActiveDeveloperNetwork() {
                   Property<span style={{ color: GOLD }}>Works</span>
                 </span>
                 <div className="w-10 h-[2px] bg-[#001B4F]/60 my-1.5 relative z-10" />
-                <span className="text-[8.5px] font-sans font-bold text-[#001B4F]/90 tracking-wider leading-tight relative z-10">
-                  INTELLIGENCE.<br />EVALUATION.<br />BETTER DECISIONS.
+                <span className="text-[8.5px] font-sans font-bold text-[#001B4F]/90 tracking-wider leading-tight relative z-10 whitespace-pre-line">
+                  {formatDynamicText(devNetworkData?.centerSubtitle || "INTELLIGENCE.\nEVALUATION.\nBETTER DECISIONS.", GOLD)}
                 </span>
               </div>
 
@@ -323,7 +333,7 @@ export default function SlideActiveDeveloperNetwork() {
           <div className="h-px flex-grow bg-gradient-to-r from-transparent to-[#D4A13A]/50" />
           <div className="w-1.5 h-1.5 rotate-45 border border-[#D4A13A] bg-[#D4A13A]/20" />
           <h3 className="font-heading text-xs font-bold text-[#001B4F] tracking-widest uppercase whitespace-nowrap">
-            Developer Associations
+            {formatDynamicText(devNetworkData?.associationsHeading || "Developer & Channel Partner Associations", GOLD)}
           </h3>
           <div className="w-1.5 h-1.5 rotate-45 border border-[#D4A13A] bg-[#D4A13A]/20" />
           <div className="h-px flex-grow bg-gradient-to-l from-transparent to-[#D4A13A]/50" />
@@ -337,7 +347,7 @@ export default function SlideActiveDeveloperNetwork() {
             <div className="absolute right-0 top-0 bottom-0 w-8 bg-gradient-to-l from-slate-50/50 to-transparent z-10 pointer-events-none" />
             
             <Marquee speed={30} gradient={false} className="py-2">
-              {developers.map((dev, idx) => (
+              {displayDevelopers.map((dev: any, idx: number) => (
                 <div
                   key={`${dev.name}-${idx}`}
                   className="pr-3.5 shrink-0"
@@ -393,11 +403,10 @@ export default function SlideActiveDeveloperNetwork() {
             </div>
             <div>
               <p className="text-[#D4A13A] font-heading font-bold text-xs uppercase tracking-wider leading-snug">
-                Access to Multiple Developers. Guidance Focused on Your Requirements.
+                {formatDynamicText(devNetworkData?.blueStripHeading || "Access to Multiple Developers. Guidance Focused on Your Requirements.", GOLD, "#ffffff")}
               </p>
-              <p className="text-white/80 text-[10.5px] leading-relaxed mt-1.5 font-medium">
-                PropertyWorks helps clients evaluate opportunities across multiple developer
-                ecosystems through structured comparison and guided advisory support.
+              <p className="text-white text-[10.5px] leading-relaxed mt-1.5 font-medium">
+                {formatDynamicText(devNetworkData?.blueStripSubheading || "PropertyWorks helps clients evaluate opportunities across multiple developer ecosystems through structured comparison and guided advisory support.", GOLD, "#ffffff")}
               </p>
             </div>
           </div>
@@ -499,7 +508,7 @@ export default function SlideActiveDeveloperNetwork() {
                     className="absolute inset-0 pointer-events-none"
                     style={{ width: 540, height: 540, zIndex: 0 }}
                   >
-                    {spokes.map((_, i) => {
+                    {displaySpokes.map((_: any, i: number) => {
                       const angleRad = (i * 45 * Math.PI) / 180;
                       const orbitR = 225;
                       const x2 = 270 + orbitR * Math.cos(angleRad);
@@ -522,7 +531,7 @@ export default function SlideActiveDeveloperNetwork() {
                   </svg>
 
                   {/* Nodes — rendered AFTER SVG so they appear on top */}
-                  {spokes.map((s, i) => {
+                  {displaySpokes.map((s: any, i: number) => {
                     const angleDeg = i * 45;
                     const angleRad = (angleDeg * Math.PI) / 180;
                     const orbitR = 225;
@@ -605,8 +614,8 @@ export default function SlideActiveDeveloperNetwork() {
                     Property<span style={{ color: GOLD }}>Works</span>
                   </span>
                   <div className="w-10 h-[2px] bg-[#001B4F]/60 my-1.5 relative z-10" />
-                  <span className="text-[8.5px] font-sans font-bold text-[#001B4F]/90 tracking-wider leading-tight relative z-10">
-                    INTELLIGENCE.<br />EVALUATION.<br />BETTER DECISIONS.
+                  <span className="text-[8.5px] font-sans font-bold text-[#001B4F]/90 tracking-wider leading-tight relative z-10 whitespace-pre-line">
+                    {formatDynamicText(devNetworkData?.centerSubtitle || "INTELLIGENCE.\nEVALUATION.\nBETTER DECISIONS.", GOLD)}
                   </span>
                 </div>
 
@@ -620,7 +629,7 @@ export default function SlideActiveDeveloperNetwork() {
           <div className="h-[1px] flex-grow bg-gradient-to-r from-transparent to-[#D4A13A]" />
           <div className="w-2.5 h-2.5 rotate-45 border border-[#D4A13A] bg-[#D4A13A]/10 shadow-[0_0_8px_rgba(212,161,58,0.4)] shrink-0" />
           <h2 className="font-heading font-bold text-center text-[#001B4F] text-[clamp(16px,1.3vw,22px)] tracking-wider whitespace-nowrap uppercase">
-            Developer &amp; Channel Partner Associations
+            {formatDynamicText(devNetworkData?.associationsHeading || "Developer & Channel Partner Associations", GOLD)}
           </h2>
           <div className="w-2.5 h-2.5 rotate-45 border border-[#D4A13A] bg-[#D4A13A]/10 shadow-[0_0_8px_rgba(212,161,58,0.4)] shrink-0" />
           <div className="h-[1px] flex-grow bg-gradient-to-l from-transparent to-[#D4A13A]" />
@@ -634,7 +643,7 @@ export default function SlideActiveDeveloperNetwork() {
             <div className="absolute right-0 top-0 bottom-0 w-16 bg-gradient-to-l from-white to-transparent z-10 pointer-events-none" />
             
             <Marquee speed={35} pauseOnHover={true} gradient={false} className="py-3">
-              {developers.map((dev, idx) => (
+              {displayDevelopers.map((dev: any, idx: number) => (
                 <div
                   key={`${dev.name}-${idx}`}
                   className="pr-5 shrink-0"
@@ -695,11 +704,10 @@ export default function SlideActiveDeveloperNetwork() {
               <div className="w-px h-12 bg-white/20 shrink-0" />
               <div>
                 <p className="text-[#D4A13A] font-heading font-bold text-[clamp(15px,1.1vw,18px)] tracking-wide leading-snug uppercase">
-                  Access to Multiple Developers. Guidance Focused on Your Requirements.
+                  {formatDynamicText(devNetworkData?.blueStripHeading || "Access to Multiple Developers. Guidance Focused on Your Requirements.", GOLD)}
                 </p>
                 <p className="text-white/80 text-[clamp(12px,0.85vw,14px)] mt-1.5 font-medium leading-relaxed max-w-[960px]">
-                  PropertyWorks helps clients evaluate opportunities across multiple developer
-                  ecosystems through structured comparison and guided advisory support.
+                  {formatDynamicText(devNetworkData?.blueStripSubheading || "PropertyWorks helps clients evaluate opportunities across multiple developer ecosystems through structured comparison and guided advisory support.", GOLD)}
                 </p>
               </div>
             </div>
@@ -732,8 +740,7 @@ export default function SlideActiveDeveloperNetwork() {
               />
             </svg>
             <span>
-              Developer names and logos are used solely to represent the broader project ecosystem
-              and do not imply partnerships or endorsements.
+              {formatDynamicText(devNetworkData?.disclaimer || "Developer names and logos are used solely to represent the broader project ecosystem and do not imply partnerships or endorsements.")}
             </span>
           </div>
         </div>

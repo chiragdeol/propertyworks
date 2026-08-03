@@ -25,15 +25,17 @@ export default function SlideYourJourney() {
     "/images/Yourjourney_img_6.webp",
   ];
 
-  const displaySteps = Array.isArray(journeyData?.steps) && journeyData.steps.length > 0
-    ? journeyData.steps.map((st: any, idx: number) => ({
-        num: st.stepNumber || `0${idx + 1}`,
-        icon: defaultStepIcons[idx % defaultStepIcons.length],
-        title: st.title || "",
-        desc: st.desc || "",
-        img: defaultStepImgs[idx % defaultStepImgs.length]
-      }))
-    : de;
+  const displaySteps = de.map((defaultStep: any, idx: number) => {
+    const st = journeyData?.steps?.[idx];
+    if (!st) return defaultStep;
+    return {
+      ...defaultStep,
+      num: st.stepNumber || defaultStep.num || `0${idx + 1}`,
+      title: st.title || defaultStep.title,
+      desc: st.desc || defaultStep.desc,
+      img: defaultStepImgs[idx % defaultStepImgs.length] || defaultStep.img,
+    };
+  });
 
   return (
     <section className="slide-section w-full overflow-visible lg:overflow-hidden bg-[#F8FAFC]">
@@ -134,21 +136,26 @@ export default function SlideYourJourney() {
               What You Gain at Every Step
             </h3>
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
-              {fe.map((e) => (
-                <div key={e.title} className="flex items-start gap-3.5 group">
-                  <div className="shrink-0 p-1.5 rounded-lg bg-white/5 border border-white/5 group-hover:border-gold/30 group-hover:bg-gold/10 transition-all duration-300">
-                    <SlideImage src={e.icon} size={28} />
+              {fe.map((defaultOutcome: any, t: number) => {
+                const dbOutcome = journeyData?.outcomes?.[t] || journeyData?.features?.[t];
+                const title = dbOutcome?.title || defaultOutcome.title;
+                const desc = dbOutcome?.desc || defaultOutcome.desc;
+                return (
+                  <div key={t} className="flex items-start gap-3.5 group">
+                    <div className="shrink-0 p-1.5 rounded-lg bg-white/5 border border-white/5 group-hover:border-gold/30 group-hover:bg-gold/10 transition-all duration-300">
+                      <SlideImage src={defaultOutcome.icon} size={28} />
+                    </div>
+                    <div>
+                      <h4 className="text-white font-bold text-[13px] sm:text-[14px] leading-tight font-heading group-hover:text-gold transition-colors duration-250">
+                        {title}
+                      </h4>
+                      <p className="text-white/75 text-[11px] sm:text-[12px] leading-relaxed mt-1 whitespace-pre-line font-medium">
+                        {desc}
+                      </p>
+                    </div>
                   </div>
-                  <div>
-                    <h4 className="text-white font-bold text-[13px] sm:text-[14px] leading-tight font-heading group-hover:text-gold transition-colors duration-250">
-                      {e.title}
-                    </h4>
-                    <p className="text-white/75 text-[11px] sm:text-[12px] leading-relaxed mt-1 whitespace-pre-line font-medium">
-                      {e.desc}
-                    </p>
-                  </div>
-                </div>
-              ))}
+                );
+              })}
             </div>
           </motion.div>
         </div>
@@ -300,27 +307,32 @@ export default function SlideYourJourney() {
             viewport={{ once: true }}
             className="flex justify-between items-center w-full h-full py-1 mt-1"
           >
-            {fe.map((e, t) => (
-              <motion.div
-                key={e.title}
-                variants={fadeInUp(0, 0.5)}
-                whileHover={{ scale: 1.02 }}
-                className={`flex items-center gap-[10px] w-[18%] h-3/4 ${t < fe.length - 1 ? `border-r border-white/10` : ``} cursor-default group transition-transform duration-250`}
-                style={t < fe.length - 1 ? { paddingRight: "1.5%" } : {}}
-              >
-                <div className="shrink-0 p-1 rounded-lg bg-white/5 border border-white/5 group-hover:border-gold/30 group-hover:bg-gold/10 transition-all duration-300">
-                  <SlideImage src={e.icon} size="clamp(22px, 2.2vw, 32px)" />
-                </div>
-                <div className="min-w-0">
-                  <p className="text-gold font-bold text-[clamp(13px,0.9vw,15.5px)] leading-tight font-heading group-hover:text-gold transition-colors duration-250">
-                    {e.title}
-                  </p>
-                  <p className="text-white/70 text-[clamp(10.5px,0.72vw,12.5px)] leading-[1.3] mt-[2px] whitespace-pre-line font-medium group-hover:text-white/90 transition-colors duration-250">
-                    {e.desc}
-                  </p>
-                </div>
-              </motion.div>
-            ))}
+            {fe.map((defaultOutcome: any, t: number) => {
+              const dbOutcome = journeyData?.outcomes?.[t] || journeyData?.features?.[t];
+              const title = dbOutcome?.title || defaultOutcome.title;
+              const desc = dbOutcome?.desc || defaultOutcome.desc;
+              return (
+                <motion.div
+                  key={t}
+                  variants={fadeInUp(0, 0.5)}
+                  whileHover={{ scale: 1.02 }}
+                  className={`flex items-center gap-[10px] w-[18%] h-3/4 ${t < fe.length - 1 ? `border-r border-white/10` : ``} cursor-default group transition-transform duration-250`}
+                  style={t < fe.length - 1 ? { paddingRight: "1.5%" } : {}}
+                >
+                  <div className="shrink-0 p-1 rounded-lg bg-white/5 border border-white/5 group-hover:border-gold/30 group-hover:bg-gold/10 transition-all duration-300">
+                    <SlideImage src={defaultOutcome.icon} size="clamp(22px, 2.2vw, 32px)" />
+                  </div>
+                  <div className="min-w-0">
+                    <p className="text-gold font-bold text-[clamp(13px,0.9vw,15.5px)] leading-tight font-heading group-hover:text-gold transition-colors duration-250">
+                      {title}
+                    </p>
+                    <p className="text-white/70 text-[clamp(10.5px,0.72vw,12.5px)] leading-[1.3] mt-[2px] whitespace-pre-line font-medium group-hover:text-white/90 transition-colors duration-250">
+                      {desc}
+                    </p>
+                  </div>
+                </motion.div>
+              );
+            })}
           </motion.div>
         </div>
 

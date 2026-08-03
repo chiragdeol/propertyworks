@@ -186,7 +186,16 @@ export default function SectionHero() {
                 visible: { opacity: 1, y: 0, transition: { duration: 0.6, delay: 0.4, ease: "easeOut" as const } }
               }
             },
-          ].map((f, i) => (
+          ].map((defaultFeature, i) => {
+            const dbFeature = heroData?.bottomStrip?.[i] || heroData?.features?.[i];
+            const title = dbFeature?.title ? formatDynamicText(dbFeature.title, GOLD, "#ffffff") : defaultFeature.title;
+            const sub = dbFeature?.sub || dbFeature?.desc ? formatDynamicText(dbFeature.sub || dbFeature.desc, GOLD, "#ffffff") : defaultFeature.sub;
+            return {
+              ...defaultFeature,
+              title,
+              sub
+            };
+          }).map((f, i) => (
             <div
               key={i}
               className="flex-1 px-6 sm:px-8 py-5 sm:py-6 flex items-start gap-4 sm:gap-5 cursor-default transition-all duration-300 hover:bg-white/3 group"
@@ -209,7 +218,7 @@ export default function SectionHero() {
                   whileInView="visible"
                   viewport={{ once: true, margin: "-40px" }}
                   variants={f.titleVariants}
-                  className="font-serif font-bold text-[16px] sm:text-[18px] leading-snug tracking-wide"
+                  className="font-serif font-bold text-[16px] sm:text-[18px] leading-snug tracking-wide text-white"
                 >
                   {f.title}
                 </motion.div>
@@ -219,7 +228,7 @@ export default function SectionHero() {
                   whileInView="visible"
                   viewport={{ once: true, margin: "-40px" }}
                   variants={f.subVariants}
-                  className="text-white/70 text-[12.5px] sm:text-[13.5px] mt-1.5 leading-relaxed font-sans"
+                  className="text-white text-[12.5px] sm:text-[13.5px] mt-1.5 leading-relaxed font-sans"
                 >
                   {f.sub}
                 </motion.div>

@@ -29,6 +29,22 @@ export default function SlideAboutPropertyWorks() {
   const { settings } = useSettings();
   const aboutData = settings?.sections?.about;
 
+  const challengeList = (aboutData?.challengePoints || []).length > 0
+    ? aboutData.challengePoints.map((p: any) => typeof p === "string" ? p : p.title || p.text || "")
+    : Ce;
+
+  const structuredList = (aboutData?.structuredItems || []).length > 0
+    ? aboutData.structuredItems
+    : Te;
+
+  const ecosystemList = (aboutData?.ecosystemItems || []).length > 0
+    ? aboutData.ecosystemItems
+    : Ee;
+
+  const techToolsList = (aboutData?.techTools || []).length > 0
+    ? aboutData.techTools
+    : De;
+
   return (
     <section id="about" className="w-full bg-white border-t border-slate-100 overflow-hidden">
       <div className="w-full bg-gradient-to-br from-[#031d51] via-[#ffffff] to-[#ffffff] text-primary relative">
@@ -161,11 +177,11 @@ export default function SlideAboutPropertyWorks() {
                     </svg>
                   </div>
                   <h4 className="h4-global text-primary">
-                    The Real Estate <span className="text-gold">Challenge Today</span>
+                    {formatDynamicText(aboutData?.challengeTitle || "The Real Estate [gold]Challenge Today[/gold]", "#D4A13A")}
                   </h4>
                 </div>
                 <div className="grid grid-cols-1 gap-2.5 mb-4">
-                  {Ce.map((e, idx) => (
+                  {challengeList.map((e: string, idx: number) => (
                     <motion.div
                       key={e}
                       initial={{ opacity: 0, x: -10 }}
@@ -196,12 +212,11 @@ export default function SlideAboutPropertyWorks() {
                 </div>
                 <div className="h-[1px] w-full bg-primary/10 my-3 " />
                 <p className="text-[13px] sm:text-[14px] text-primary/80 mr-10">
-                  Buyers spend months evaluating projects without complete clarity or alignment.
+                  {formatDynamicText(aboutData?.challengeSubtext || "Buyers spend months evaluating projects without complete clarity or alignment.", "#D4A13A")}
                 </p>
                 <div className="absolute inset-x-0 bottom-0 bg-primary p-4 rounded-b-[14px]">
                   <p className="font-heading text-[13px] sm:text-[14px] md:text-[15px] leading-snug text-white">
-                    We turn confusion into <span className="text-gold">clarity.</span> Information
-                    into <span className="text-gold">decisions.</span>
+                    {formatDynamicText(aboutData?.challengeBanner || "We turn confusion into [gold]clarity.[/gold] Information into [gold]decisions.[/gold]", "#D4A13A")}
                   </p>
                 </div>
               </SlidePanel>
@@ -269,20 +284,22 @@ export default function SlideAboutPropertyWorks() {
                 >
                   <SlideImage src={y.logo} size={36} className="brightness-0 invert mb-1 sm:mb-2 opacity-100 drop-shadow-md" />
                   <h3 className="font-heading text-[15px] sm:text-[18px] font-bold text-white leading-tight drop-shadow-md relative z-10">
-                    Our <span className="text-gold">Approach</span>
+                    {formatDynamicText(aboutData?.approachCircleTitle || "Our [gold]Approach[/gold]", "#D4A13A")}
                   </h3>
-                  <p className="text-[10px] sm:text-[12px] text-white/90 font-medium mt-1 sm:mt-1.5 leading-snug relative z-10">
-                    Structured.<br/>Objective.<br/>Buyer-First.
+                  <p className="text-[10px] sm:text-[12px] text-white/90 font-medium mt-1 sm:mt-1.5 leading-snug relative z-10 whitespace-pre-line">
+                    {formatDynamicText(aboutData?.approachCircleSub || "Structured.\nObjective.\nBuyer-First.", "#D4A13A")}
                   </p>
                 </div>
 
                 {/* 6 Orbiting Circle Cards */}
                 <div className="absolute inset-0 m-auto w-0 h-0 animate-orbit z-20 flex items-center justify-center">
-                  {we.map(({ icon: e, title: t }, index) => {
+                  {we.map(({ icon: e, title: defaultTitle }: any, index: number) => {
+                    const dbItem = aboutData?.movingCircle?.[index] || aboutData?.approachItems?.[index];
+                    const t = dbItem?.title || dbItem?.label || defaultTitle;
                     const angle = index * 60;
                     return (
                       <div 
-                        key={t}
+                        key={index}
                         className="absolute flex items-center justify-center w-0 h-0"
                         style={{ transform: `rotate(${angle}deg)` }}
                       >
@@ -327,7 +344,7 @@ export default function SlideAboutPropertyWorks() {
               >
                 <SlidePanel className="p-5 md:p-6 bg-white">
                   <h3 className="h3-global text-primary mb-4">
-                    A More Structured Real Estate Evaluation Experience
+                    {formatDynamicText(aboutData?.structuredTitle || "A More Structured Real Estate Evaluation Experience", "#D4A13A")}
                   </h3>
                   <motion.div
                     variants={staggerContainer(0.06, 0.2)}
@@ -336,16 +353,16 @@ export default function SlideAboutPropertyWorks() {
                     viewport={{ once: true }}
                     className="grid grid-cols-3 sm:grid-cols-5 gap-2 md:gap-3"
                   >
-                    {Te.map(({ icon: e, label: t }) => (
+                    {structuredList.map(({ icon: e, label: t }: any, idx: number) => (
                       <motion.div
-                        key={t}
+                        key={t || idx}
                         variants={fadeInUp(0, 0.4)}
                         whileHover={{ scale: 1.06, y: -2 }}
                         className="flex flex-col items-center text-center p-2.5 rounded-xl bg-slate-50 border border-slate-100/80 hover:bg-slate-100/50 transition-colors cursor-pointer shadow-xs"
                       >
-                        <SlideImage src={e} size={30} />
+                        <SlideImage src={e || Te[idx % Te.length]?.icon || y.monitor} size={30} />
                         <p className="mt-2 whitespace-pre-line text-[11.5px] sm:text-[12px] font-semibold leading-snug text-primary">
-                          {t}
+                          {t || e}
                         </p>
                       </motion.div>
                     ))}
@@ -363,7 +380,9 @@ export default function SlideAboutPropertyWorks() {
                   transition={{ duration: 0.6 }}
                 >
                   <SlidePanel className="p-4 md:p-5 bg-white h-full">
-                    <h3 className="h3-global text-primary mb-4">Multi-Developer Ecosystem</h3>
+                    <h3 className="h3-global text-primary mb-4">
+                      {formatDynamicText(aboutData?.ecosystemTitle || "Multi-Developer Ecosystem", "#D4A13A")}
+                    </h3>
                     <motion.div
                       variants={staggerContainer(0.06, 0.2)}
                       initial="hidden"
@@ -371,16 +390,16 @@ export default function SlideAboutPropertyWorks() {
                       viewport={{ once: true }}
                       className="grid grid-cols-2 sm:grid-cols-4 gap-2.5"
                     >
-                      {Ee.map(({ icon: e, label: t }) => (
+                      {ecosystemList.map(({ icon: e, label: t }: any, idx: number) => (
                         <motion.div
-                          key={t}
+                          key={t || idx}
                           variants={fadeInUp(0, 0.4)}
                           whileHover={{ scale: 1.06, y: -2 }}
                           className="flex flex-col items-center text-center p-2 rounded-xl bg-slate-50 border border-slate-100 hover:bg-slate-100/50 transition-colors cursor-pointer shadow-xs"
                         >
-                          <SlideImage src={e} size={28} />
+                          <SlideImage src={e || Ee[idx % Ee.length]?.icon || y.citySkyline} size={28} />
                           <p className="mt-2 whitespace-pre-line text-[11px] sm:text-[11.5px] font-semibold leading-snug text-primary">
-                            {t}
+                            {t || e}
                           </p>
                         </motion.div>
                       ))}
@@ -400,15 +419,16 @@ export default function SlideAboutPropertyWorks() {
                   <div>
                     <div className="flex items-center gap-2 mb-3">
                       <SlideImage src={y.eye} size={48} className="shrink-0" />
-                      <h3 className="h3-global text-gold">Our Vision</h3>
+                      <h3 className="h3-global text-gold">
+                        {formatDynamicText(aboutData?.visionTitle || "Our Vision", "#D4A13A")}
+                      </h3>
                     </div>
                     <p className="font-heading text-[15px] sm:text-[16px] md:text-[17px] leading-relaxed">
-                      Smarter evaluation. Better decisions.{" "}
-                      <span className="text-gold">Brighter futures.</span>
+                      {formatDynamicText(aboutData?.visionText || "Smarter evaluation. Better decisions. [gold]Brighter futures.[/gold]", "#D4A13A")}
                     </p>
                   </div>
                   <div className="mt-4 text-[11.5px] text-white/50 border-t border-white/10 pt-2.5">
-                    Helping you find value with confidence.
+                    {formatDynamicText(aboutData?.visionSub || "Helping you find value with confidence.", "#D4A13A")}
                   </div>
                 </motion.div>
               </div>
@@ -692,24 +712,23 @@ export default function SlideAboutPropertyWorks() {
 
               <div className="flex-shrink-0 flex flex-col justify-center px-4 py-2 w-[160px] md:w-[200px] border-r border-primary/10">
                 <h3 className="h4-global text-primary leading-[1.2]">
-                  Technology With <span className="text-gold">Human Guidance</span>
+                  {formatDynamicText(aboutData?.techHeading || "Technology With [gold]Human Guidance[/gold]", "#D4A13A")}
                 </h3>
                 <p className="mt-1 text-[12px] sm:text-[11.5px] md:text-[12.5px] font-medium leading-[1.4] text-primary/75">
-                  Digital tools and intelligence systems to simplify evaluation — combined with
-                  expert human support.
+                  {formatDynamicText(aboutData?.techDesc || "Digital tools and intelligence systems to simplify evaluation — combined with expert human support.", "#D4A13A")}
                 </p>
               </div>
 
               <div className="flex-1 overflow-x-auto">
                 <div className="flex h-full min-w-max sm:min-w-0 divide-x divide-primary/10">
-                  {De.map(({ icon: e, label: t }) => (
+                  {techToolsList.map(({ icon: e, label: t }: any, idx: number) => (
                     <div
-                      key={t}
+                      key={t || idx}
                       className="flex flex-col items-center justify-center text-center px-3 py-3 sm:px-2 md:px-3 sm:flex-1"
                     >
-                      <SlideImage src={e} size={36} />
+                      <SlideImage src={e || De[idx % De.length]?.icon || y.monitor} size={36} />
                       <p className="mt-1 whitespace-pre-line text-[11px] sm:text-[10.5px] md:text-[11.5px] font-semibold leading-[1.2] text-primary">
-                        {t}
+                        {t || e}
                       </p>
                     </div>
                   ))}
@@ -717,14 +736,8 @@ export default function SlideAboutPropertyWorks() {
               </div>
 
               <div className="flex-shrink-0 flex flex-col items-center justify-center bg-white border-t sm:border-t-0 sm:border-l border-primary/10 px-4 py-3 sm:w-[110px] md:w-[130px]">
-                <p className="font-heading text-[13px] sm:text-[12px] md:text-[13.5px] font-semibold leading-[1.35] text-primary text-center">
-                  We focus on you.
-                  <br />
-                  Your needs.
-                  <br />
-                  Your goals.
-                  <br />
-                  <span className="text-gold font-bold">Your future.</span>
+                <p className="font-heading text-[13px] sm:text-[12px] md:text-[13.5px] font-semibold leading-[1.35] text-primary text-center whitespace-pre-line">
+                  {formatDynamicText(aboutData?.focusText || "We focus on [gold]you[/gold]. Your needs. Your goals. [gold]Your future.[/gold]", "#D4A13A")}
                 </p>
                 <div
                   className="mt-2 animate-float-slow"
@@ -753,23 +766,17 @@ export default function SlideAboutPropertyWorks() {
                 {/* Title & text */}
                 <div className="flex-1 flex flex-col justify-center px-6 py-4 bg-[#edf4fb]">
                   <h3 className="h4-global text-primary leading-[1.2]">
-                    Technology With <span className="text-gold">Human Guidance</span>
+                    {formatDynamicText(aboutData?.techHeading || "Technology With [gold]Human Guidance[/gold]", "#D4A13A")}
                   </h3>
                   <p className="mt-1 text-[13px] font-medium leading-[1.45] text-primary/75">
-                    Digital tools and intelligence systems to simplify evaluation — combined with expert human support.
+                    {formatDynamicText(aboutData?.techDesc || "Digital tools and intelligence systems to simplify evaluation — combined with expert human support.", "#D4A13A")}
                   </p>
                 </div>
 
                 {/* Focus Banner */}
                 <div className="flex-shrink-0 flex flex-col items-center justify-center bg-white border-l border-primary/10 px-6 py-4 w-[160px]">
-                  <p className="font-heading text-[13px] font-semibold leading-[1.35] text-primary text-center">
-                    We focus on you.
-                    <br />
-                    Your needs.
-                    <br />
-                    Your goals.
-                    <br />
-                    <span className="text-gold font-bold">Your future.</span>
+                  <p className="font-heading text-[13px] font-semibold leading-[1.35] text-primary text-center whitespace-pre-line">
+                    {formatDynamicText(aboutData?.focusText || "We focus on [gold]you[/gold]. Your needs. Your goals. [gold]Your future.[/gold]", "#D4A13A")}
                   </p>
                   <div className="mt-2 animate-float-slow">
                     <SlideImage src={y.users} size={28} />
@@ -779,14 +786,14 @@ export default function SlideAboutPropertyWorks() {
 
               {/* Row 2: Tools grid (3 columns) */}
               <div className="grid grid-cols-3 divide-x divide-primary/10 bg-white">
-                {De.map(({ icon: e, label: t }) => (
+                {techToolsList.map(({ icon: e, label: t }: any, idx: number) => (
                   <div
-                    key={t}
+                    key={t || idx}
                     className="flex flex-col items-center justify-center text-center px-4 py-4"
                   >
-                    <SlideImage src={e} size={36} />
+                    <SlideImage src={e || De[idx % De.length]?.icon || y.monitor} size={36} />
                     <p className="mt-1.5 whitespace-pre-line text-[11.5px] font-bold leading-[1.25] text-primary">
-                      {t}
+                      {t || e}
                     </p>
                   </div>
                 ))}
@@ -812,24 +819,24 @@ export default function SlideAboutPropertyWorks() {
 
                 <div className="flex flex-col justify-center pl-3.5 pr-1 py-1">
                   <h3 className="text-[#001B4F] font-heading font-extrabold text-[14.5px] leading-tight">
-                    Technology With <span className="text-gold">Human Guidance</span>
+                    {formatDynamicText(aboutData?.techHeading || "Technology With [gold]Human Guidance[/gold]", "#D4A13A")}
                   </h3>
                   <p className="mt-1 text-[11.5px] font-medium leading-relaxed text-primary/75">
-                    Digital tools &amp; intelligence systems to simplify evaluation — with expert human support.
+                    {formatDynamicText(aboutData?.techDesc || "Digital tools and intelligence systems to simplify evaluation — combined with expert human support.", "#D4A13A")}
                   </p>
                 </div>
               </div>
 
               {/* Tools Grid (3 Columns) */}
               <div className="grid grid-cols-3 divide-x divide-primary/10 border-b border-primary/10 bg-white">
-                {De.map(({ icon: e, label: t }) => (
+                {techToolsList.map(({ icon: e, label: t }: any, idx: number) => (
                   <div
-                    key={t}
+                    key={t || idx}
                     className="flex flex-col items-center justify-center text-center px-2 py-4"
                   >
-                    <SlideImage src={e} size={36} />
+                    <SlideImage src={e || De[idx % De.length]?.icon || y.monitor} size={36} />
                     <p className="mt-1.5 whitespace-pre-line text-[10.5px] font-bold leading-[1.25] text-primary">
-                      {t}
+                      {t || e}
                     </p>
                   </div>
                 ))}
@@ -837,8 +844,8 @@ export default function SlideAboutPropertyWorks() {
 
               {/* Focus Banner (Full Width) */}
               <div className="flex items-center justify-between bg-[#edf4fb] px-4 py-3 border-t border-primary/5">
-                <div className="text-[12.5px] font-bold leading-snug text-primary text-left">
-                  We focus on <span className="text-gold font-bold">you</span>. Your needs. Your goals. <span className="text-gold font-bold">Your future.</span>
+                <div className="text-[12.5px] font-bold leading-snug text-primary text-left whitespace-pre-line">
+                  {formatDynamicText(aboutData?.focusText || "We focus on [gold]you[/gold]. Your needs. Your goals. [gold]Your future.[/gold]", "#D4A13A")}
                 </div>
                 <div className="animate-float-slow shrink-0 ml-3">
                   <SlideImage src={y.users} size={26} />

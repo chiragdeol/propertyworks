@@ -106,16 +106,13 @@ export default function SlideOurServices() {
       dbPoints = [dbItem.description];
     }
 
-    const mergedPoints = dbPoints.length >= 5 ? dbPoints : [
-      ...dbPoints,
-      ...defaultCard.points.slice(dbPoints.length)
-    ];
+    const points = dbPoints.length > 0 ? dbPoints : defaultCard.points;
 
     return {
       ...defaultCard,
       title: dbItem.title || defaultCard.title,
       subtitle: dbItem.subtitle || defaultCard.subtitle,
-      points: mergedPoints
+      points: points
     };
   });
 
@@ -170,10 +167,15 @@ export default function SlideOurServices() {
                   animation: "glowMove 10s ease infinite",
                 }}
               >
-                <h3 className="h3-global text-gold">Our Approach</h3>
+                <h3 className="h3-global text-gold">
+                  {formatDynamicText(servicesData?.approachHeading || "Our Approach", GOLD)}
+                </h3>
                 <div className="space-y-3 flex flex-col">
-                  {he.map((e) => (
-                    <div key={e} className="flex items-start gap-3">
+                  {((servicesData?.approachPoints || servicesData?.approachItems || []).length > 0
+                    ? (servicesData?.approachPoints || servicesData?.approachItems).map((pt: any) => typeof pt === "string" ? pt : pt.title || pt.text || "")
+                    : he
+                  ).map((e: string, i: number) => (
+                    <div key={i} className="flex items-start gap-3">
                       <SlideCheckIcon />
                       <p className="p-global text-white">{e}</p>
                     </div>
@@ -181,8 +183,7 @@ export default function SlideOurServices() {
                 </div>
                 <div className="h-px bg-gold/30 my-1" />
                 <p className="p-global text-white/95">
-                  through a <span className="font-bold text-gold">guided, intelligence-driven</span>{" "}
-                  approach.
+                  {formatDynamicText(servicesData?.approachFooter || "through a [gold]guided, intelligence-driven[/gold] approach.", GOLD)}
                 </p>
               </div>
             </motion.div>
@@ -223,10 +224,15 @@ export default function SlideOurServices() {
                 animation: "glowMove 10s ease infinite",
               }}
             >
-              <h3 className="h3-global text-gold">Our Approach</h3>
+              <h3 className="h3-global text-gold">
+                {formatDynamicText(servicesData?.approachHeading || "Our Approach", GOLD)}
+              </h3>
               <div className="space-y-2 flex flex-col">
-                {he.map((e) => (
-                  <div key={e} className="flex items-start gap-2.5">
+                {((servicesData?.approachPoints || servicesData?.approachItems || []).length > 0
+                  ? (servicesData?.approachPoints || servicesData?.approachItems).map((pt: any) => typeof pt === "string" ? pt : pt.title || pt.text || "")
+                  : he
+                ).map((e: string, i: number) => (
+                  <div key={i} className="flex items-start gap-2.5">
                     <SlideCheckIcon />
                     <p className="text-[clamp(11px,1vw,13px)] font-medium leading-snug text-white">
                       {e}
@@ -236,8 +242,7 @@ export default function SlideOurServices() {
               </div>
               <div className="h-px bg-gold/30" />
               <p className="text-[clamp(11px,1vw,13px)] font-medium text-white/90">
-                through a <span className="font-bold text-gold">guided, intelligence-driven</span>{" "}
-                approach.
+                {formatDynamicText(servicesData?.approachFooter || "through a [gold]guided, intelligence-driven[/gold] approach.", GOLD)}
               </p>
             </div>
           </motion.div>
@@ -299,10 +304,11 @@ export default function SlideOurServices() {
                 <SlideImage src={y.logo} size={80} />
               </div>
               <div>
-                <h3 className="h3-global text-white">Begin Your Guided Evaluation Journey</h3>
+                <h3 className="h3-global text-white">
+                  {formatDynamicText(servicesData?.blueStripHeading || "Begin Your Guided Evaluation Journey", GOLD, "#ffffff")}
+                </h3>
                 <p className="text-xs sm:text-sm font-semibold text-gold mt-1">
-                  Residential or Commercial — Evaluate Real Estate With Greater Clarity &amp;
-                  Confidence
+                  {formatDynamicText(servicesData?.blueStripSubheading || "Residential or Commercial — Evaluate Real Estate With Greater Clarity & Confidence", GOLD)}
                 </p>
               </div>
             </div>
@@ -332,30 +338,43 @@ export default function SlideOurServices() {
               }
             `}</style>
 
-            <div 
-              className="flex w-max animate-marquee-scroll" 
-              style={{ gap: "24px", paddingRight: "24px" }}
-            >
-              {[..._e, ..._e].map((e, t) => (
-                <div
-                  key={`${e.title}-${t}`}
-                  className="flex items-center gap-3.5 bg-white border border-[#D4A13A]/30 shadow-[0_4px_15px_rgba(0,27,79,0.04)] rounded-[20px] px-5 py-3.5 min-w-[300px] hover:border-[#D4A13A] hover:shadow-[0_8px_25px_rgba(212,161,58,0.15)] hover:-translate-y-1 transition-all duration-300 cursor-pointer group"
+            {(() => {
+              const displayMarquee = _e.map((defaultCard: any, idx: number) => {
+                const dbCard = servicesData?.movingCards?.[idx] || servicesData?.approachCards?.[idx];
+                if (!dbCard) return defaultCard;
+                return {
+                  ...defaultCard,
+                  title: dbCard.title || defaultCard.title,
+                  desc: dbCard.desc || defaultCard.desc,
+                };
+              });
+              const marqueeItems = [...displayMarquee, ...displayMarquee];
+              return (
+                <div 
+                  className="flex w-max animate-marquee-scroll" 
+                  style={{ gap: "24px", paddingRight: "24px" }}
                 >
-                  <div className="w-[44px] h-[44px] rounded-full bg-[#001B4F]/5 flex items-center justify-center shrink-0 group-hover:bg-[#001B4F] group-hover:shadow-md transition-colors duration-300">
-                    <SlideImage src={e.icon} size={28} className="group-hover:brightness-0 group-hover:invert transition-all duration-300" />
-                  </div>
-                  <div className="flex flex-col">
-                    <h4 className="font-heading text-[14px] font-bold text-gold
-                     leading-tight group-hover:text-[#D4A13A] transition-colors duration-300">
-                      {e.title}
-                    </h4>
-                    <p className="text-[11.5px] text-[#001B4F]/70 font-medium mt-1 leading-snug">
-                      {e.desc}
-                    </p>
-                  </div>
+                  {marqueeItems.map((e: any, t: number) => (
+                    <div
+                      key={`${e.title}-${t}`}
+                      className="flex items-center gap-3.5 bg-white border border-[#D4A13A]/30 shadow-[0_4px_15px_rgba(0,27,79,0.04)] rounded-[20px] px-5 py-3.5 min-w-[300px] hover:border-[#D4A13A] hover:shadow-[0_8px_25px_rgba(212,161,58,0.15)] hover:-translate-y-1 transition-all duration-300 cursor-pointer group"
+                    >
+                      <div className="w-[44px] h-[44px] rounded-full bg-[#001B4F]/5 flex items-center justify-center shrink-0 group-hover:bg-[#001B4F] group-hover:shadow-md transition-colors duration-300">
+                        <SlideImage src={e.icon} size={28} className="group-hover:brightness-0 group-hover:invert transition-all duration-300" />
+                      </div>
+                      <div className="flex flex-col">
+                        <h4 className="font-heading text-[14px] font-bold text-gold leading-tight group-hover:text-[#D4A13A] transition-colors duration-300">
+                          {e.title}
+                        </h4>
+                        <p className="text-[11.5px] text-[#001B4F]/70 font-medium mt-1 leading-snug">
+                          {e.desc}
+                        </p>
+                      </div>
+                    </div>
+                  ))}
                 </div>
-              ))}
-            </div>
+              );
+            })()}
           </div>
         </div>
       </div>

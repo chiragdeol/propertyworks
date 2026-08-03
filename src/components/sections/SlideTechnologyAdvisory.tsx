@@ -107,26 +107,31 @@ export default function SlideTechnologyAdvisory() {
               What You Gain
             </h3>
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
-              {D.map((e) => (
-                <div key={e.title} className="flex items-start gap-3.5">
-                  <SlideImage src={e.icon} size={48} className="shrink-0" />
-                  <div>
-                    <h4 className="text-white font-bold text-[13px] sm:text-[14px] leading-tight font-heading">
-                      {e.title}
-                    </h4>
-                    <p className="text-white/65 text-[11px] sm:text-[12px] leading-relaxed mt-1 whitespace-pre-line font-medium">
-                      {e.desc}
-                    </p>
+              {D.map((defaultCard: any, t: number) => {
+                const dbCard = techData?.outcomes?.[t] || techData?.blueStrip?.[t];
+                const title = dbCard?.title || defaultCard.title;
+                const desc = dbCard?.desc || defaultCard.desc;
+                return (
+                  <div key={t} className="flex items-start gap-3.5">
+                    <SlideImage src={defaultCard.icon} size={48} className="shrink-0" />
+                    <div>
+                      <h4 className="text-white font-bold text-[13px] sm:text-[14px] leading-tight font-heading">
+                        {title}
+                      </h4>
+                      <p className="text-white/65 text-[11px] sm:text-[12px] leading-relaxed mt-1 whitespace-pre-line font-medium">
+                        {desc}
+                      </p>
+                    </div>
                   </div>
-                </div>
-              ))}
+                );
+              })}
             </div>
           </motion.div>
         </div>
 
         <div className="w-full bg-white flex items-center justify-center py-4 border-t border-b-2 px-4 text-center mt-4">
           <p className="text-primary text-[13.5px] sm:text-[15px] font-heading font-semibold">
-            Smart Technology. Real Expertise. <span className="italic font-bold text-gold">Better Decisions.</span>
+            {formatDynamicText(techData?.stripText || "Smart Technology. Real Expertise. [gold]Better Decisions.[/gold]", GOLD)}
           </p>
         </div>
       </motion.div>
@@ -172,27 +177,32 @@ export default function SlideTechnologyAdvisory() {
             className="flex flex-col gap-5"
             style={{ marginTop: "30px" }}
           >
-            {E.map((e, t) => (
-              <motion.div key={e.title} variants={fadeInRight(0, 0.5)}>
-                {t > 0 && <div className="h-[2px] bg-[#001B4F]/10 my-3 w-[70%]" />}
-                <div className="flex items-start gap-[12px]">
-                  <motion.div
-                    whileHover={{ scale: 1.1, rotate: 5 }}
-                    className="flex h-[52px] w-[52px] shrink-0 items-center justify-center rounded-full bg-[#001B4F] border border-gold/30 shadow-sm text-white cursor-pointer"
-                  >
-                    <SlideImage src={e.icon} size={24} />
-                  </motion.div>
-                  <div>
-                    <p className="font-bold text-[#001B4F] text-[clamp(16.5px,0.95vw,22.5px)] font-heading leading-tight mb-1">
-                      {e.title}
-                    </p>
-                    <p className="text-[#001B4F]/70 text-[clamp(11px,0.78vw,13px)] font-medium leading-relaxed whitespace-pre-line mt-[3px]">
-                      {e.desc}
-                    </p>
+            {E.map((defaultCard: any, t: number) => {
+              const dbCard = techData?.features?.[t] || techData?.items?.[t];
+              const title = dbCard?.title || defaultCard.title;
+              const desc = dbCard?.desc || defaultCard.desc;
+              return (
+                <motion.div key={t} variants={fadeInRight(0, 0.5)}>
+                  {t > 0 && <div className="h-[2px] bg-[#001B4F]/10 my-3 w-[70%]" />}
+                  <div className="flex items-start gap-[12px]">
+                    <motion.div
+                      whileHover={{ scale: 1.1, rotate: 5 }}
+                      className="flex h-[52px] w-[52px] shrink-0 items-center justify-center rounded-full bg-[#001B4F] border border-gold/30 shadow-sm text-white cursor-pointer"
+                    >
+                      <SlideImage src={defaultCard.icon} size={24} />
+                    </motion.div>
+                    <div>
+                      <p className="font-bold text-[#001B4F] text-[clamp(16.5px,0.95vw,22.5px)] font-heading leading-tight mb-1">
+                        {title}
+                      </p>
+                      <p className="text-[#001B4F]/70 text-[clamp(11px,0.78vw,13px)] font-medium leading-relaxed whitespace-pre-line mt-[3px]">
+                        {desc}
+                      </p>
+                    </div>
                   </div>
-                </div>
-              </motion.div>
-            ))}
+                </motion.div>
+              );
+            })}
           </motion.div>
         </div>
 
@@ -244,24 +254,29 @@ export default function SlideTechnologyAdvisory() {
             animation: "glowMove 10s ease infinite",
           }}
         >
-          {D.map((e, t) => (
-            <motion.div
-              key={e.title}
-              variants={fadeInUp(0, 0.55)}
-              className={`flex items-start gap-[12px] w-[22%] ${t < D.length - 1 ? `border-r border-white/15` : ``}`}
-              style={t < D.length - 1 ? { paddingRight: "3%" } : {}}
-            >
-              <SlideImage src={e.icon} size="clamp(40px, 4.2vw, 70px)" className="shrink-0" />
-              <div>
-                <p className="text-gold font-bold text-[clamp(13px,0.95vw,16px)] leading-tight">
-                  {e.title}
-                </p>
-                <p className="text-white/65 text-[clamp(11.5px,0.75vw,13px)] leading-normal mt-[2px] whitespace-pre-line font-medium">
-                  {e.desc}
-                </p>
-              </div>
-            </motion.div>
-          ))}
+          {D.map((defaultCard: any, t: number) => {
+            const dbCard = techData?.outcomes?.[t] || techData?.blueStrip?.[t];
+            const title = dbCard?.title || defaultCard.title;
+            const desc = dbCard?.desc || defaultCard.desc;
+            return (
+              <motion.div
+                key={t}
+                variants={fadeInUp(0, 0.55)}
+                className={`flex items-start gap-[12px] w-[22%] ${t < D.length - 1 ? `border-r border-white/15` : ``}`}
+                style={t < D.length - 1 ? { paddingRight: "3%" } : {}}
+              >
+                <SlideImage src={defaultCard.icon} size="clamp(40px, 4.2vw, 70px)" className="shrink-0" />
+                <div>
+                  <p className="text-gold font-bold text-[clamp(13px,0.95vw,16px)] leading-tight">
+                    {title}
+                  </p>
+                  <p className="text-white/65 text-[clamp(11.5px,0.75vw,13px)] leading-normal mt-[2px] whitespace-pre-line font-medium">
+                    {desc}
+                  </p>
+                </div>
+              </motion.div>
+            );
+          })}
         </motion.div>
 
         {/* Bottom Gold Strip */}

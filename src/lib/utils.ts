@@ -6,7 +6,7 @@ export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs));
 }
 
-export function formatDynamicText(text: string, goldColor = "#D4A13A"): React.ReactNode {
+export function formatDynamicText(text: string, goldColor = "#D4A13A", defaultTextColor?: string): React.ReactNode {
   if (!text) return "";
   
   // Split by [gold]...[/gold] tags (using [\s\S] to support newlines within tags)
@@ -30,8 +30,8 @@ export function formatDynamicText(text: string, goldColor = "#D4A13A"): React.Re
     }
     
     return React.createElement(
-      Fragment,
-      { key: index },
+      "span",
+      { key: index, style: defaultTextColor ? { color: defaultTextColor } : undefined },
       part.split("\n").map((line, lIdx) => (
         React.createElement(
           Fragment,

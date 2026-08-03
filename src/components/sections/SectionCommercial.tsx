@@ -146,6 +146,26 @@ export default function SectionCommercial() {
     { icon: iconGrowthTrend, t: "Future-Ready Investments.", s: "Sustainable Growth." },
   ];
 
+  const displayItems = items.map((defaultCard, i) => {
+    const dbItem = commData?.items?.[i] || commData?.cards?.[i];
+    if (!dbItem) return defaultCard;
+    return {
+      ...defaultCard,
+      title: dbItem.title || defaultCard.title,
+      body: dbItem.body || defaultCard.body,
+    };
+  });
+
+  const displayBottom = bottom.map((defaultItem, i) => {
+    const dbItem = commData?.blueStrip?.[i] || commData?.bottomFeatures?.[i];
+    if (!dbItem) return defaultItem;
+    return {
+      ...defaultItem,
+      t: dbItem.title || dbItem.t || defaultItem.t,
+      s: dbItem.sub || dbItem.s || defaultItem.s,
+    };
+  });
+
   return (
     <section id="commercial" className="w-full bg-white overflow-hidden relative">
       <AmbientGlows variant="light" />
@@ -171,7 +191,7 @@ export default function SectionCommercial() {
 
             {/* Interactive Grid Cards with hover scale & shadow */}
             <div className="mt-8 grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-1 xl:grid-cols-3 gap-4 max-w-xl md:max-w-none lg:max-w-xl xl:max-w-3xl">
-              {items.map((it, i) => (
+              {displayItems.map((it, i) => (
                 <CommercialHoverCard key={i} it={it} index={i} />
               ))}
             </div>
@@ -220,7 +240,7 @@ export default function SectionCommercial() {
           }}
         >
           <div className="grid grid-cols-1 xs:grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 lg:divide-x divide-white/20 gap-y-5 gap-x-4 w-full">
-            {bottom.map((b, i) => (
+            {displayBottom.map((b, i) => (
               <div key={i} className="flex items-center gap-3.5 text-white sm:pl-0 lg:pl-6 first:pl-0">
                 <div
                   style={{ animationDelay: `${i * 0.4}s` }}
@@ -244,18 +264,14 @@ export default function SectionCommercial() {
             className="text-white text-[15px] font-medium border-l-[4px] pl-4 lg:pl-6 w-full max-w-full lg:max-w-xs leading-relaxed shrink-0 drop-shadow-md"
             style={{ borderColor: GOLD }}
           >
-            We help you find spaces that drive performance and{" "}
-            <span className="font-bold" style={{ color: GOLD }}>create value.</span>
+            {formatDynamicText(commData?.sideText || "We help you find spaces that drive performance and [gold]create value.[/gold]", GOLD)}
           </motion.div>
         </motion.div>
       </div>
 
       <div className="w-full text-center py-4 px-5 bg-white border-b-2">
         <p className="font-sans text-[#001B4F] text-[15px] sm:text-base">
-          Better decisions today.{" "}
-          <span className="italic font-bold" style={{ color: GOLD }}>
-            Stronger returns tomorrow.
-          </span>
+          {formatDynamicText(commData?.bottomStatement || "Better decisions today. [gold]Stronger returns tomorrow.[/gold]", GOLD)}
         </p>
       </div>
     </section>

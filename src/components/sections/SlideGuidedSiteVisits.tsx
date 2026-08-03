@@ -73,7 +73,26 @@ export default function SlideGuidedSiteVisits() {
   }, []);
 
   const crossSequence = [0, 3, 1, 2];
-  const activeCardIndex = crossSequence[activeIndex];
+  const displaySpotlightCards = ne.map((defaultCard: any, i: number) => {
+    const dbCard = visitsData?.spotlightCards?.[i] || visitsData?.items?.[i];
+    if (!dbCard) return defaultCard;
+    return {
+      ...defaultCard,
+      title: dbCard.title || defaultCard.title,
+      desc: dbCard.desc || defaultCard.desc,
+    };
+  });
+
+  const displayFeatures = T.map((defaultFeature: any, i: number) => {
+    const dbFeature = visitsData?.features?.[i] || visitsData?.blueStrip?.[i];
+    if (!dbFeature) return defaultFeature;
+    return {
+      ...defaultFeature,
+      title: dbFeature.title || defaultFeature.title,
+      desc: dbFeature.desc || defaultFeature.desc,
+    };
+  });
+
   return (
     <section
       id="guided-site-visits"
@@ -107,9 +126,9 @@ export default function SlideGuidedSiteVisits() {
 
             {/* Interactive Grid Cards with hover scale & shadow */}
             <motion.div variants={staggerContainer(0.08, 0.4)} className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-2 gap-4 sm:gap-5 mt-6 max-w-2xl md:max-w-none lg:max-w-2xl">
-              {ne.map((e, index) => (
+              {displaySpotlightCards.map((e: any, index: number) => (
                 <motion.div key={e.title} variants={fadeInUp(0, 0.5)} className="h-full">
-                  <SiteVisitSpotlightCard e={e} index={index} isActive={index === activeCardIndex} />
+                  <SiteVisitSpotlightCard e={e} index={index} isActive={index === crossSequence[activeIndex]} />
                 </motion.div>
               ))}
             </motion.div>
@@ -141,10 +160,10 @@ export default function SlideGuidedSiteVisits() {
               </div>
               <div>
                 <p className="text-white font-heading font-bold text-sm sm:text-base leading-tight">
-                  See Beyond. Understand Deeply.
+                  {formatDynamicText(visitsData?.badgeTitle || "See Beyond. Understand Deeply.", GOLD)}
                 </p>
                 <p className="text-gold font-heading font-bold text-xs sm:text-sm mt-1 leading-tight">
-                  Decide Confidently.
+                  {formatDynamicText(visitsData?.badgeSubtitle || "Decide Confidently.", GOLD)}
                 </p>
               </div>
             </div>
@@ -176,14 +195,7 @@ export default function SlideGuidedSiteVisits() {
             viewport={{ once: true }}
             className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-6 lg:gap-8"
           >
-            {(Array.isArray(visitsData?.features) && visitsData.features.length > 0 && typeof visitsData.features[0] === 'object' && visitsData.features[0]?.title
-              ? visitsData.features.map((f: any, i: number) => ({
-                  icon: [y.scalesGold, y.vastu, y.location, y.scales, y.handshake][i % 5],
-                  title: f.title || T[i % T.length]?.title || "",
-                  desc: f.desc || T[i % T.length]?.desc || ""
-                }))
-              : T
-            ).map((e: any, i: number) => (
+            {displayFeatures.map((e: any, i: number) => (
               <motion.div
                 key={e.title || i}
                 variants={fadeInUp(0, 0.5)}

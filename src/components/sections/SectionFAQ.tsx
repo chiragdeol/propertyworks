@@ -170,6 +170,43 @@ export default function SectionFAQ() {
     },
   ];
 
+  const displayCategories = useMemo(() => {
+    if (!Array.isArray(faqData?.categories) || faqData.categories.length === 0) return categories;
+    return categories.map((defaultCat, idx) => {
+      const dbCat = faqData.categories[idx];
+      if (!dbCat) return defaultCat;
+      return {
+        ...defaultCat,
+        label: typeof dbCat === 'string' ? dbCat : (dbCat.label || defaultCat.label),
+      };
+    });
+  }, [faqData]);
+
+  const displayFaqs = useMemo(() => {
+    if (Array.isArray(faqData?.items) && faqData.items.length > 0) {
+      return faqData.items.map((dbFaq: any, idx: number) => {
+        const defaultFaq = faqs[idx];
+        return {
+          category: (dbFaq.category as any) || defaultFaq?.category || "general",
+          q: dbFaq.question || dbFaq.q || defaultFaq?.q || "",
+          a: dbFaq.answer || dbFaq.a || defaultFaq?.a || "",
+        };
+      });
+    }
+    return faqs;
+  }, [faqData]);
+
+  const filteredFaqs = useMemo(() => {
+    return displayFaqs.filter((faq: any) => {
+      const matchesCategory = activeCategory === "all" || faq.category === activeCategory;
+      const matchesSearch =
+        !searchTerm ||
+        faq.q.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        faq.a.toLowerCase().includes(searchTerm.toLowerCase());
+      return matchesCategory && matchesSearch;
+    });
+  }, [displayFaqs, activeCategory, searchTerm]);
+
   // Helper to dynamically render styled paragraphs and bullet lists
   const renderAnswer = (text: string) => {
     const lines = text.split("\n");
@@ -228,11 +265,11 @@ export default function SectionFAQ() {
   // Memoized counts matching search
   const categoryCounts = useMemo(() => {
     const counts: Record<string, number> = { all: 0 };
-    categories.forEach((c) => {
+    displayCategories.forEach((c) => {
       if (c.id !== "all") counts[c.id] = 0;
     });
 
-    faqs.forEach((faq) => {
+    displayFaqs.forEach((faq: any) => {
       const matchesSearch =
         !searchTerm ||
         faq.q.toLowerCase().includes(searchTerm.toLowerCase()) ||
@@ -247,19 +284,7 @@ export default function SectionFAQ() {
     });
 
     return counts;
-  }, [searchTerm]);
-
-  // Memoized filtered FAQs list
-  const filteredFaqs = useMemo(() => {
-    return faqs.filter((faq) => {
-      const matchesCategory = activeCategory === "all" || faq.category === activeCategory;
-      const matchesSearch =
-        !searchTerm ||
-        faq.q.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        faq.a.toLowerCase().includes(searchTerm.toLowerCase());
-      return matchesCategory && matchesSearch;
-    });
-  }, [activeCategory, searchTerm]);
+  }, [searchTerm, displayCategories, displayFaqs]);
 
   return (
     <section
@@ -330,7 +355,7 @@ export default function SectionFAQ() {
                   CATEGORIES
                 </div>
                 <div className="space-y-1.5">
-                  {categories.map((cat) => {
+                  {displayCategories.map((cat) => {
                     const CatIcon = cat.icon;
                     const isActive = activeCategory === cat.id;
                     const count = categoryCounts[cat.id] || 0;
@@ -382,7 +407,7 @@ export default function SectionFAQ() {
             {/* Mobile Category Horizontal Scrolling Pills */}
             <motion.div variants={fadeInUp(0.15, 0.6)} className="lg:hidden">
               <div className="flex gap-2 overflow-x-auto pb-3 scrollbar-none -mx-4 px-4 mask-image">
-                {categories.map((cat) => {
+                {displayCategories.map((cat) => {
                   const CatIcon = cat.icon;
                   const isActive = activeCategory === cat.id;
                   const count = categoryCounts[cat.id] || 0;
@@ -463,7 +488,7 @@ export default function SectionFAQ() {
                     viewport={{ once: true, margin: "0px" }}
                     className="space-y-3.5"
                   >
-                    {filteredFaqs.map((faq) => {
+                    {filteredFaqs.map((faq: any) => {
                       const isOpen = openFAQ === faq.q;
                       return (
                         <motion.div
@@ -565,12 +590,11 @@ export default function SectionFAQ() {
               </div>
               <div className="relative z-10 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-6">
                 <div className="space-y-1.5 max-w-md">
-                  <h4 className="font-serif text-base sm:text-lg font-bold">
-                    Still have questions?
+                  <h4 className="font-serif text-base sm:text-lg font-bold text-white">
+                    {formatDynamicText(faqData?.blueStripHeading || "Still have questions?", GOLD, "#ffffff")}
                   </h4>
-                  <p className="text-[13.5px] sm:text-sm text-white/75 leading-relaxed">
-                    Can't find the answers you're looking for? Reach out directly to our
-                    PropertyWorks advisory team on WhatsApp.
+                  <p className="text-[13.5px] sm:text-sm text-white leading-relaxed">
+                    {formatDynamicText(faqData?.blueStripSubheading || "Can't find the answers you're looking for? Reach out directly to our PropertyWorks advisory team on WhatsApp.", GOLD, "#ffffff")}
                   </p>
                 </div>
                 <motion.a
@@ -585,7 +609,7 @@ export default function SectionFAQ() {
                     <path d="M.057 24l1.687-6.163c-1.041-1.804-1.588-3.849-1.587-5.946C.06 5.348 5.397.01 12.008.01c3.202.001 6.212 1.246 8.477 3.513 2.262 2.268 3.507 5.28 3.505 8.484-.004 6.657-5.34 11.997-11.953 11.997-2.005-.001-3.973-.502-5.724-1.457L0 24zm6.59-4.846c1.6.95 3.088 1.452 4.835 1.453 5.402.002 9.794-4.39 9.797-9.798.002-2.62-1.018-5.084-2.871-6.94C16.505 2.01 14.04 1.002 12.01 1.001 6.605 1.001 2.212 5.393 2.21 10.801c-.001 1.83.483 3.42 1.47 5.008l-.997 3.642 3.734-.979.23.136z" />
                     <path d="M15.35 12.045c-.18-.09-.54-.27-.6-.3-.06-.03-.12-.045-.18-.045-.06 0-.15.03-.225.135-.075.105-.3.3-.36.375-.06.075-.12.09-.3.001-.18-.09-.76-.28-1.447-.893-.535-.477-.897-1.066-.997-1.246-.1-.18-.01-.277.08-.367.08-.08.18-.21.27-.315.09-.105.12-.18.18-.3.06-.12.03-.225-.015-.315-.045-.09-.39-1.05-.54-1.41-.15-.36-.3-.315-.39-.315-.06 0-.12-.015-.195-.015s-.195.03-.3.15c-.105.12-.39.375-.39.915s.39 1.065.45 1.14c.06.075.765 1.17 1.86 1.635.26.11.465.18.625.23.265.085.505.07.695.04.21-.03.54-.225.615-.435.075-.21.075-.39.045-.435-.03-.045-.105-.075-.285-.165z" />
                   </svg>
-                  <span>Chat on WhatsApp</span>
+                  <span>{formatDynamicText(faqData?.blueStripCtaText || "Chat on WhatsApp")}</span>
                 </motion.a>
               </div>
             </motion.div>

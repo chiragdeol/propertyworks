@@ -15,6 +15,21 @@ import { formatDynamicText } from "@/lib/utils";
 export default function SlideIndependentEvaluation() {
   const { settings } = useSettings();
   const evaluationData = settings?.sections?.independentEvaluation;
+
+  const pillarsList = Array.isArray(evaluationData?.pillars) && evaluationData.pillars.length > 0
+    ? evaluationData.pillars.map((p: any, idx: number) => ({
+        icon: ie[idx % ie.length]?.icon || y.buildingsFilled,
+        title: p.title || ie[idx % ie.length]?.title || "",
+        desc: p.desc || p.subtitle || ie[idx % ie.length]?.desc || "",
+      }))
+    : ie;
+
+  const noBiasPointsList = Array.isArray(evaluationData?.noBiasPoints) && evaluationData.noBiasPoints.length > 0
+    ? evaluationData.noBiasPoints.map((pt: any) => typeof pt === "string" ? pt : pt.title || pt.label || "")
+    : Array.isArray(evaluationData?.clarityPoints) && evaluationData.clarityPoints.length > 0
+    ? evaluationData.clarityPoints.map((pt: any) => typeof pt === "string" ? pt : pt.title || pt.label || "")
+    : ae;
+
   return (
     <section className="slide-section w-full overflow-visible lg:overflow-hidden bg-[#F8FAFC]">
       {/* MOBILE LAYOUT */}
@@ -36,9 +51,8 @@ export default function SlideIndependentEvaluation() {
         </div>
         <div className="px-5 pb-8 md:px-10 md:pb-12 flex flex-col gap-8">
 
-          {/* Vertical Flow Diagram for Mobile (matches the desktop visual architecture) */}
+          {/* Vertical Flow Diagram for Mobile */}
           <div className="flex flex-col items-center my-4 py-6 bg-slate-50 rounded-2xl border border-slate-100 relative overflow-hidden">
-            {/* Ambient gold glow */}
             <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,rgba(212,161,58,0.06)_0%,transparent_70%)] pointer-events-none" />
 
             {/* 1. YOU Card */}
@@ -48,8 +62,12 @@ export default function SlideIndependentEvaluation() {
                   <SlideImage src={y.user} size={20} />
                 </div>
                 <div className="flex flex-col text-left">
-                  <p className="text-[12px] font-heading font-extrabold text-[#001B4F] tracking-wider leading-none mb-1">YOU</p>
-                  <p className="text-[10px] font-bold text-[#001B4F]/60 leading-tight">Your Goals &amp; Priorities</p>
+                  <p className="text-[12px] font-heading font-extrabold text-[#001B4F] tracking-wider leading-none mb-1">
+                    {formatDynamicText(evaluationData?.youTitle || "YOU")}
+                  </p>
+                  <p className="text-[10px] font-bold text-[#001B4F]/60 leading-tight">
+                    {formatDynamicText(evaluationData?.youSubtitle || "Your Goals & Priorities")}
+                  </p>
                 </div>
               </div>
             </div>
@@ -57,12 +75,10 @@ export default function SlideIndependentEvaluation() {
             {/* Dotted connector */}
             <div className="h-8 w-[2px] border-l-2 border-dashed border-[#D4A13A] my-1.5" />
 
-            {/* 2. PropertyWorks Diamond Hub (scaled down for mobile) */}
+            {/* 2. PropertyWorks Diamond Hub */}
             <div className="relative z-10 flex items-center justify-center my-2">
-              {/* Pulsing Aura */}
               <div className="absolute inset-[-40px] rounded-full bg-[radial-gradient(circle,rgba(212,161,58,0.12)_0%,transparent_70%)] blur-md pointer-events-none" />
               
-              {/* Outer Tilted 3D Orbiting Ring */}
               <motion.div
                 animate={{ rotate: 360 }}
                 transition={{ repeat: Infinity, ease: "linear", duration: 12 }}
@@ -76,14 +92,11 @@ export default function SlideIndependentEvaluation() {
                 }}
               />
 
-              {/* Diamond Container */}
               <div className="relative w-36 h-36 flex items-center justify-center">
-                {/* Rotated square */}
                 <div className="absolute inset-0 rounded-[24px] bg-gradient-to-b from-[#001B4F] to-[#000d2b] border-2 border-gold shadow-lg flex items-center justify-center rotate-45">
                   <div className="absolute inset-[6px] rounded-[18px] border border-gold/25" />
                 </div>
 
-                {/* Content upright */}
                 <div className="relative z-20 flex flex-col items-center justify-center text-center p-2 select-none">
                   <div className="w-9 h-9 rounded-lg bg-white/10 border border-white/25 flex items-center justify-center mb-1.5 shadow-sm">
                     <SlideImage src={y.logo} size={24} className="filter brightness-110" />
@@ -93,7 +106,7 @@ export default function SlideIndependentEvaluation() {
                   </p>
                   <div className="h-[1px] w-8 bg-gold/50 my-1.5" />
                   <div className="px-1.5 py-0.5 rounded-full bg-gold/10 border border-gold/25 text-[7.5px] font-extrabold uppercase text-gold tracking-widest leading-none">
-                    Evaluation
+                    {formatDynamicText(evaluationData?.hubBadge || "Evaluation")}
                   </div>
                 </div>
               </div>
@@ -109,8 +122,12 @@ export default function SlideIndependentEvaluation() {
                   <SlideImage src={y.clipboardCheck} size={20} />
                 </div>
                 <div className="flex flex-col text-left">
-                  <p className="text-[12px] font-heading font-extrabold text-[#001B4F] tracking-wider leading-none mb-1">SHORTLISTED</p>
-                  <p className="text-[10px] font-bold text-[#001B4F]/60 leading-tight">Aligned<br />Opportunities</p>
+                  <p className="text-[12px] font-heading font-extrabold text-[#001B4F] tracking-wider leading-none mb-1">
+                    {formatDynamicText(evaluationData?.shortlistedTitle || "SHORTLISTED")}
+                  </p>
+                  <p className="text-[10px] font-bold text-[#001B4F]/60 leading-tight">
+                    {formatDynamicText(evaluationData?.shortlistedSubtitle || "Aligned Opportunities")}
+                  </p>
                 </div>
               </div>
             </div>
@@ -118,22 +135,22 @@ export default function SlideIndependentEvaluation() {
 
           {/* Staggered checklist */}
           <motion.div variants={staggerContainer(0.08, 0.2)} className="flex flex-col gap-5">
-            {ie.map((e) => (
+            {pillarsList.map((item: any, idx: number) => (
               <motion.div
-                key={e.title}
+                key={idx}
                 variants={fadeInUp(0, 0.5)}
                 whileHover={{ scale: 1.02 }}
                 className="flex items-start gap-3.5 p-4 rounded-xl bg-white shadow-[0_4px_16px_rgba(0,0,0,0.03)] border border-primary/5 cursor-default transition-all duration-300"
               >
                 <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-full bg-[#001B4F] border border-gold/30 shadow-sm text-white">
-                  <SlideImage src={e.icon} size={22} className="filter brightness-110" />
+                  <SlideImage src={item.icon} size={22} className="filter brightness-110" />
                 </div>
                 <div>
                   <h4 className="font-bold text-[#001B4F] text-[14px] sm:text-[15px] font-heading leading-tight mb-1">
-                    {e.title}
+                    {item.title}
                   </h4>
                   <p className="text-[#001B4F]/70 text-[12px] sm:text-[12.5px] font-medium leading-relaxed mt-1 whitespace-pre-line">
-                    {e.desc}
+                    {item.desc}
                   </p>
                 </div>
               </motion.div>
@@ -157,9 +174,9 @@ export default function SlideIndependentEvaluation() {
               <span className="text-gold"> Works</span>
             </h3>
             <p className="text-[12px] sm:text-[13px] text-white/80 font-medium max-w-md leading-relaxed">
-              A Wide Network. One Trusted Partner.
+              {formatDynamicText(evaluationData?.blueStripHeading || "A Wide Network. One Trusted Partner.", GOLD)}
               <br />
-              Access to top developers, evaluated through one intelligent and objective framework.
+              {formatDynamicText(evaluationData?.blueStripSubheading || "Access to top developers, evaluated through one intelligent and objective framework.", GOLD)}
             </p>
           </motion.div>
 
@@ -183,7 +200,7 @@ export default function SlideIndependentEvaluation() {
                 </svg>
               </div>
               <h3 className="text-primary text-[18px] sm:text-[20px] font-heading font-extrabold tracking-tight">
-                No Bias. <span className="text-gold">Only Clarity.</span>
+                {formatDynamicText(evaluationData?.noBiasTitle || "No Bias. [gold]Only Clarity.[/gold]", GOLD)}
               </h3>
             </div>
 
@@ -191,9 +208,9 @@ export default function SlideIndependentEvaluation() {
               variants={staggerContainer(0.06, 0.2)}
               className="grid grid-cols-2 gap-4 w-full"
             >
-              {ae.map((e) => (
+              {noBiasPointsList.map((e: string, idx: number) => (
                 <motion.div
-                  key={e}
+                  key={idx}
                   variants={fadeInUp(0, 0.4)}
                   whileHover={{ scale: 1.03 }}
                   className="flex items-center gap-2.5 p-3 rounded-lg bg-slate-50 border border-slate-100 hover:border-gold/30 hover:bg-white transition-all cursor-pointer shadow-xs"
@@ -247,8 +264,7 @@ export default function SlideIndependentEvaluation() {
                 <SlideImage src={y.usersGroup} size={28} />
               </div>
               <p className="text-white text-[12px] sm:text-[13px] font-medium leading-normal">
-                We bring the entire market to you. You make the right choice with{" "}
-                <span className="text-gold font-bold">confidence.</span>
+                {formatDynamicText(evaluationData?.bottomCard1Text || "We bring the entire market to you. You make the right choice with [gold]confidence.[/gold]", GOLD)}
               </p>
             </div>
             <div className="flex items-center gap-3.5 pt-3">
@@ -259,8 +275,7 @@ export default function SlideIndependentEvaluation() {
                 <SlideImage src={y.target} size={28} />
               </div>
               <p className="text-white text-[12px] sm:text-[13px] font-medium leading-normal">
-                More options. Better insights.{" "}
-                <span className="text-gold font-bold">Stronger decisions.</span>
+                {formatDynamicText(evaluationData?.bottomCard2Text || "More options. Better insights. [gold]Stronger decisions.[/gold]", GOLD)}
               </p>
             </div>
           </div>
@@ -293,10 +308,10 @@ export default function SlideIndependentEvaluation() {
 
             <div className="text-center mb-8">
               <h2 className="font-heading font-bold text-[20px] text-primary tracking-tight">
-                A Wide Network. <span className="text-gold">One Trusted Partner.</span>
+                {formatDynamicText(evaluationData?.centerHeading || "A Wide Network. [gold]One Trusted Partner.[/gold]", GOLD)}
               </h2>
               <p className="text-[11px] text-primary/60 font-semibold tracking-wide uppercase mt-1">
-                Access to top developers. Evaluated through one intelligent framework.
+                {formatDynamicText(evaluationData?.centerSubheading || "Access to top developers. Evaluated through one intelligent framework.", GOLD)}
               </p>
             </div>
 
@@ -319,8 +334,12 @@ export default function SlideIndependentEvaluation() {
                       <SlideImage src={y.user} size={20} />
                     </div>
                     <div className="flex flex-col text-left">
-                      <p className="text-[12px] font-heading font-extrabold text-[#001B4F] tracking-wider leading-none mb-1">YOU</p>
-                      <p className="text-[10px] font-bold text-[#001B4F]/60 leading-tight">Your Goals &amp; Priorities</p>
+                      <p className="text-[12px] font-heading font-extrabold text-[#001B4F] tracking-wider leading-none mb-1">
+                        {formatDynamicText(evaluationData?.youTitle || "YOU")}
+                      </p>
+                      <p className="text-[10px] font-bold text-[#001B4F]/60 leading-tight">
+                        {formatDynamicText(evaluationData?.youSubtitle || "Your Goals & Priorities")}
+                      </p>
                     </div>
                   </div>
                 </div>
@@ -343,7 +362,7 @@ export default function SlideIndependentEvaluation() {
                     </p>
                     <div className="h-[1px] w-6 bg-gold/50 my-1" />
                     <div className="px-1.5 py-0.5 rounded-full bg-gold/10 border border-gold/25 text-[7px] font-extrabold uppercase text-gold tracking-widest leading-none">
-                      Evaluation
+                      {formatDynamicText(evaluationData?.hubBadge || "Evaluation")}
                     </div>
                   </div>
                 </div>
@@ -358,8 +377,12 @@ export default function SlideIndependentEvaluation() {
                       <SlideImage src={y.clipboardCheck} size={20} />
                     </div>
                     <div className="flex flex-col text-left">
-                      <p className="text-[12px] font-heading font-extrabold text-[#001B4F] tracking-wider leading-none mb-1">SHORTLISTED</p>
-                      <p className="text-[10px] font-bold text-[#001B4F]/60 leading-tight">Aligned<br />Opportunities</p>
+                      <p className="text-[12px] font-heading font-extrabold text-[#001B4F] tracking-wider leading-none mb-1">
+                        {formatDynamicText(evaluationData?.shortlistedTitle || "SHORTLISTED")}
+                      </p>
+                      <p className="text-[10px] font-bold text-[#001B4F]/60 leading-tight">
+                        {formatDynamicText(evaluationData?.shortlistedSubtitle || "Aligned Opportunities")}
+                      </p>
                     </div>
                   </div>
                 </div>
@@ -397,7 +420,7 @@ export default function SlideIndependentEvaluation() {
                 </svg>
               </div>
               <h3 className="text-primary text-[18px] sm:text-[20px] font-heading font-extrabold tracking-tight">
-                No Bias. <span className="text-gold">Only Clarity.</span>
+                {formatDynamicText(evaluationData?.noBiasTitle || "No Bias. [gold]Only Clarity.[/gold]", GOLD)}
               </h3>
             </div>
 
@@ -405,9 +428,9 @@ export default function SlideIndependentEvaluation() {
               variants={staggerContainer(0.06, 0.2)}
               className="grid grid-cols-2 gap-4 w-full"
             >
-              {ae.map((e) => (
+              {noBiasPointsList.map((e: string, idx: number) => (
                 <motion.div
-                  key={e}
+                  key={idx}
                   variants={fadeInUp(0, 0.4)}
                   whileHover={{ scale: 1.03 }}
                   className="flex items-center gap-2.5 p-3 rounded-lg bg-slate-50 border border-slate-100 hover:border-gold/30 hover:bg-white transition-all cursor-pointer shadow-xs"
@@ -432,22 +455,22 @@ export default function SlideIndependentEvaluation() {
 
           {/* Staggered checklist */}
           <motion.div variants={staggerContainer(0.08, 0.2)} className="flex flex-col gap-5 w-full max-w-4xl mx-auto">
-            {ie.map((e) => (
+            {pillarsList.map((item: any, idx: number) => (
               <motion.div
-                key={e.title}
+                key={idx}
                 variants={fadeInUp(0, 0.5)}
                 whileHover={{ scale: 1.02 }}
                 className="flex items-start gap-3.5 p-4 rounded-xl bg-white shadow-[0_4px_16px_rgba(0,0,0,0.03)] border border-primary/5 cursor-default transition-all duration-300"
               >
                 <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-full bg-[#001B4F] border border-gold/30 shadow-sm text-white">
-                  <SlideImage src={e.icon} size={22} className="filter brightness-110" />
+                  <SlideImage src={item.icon} size={22} className="filter brightness-110" />
                 </div>
                 <div>
                   <h4 className="font-bold text-[#001B4F] text-[14px] sm:text-[15px] font-heading leading-tight mb-1">
-                    {e.title}
+                    {item.title}
                   </h4>
                   <p className="text-[#001B4F]/70 text-[12px] sm:text-[12.5px] font-medium leading-relaxed mt-1 whitespace-pre-line">
-                    {e.desc}
+                    {item.desc}
                   </p>
                 </div>
               </motion.div>
@@ -463,8 +486,7 @@ export default function SlideIndependentEvaluation() {
                 <SlideImage src={y.usersGroup} size={28} />
               </div>
               <p className="text-white text-[12px] sm:text-[13px] font-medium leading-normal">
-                We bring the entire market to you. You make the right choice with{" "}
-                <span className="text-gold font-bold">confidence.</span>
+                {formatDynamicText(evaluationData?.bottomCard1Text || "We bring the entire market to you. You make the right choice with [gold]confidence.[/gold]", GOLD)}
               </p>
             </div>
             <div className="flex items-center gap-3.5 pt-3">
@@ -475,8 +497,7 @@ export default function SlideIndependentEvaluation() {
                 <SlideImage src={y.target} size={28} />
               </div>
               <p className="text-white text-[12px] sm:text-[13px] font-medium leading-normal">
-                More options. Better insights.{" "}
-                <span className="text-gold font-bold">Stronger decisions.</span>
+                {formatDynamicText(evaluationData?.bottomCard2Text || "More options. Better insights. [gold]Stronger decisions.[/gold]", GOLD)}
               </p>
             </div>
           </div>
@@ -497,7 +518,7 @@ export default function SlideIndependentEvaluation() {
               />
             </svg>
             <span>
-              Developer names and logos are used solely to represent the broader project ecosystem and do not imply partnerships or endorsements.
+              {formatDynamicText(evaluationData?.disclaimer || "Developer names and logos are used solely to represent the broader project ecosystem and do not imply partnerships or endorsements.")}
             </span>
           </div>
         </div>
@@ -528,39 +549,27 @@ export default function SlideIndependentEvaluation() {
             </h2>
           </motion.div>
           <motion.p variants={fadeInRight(0.1, 0.6)} className="p-global text-primary/80 mt-1">
-            {evaluationData?.description ? (
-              formatDynamicText(evaluationData.description, GOLD)
-            ) : (
-              <>
-                We evaluate opportunities across the market.
-                <br />
-                We do not push inventory.
-                <br />
-                Our only focus is helping you find the
-                <br />
-                right property.
-              </>
-            )}
+            {formatDynamicText(evaluationData?.description || "We evaluate opportunities across the market objectively. We do not push developer inventory. Our only focus is helping you find the right property that matches your criteria and interests.", GOLD)}
           </motion.p>
 
           <motion.div variants={staggerContainer(0.08, 0.3)} className="flex flex-col gap-[14px]">
-            {ie.map((e) => (
+            {pillarsList.map((item: any, idx: number) => (
               <motion.div
-                key={e.title}
+                key={idx}
                 variants={fadeInRight(0, 0.5)}
                 whileHover={{ x: 6 }}
                 className="flex items-start gap-[12px] cursor-default group"
               >
                 <div className="flex h-[42px] w-[42px] shrink-0 items-center justify-center rounded-full bg-[#001B4F] border border-gold/30 shadow-[0_4px_12px_rgba(0,27,79,0.1)] relative overflow-hidden transition-all duration-300 group-hover:border-gold text-white">
                   <div className="absolute inset-0 bg-gradient-to-tr from-gold/25 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
-                  <SlideImage src={e.icon} size={22} className="relative z-10 filter brightness-110" />
+                  <SlideImage src={item.icon} size={22} className="relative z-10 filter brightness-110" />
                 </div>
                 <div>
                   <p className="font-bold text-[#001B4F] text-[clamp(15px,0.95vw,20px)] font-heading leading-tight mb-[3px] group-hover:text-gold transition-colors duration-300">
-                    {e.title}
+                    {item.title}
                   </p>
                   <p className="text-[#001B4F]/70 text-[clamp(11.5px,0.78vw,13.5px)] font-medium leading-relaxed whitespace-pre-line mt-[3px]">
-                    {e.desc}
+                    {item.desc}
                   </p>
                 </div>
               </motion.div>
@@ -577,10 +586,10 @@ export default function SlideIndependentEvaluation() {
           className="absolute left-[55%] -translate-x-1/2 top-[3.5%] w-[50%] text-center flex flex-col gap-2"
         >
           <h2 className="font-heading font-bold text-[clamp(24px,1.8vw,36px)] leading-snug text-primary tracking-tight">
-            A Wide Network. <span className="text-gold">One Trusted Partner.</span>
+            {formatDynamicText(evaluationData?.centerHeading || "A Wide Network. [gold]One Trusted Partner.[/gold]", GOLD)}
           </h2>
           <p className="text-[clamp(11px,0.75vw,14px)] text-primary/60 font-semibold tracking-wide uppercase">
-            Access to top developers. Evaluated through one intelligent framework.
+            {formatDynamicText(evaluationData?.centerSubheading || "Access to top developers. Evaluated through one intelligent framework.", GOLD)}
           </p>
         </motion.div>
 
@@ -605,8 +614,12 @@ export default function SlideIndependentEvaluation() {
               <SlideImage src={y.user} size={24} />
             </div>
             <div className="flex flex-col text-left">
-              <p className="text-[13px] font-heading font-extrabold text-[#001B4F] tracking-wider leading-none mb-1">YOU</p>
-              <p className="text-[11px] font-bold text-[#001B4F]/60 leading-tight">Your Goals &<br/>Priorities</p>
+              <p className="text-[13px] font-heading font-extrabold text-[#001B4F] tracking-wider leading-none mb-1">
+                {formatDynamicText(evaluationData?.youTitle || "YOU")}
+              </p>
+              <p className="text-[11px] font-bold text-[#001B4F]/60 leading-tight">
+                {formatDynamicText(evaluationData?.youSubtitle || "Your Goals & Priorities")}
+              </p>
             </div>
           </div>
         </motion.div>
@@ -732,11 +745,11 @@ export default function SlideIndependentEvaluation() {
               
               {/* Highlighted Micro-Badge for Subtitle */}
               <div className="px-2.5 py-0.5 rounded-full bg-gold/12 border border-gold/30 text-gold text-[clamp(8px,0.8vw,9.5px)] font-extrabold uppercase tracking-widest leading-none mb-1.5">
-                Independent Evaluation
+                {formatDynamicText(evaluationData?.hubBadge || "Independent Evaluation")}
               </div>
               
               <p className="text-white/85 text-[clamp(7.5px,0.7vw,9px)] font-bold tracking-wide mt-0.5 leading-normal max-w-[85%]">
-                Intelligent Comparison • Informed Decisions
+                {formatDynamicText(evaluationData?.hubSubtext || "Intelligent Comparison • Informed Decisions")}
               </p>
             </div>
           </motion.div>
@@ -764,8 +777,12 @@ export default function SlideIndependentEvaluation() {
               <SlideImage src={y.clipboardCheck} size={28} />
             </div>
             <div className="flex flex-col text-left">
-              <p className="text-[13px] font-heading font-extrabold text-[#001B4F] tracking-wider leading-none mb-1">SHORTLISTED</p>
-              <p className="text-[11px] font-bold text-[#001B4F]/60 leading-tight">Aligned<br/>Opportunities</p>
+              <p className="text-[13px] font-heading font-extrabold text-[#001B4F] tracking-wider leading-none mb-1">
+                {formatDynamicText(evaluationData?.shortlistedTitle || "SHORTLISTED")}
+              </p>
+              <p className="text-[11px] font-bold text-[#001B4F]/60 leading-tight">
+                {formatDynamicText(evaluationData?.shortlistedSubtitle || "Aligned Opportunities")}
+              </p>
             </div>
           </div>
         </motion.div>
@@ -841,9 +858,7 @@ export default function SlideIndependentEvaluation() {
           </div>
           <div className="text-center">
             <h3 className="text-[#001B4F] text-[clamp(15px,1.15vw,22px)] font-heading font-extrabold leading-snug tracking-tight">
-              No Bias.
-              <br />
-              <span className="text-gold">Only Clarity.</span>
+              {formatDynamicText(evaluationData?.noBiasTitle || "No Bias.\n[gold]Only Clarity.[/gold]", GOLD)}
             </h3>
             <div className="h-[2px] w-[24px] bg-gold/50 mx-auto mt-2" />
           </div>
@@ -854,9 +869,9 @@ export default function SlideIndependentEvaluation() {
             animate="visible"
             className="w-full flex flex-col gap-[10px] text-left px-1"
           >
-            {ae.map((e) => (
+            {noBiasPointsList.map((e: string, idx: number) => (
               <motion.div
-                key={e}
+                key={idx}
                 variants={fadeInUp(0, 0.45)}
                 className="flex items-center gap-[8px] p-1.5 rounded-lg bg-white/50 border border-slate-100 hover:bg-white hover:border-gold/30 hover:shadow-sm transition-all duration-200 cursor-default"
               >
@@ -903,10 +918,7 @@ export default function SlideIndependentEvaluation() {
               <SlideImage src={y.usersGroup} size={32} />
             </div>
             <p className="text-white text-[clamp(12px,0.9vw,16px)] font-heading leading-snug font-medium">
-              We bring the entire market to you.
-              <br />
-              You make the right choice with{" "}
-              <span className="text-gold font-bold">confidence.</span>
+              {formatDynamicText(evaluationData?.bottomCard1Text || "We bring the entire market to you.\nYou make the right choice with [gold]confidence.[/gold]", GOLD)}
             </p>
           </div>
 
@@ -920,9 +932,7 @@ export default function SlideIndependentEvaluation() {
               <SlideImage src={y.target} size={32} />
             </div>
             <p className="text-white text-[clamp(12px,0.9vw,16px)] font-heading leading-snug font-medium">
-              More options. Better insights.
-              <br />
-              <span className="text-gold font-bold">Stronger decisions.</span>
+              {formatDynamicText(evaluationData?.bottomCard2Text || "More options. Better insights.\n[gold]Stronger decisions.[/gold]", GOLD)}
             </p>
           </div>
         </motion.div>

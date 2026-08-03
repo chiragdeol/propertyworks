@@ -59,19 +59,11 @@ export default function SlideClientTestimonials() {
       img: "/images/prop-2-img.webp",
     },
     {
+      name: "Pooja & Rahul Verma",
+      role: "Borivali | Home Buyer",
+      text: "PropertyWorks made our home evaluation completely stress-free. The comparative analysis helped us choose the right project.",
       img: "/images/prop-6-img.webp",
     },
-  ];
-
-  const defaultTestimonialImgs = [
-    "/images/prop-1-img.webp",
-    "/images/prop-5-img.webp",
-    "/images/prop-4-img.webp",
-    "/images/prop-3-img.webp",
-    "/images/prop-7-img.webp",
-    "/images/prop-8-img.webp",
-    "/images/prop-2-img.webp",
-    "/images/prop-6-img.webp",
   ];
 
   const displayTestimonials = testimonials.map((defaultCard: any, idx: number) => {
@@ -81,7 +73,8 @@ export default function SlideClientTestimonials() {
       ...defaultCard,
       name: dbItem.name || defaultCard.name,
       role: dbItem.role || defaultCard.role,
-      text: dbItem.quote || defaultCard.text,
+      text: dbItem.quote || dbItem.text || defaultCard.text,
+      img: dbItem.img || defaultCard.img,
     };
   });
 
@@ -107,6 +100,16 @@ export default function SlideClientTestimonials() {
       icon: y.handshake,
     },
   ];
+
+  const displayPillars = pillars.map((defaultPillar: any, idx: number) => {
+    const dbPillar = testimonialsData?.pillars?.[idx] || testimonialsData?.blueStrip?.[idx];
+    if (!dbPillar) return defaultPillar;
+    return {
+      ...defaultPillar,
+      title: dbPillar.title || defaultPillar.title,
+      desc: dbPillar.desc || defaultPillar.desc,
+    };
+  });
 
   return (
     <section
@@ -250,7 +253,7 @@ export default function SlideClientTestimonials() {
             animation: "glowMove 10s ease infinite",
           }}
         >
-          {pillars.map((p, idx) => (
+          {displayPillars.map((p: any, idx: number) => (
             <div key={idx} className="flex items-center gap-3">
               <div className="w-9 h-9 shrink-0 rounded-full border border-gold/40 flex items-center justify-center bg-gold/5 p-2">
                 <img
@@ -430,31 +433,42 @@ export default function SlideClientTestimonials() {
           >
             <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_top_right,rgba(212,161,58,0.06),transparent_50%)] pointer-events-none" />
 
-            {pillars.map((p, idx) => (
-              <React.Fragment key={p.title}>
-                <div className="flex items-center gap-5 flex-1 relative z-10 pl-4 first:pl-0">
-                  <div className="relative w-14 h-14 shrink-0 bg-[#D4A13A]/15 rounded-full flex items-center justify-center border border-[#D4A13A]/40 shadow-[0_0_15px_rgba(212,161,58,0.2)] p-3">
-                    <div className="absolute inset-0 bg-[#D4A13A]/5 rounded-full pulsing-ring pointer-events-none" />
-                    <img
-                      src={p.icon}
-                      alt={p.title}
-                      className="w-full h-full object-contain filter brightness-110 relative z-10"
-                    />
+            {(() => {
+              const displayPillars = pillars.map((defaultPillar: any, idx: number) => {
+                const dbPillar = testimonialsData?.pillars?.[idx] || testimonialsData?.blueStrip?.[idx];
+                if (!dbPillar) return defaultPillar;
+                return {
+                  ...defaultPillar,
+                  title: dbPillar.title || defaultPillar.title,
+                  desc: dbPillar.desc || defaultPillar.desc,
+                };
+              });
+              return displayPillars.map((p: any, idx: number) => (
+                <React.Fragment key={idx}>
+                  <div className="flex items-center gap-5 flex-1 relative z-10 pl-4 first:pl-0">
+                    <div className="relative w-14 h-14 shrink-0 bg-[#D4A13A]/15 rounded-full flex items-center justify-center border border-[#D4A13A]/40 shadow-[0_0_15px_rgba(212,161,58,0.2)] p-3">
+                      <div className="absolute inset-0 bg-[#D4A13A]/5 rounded-full pulsing-ring pointer-events-none" />
+                      <img
+                        src={p.icon}
+                        alt={p.title}
+                        className="w-full h-full object-contain filter brightness-110 relative z-10"
+                      />
+                    </div>
+                    <div className="min-w-0">
+                      <p className="text-[#D4A13A] font-heading font-bold text-sm tracking-wider uppercase">
+                        {p.title}
+                      </p>
+                      <p className="text-white/80 text-[11.5px] mt-1 font-medium leading-relaxed">
+                        {p.desc}
+                      </p>
+                    </div>
                   </div>
-                  <div className="min-w-0">
-                    <p className="text-[#D4A13A] font-heading font-bold text-sm tracking-wider uppercase">
-                      {p.title}
-                    </p>
-                    <p className="text-white/80 text-[11.5px] mt-1 font-medium leading-relaxed">
-                      {p.desc}
-                    </p>
-                  </div>
-                </div>
-                {idx < pillars.length - 1 && (
-                  <div className="w-px h-12 bg-slate-400/25 shrink-0 self-center hidden lg:block mx-4" />
-                )}
-              </React.Fragment>
-            ))}
+                  {idx < displayPillars.length - 1 && (
+                    <div className="w-px h-12 bg-slate-400/25 shrink-0 self-center hidden lg:block mx-4" />
+                  )}
+                </React.Fragment>
+              ));
+            })()}
           </motion.div>
         </div>
       </div>

@@ -280,7 +280,7 @@ export default function SectionClarity() {
                 viewport={{ once: true }}
                 className="absolute inset-0 z-20 hidden sm:flex flex-col justify-start pt-[6%] pr-4 items-end space-y-[4.5%]"
               >
-                {rightPointsList.map((item, idx) => (
+                {rightPointsList.map((item: any, idx: number) => (
                   <motion.div
                     key={idx}
                     variants={fadeInLeft(0, 0.5)}

@@ -297,34 +297,37 @@ export default function SlideWhyChoose() {
               </div>
               <div className="border-l border-gold/30 pl-4">
                 <p className="text-gold font-heading font-bold text-[13px] sm:text-[14px] leading-snug">
-                  We Don't Just Show Properties.
+                  {formatDynamicText(chooseData?.blueStripTagline1 || "We Don't Just Show Properties.", GOLD, "#ffffff")}
                 </p>
                 <p className="text-white text-[13.5px] sm:text-[14px] font-medium mt-0.5 leading-snug">
-                  We Help You Make the Right Decision.
+                  {formatDynamicText(chooseData?.blueStripTagline2 || "We Help You Make the Right Decision.", GOLD, "#ffffff")}
                 </p>
               </div>
             </div>
 
             {/* Sections 2-4 – Outcomes */}
-            {bottomCard.map(({ icon, title, desc }, idx) => {
+            {bottomCard.map((defaultCard, idx) => {
+              const dbItem = chooseData?.blueStripOutcomes?.[idx] || chooseData?.bottomCard?.[idx];
+              const title = dbItem?.title || defaultCard.title;
+              const desc = dbItem?.desc || defaultCard.desc;
               const borderClass = idx === 1
                 ? "md:border-r md:border-b lg:border-r-0 lg:border-b-0 border-gold/20"
                 : "md:border-b lg:border-b-0 border-gold/20";
               return (
                 <motion.div
-                  key={title}
+                  key={idx}
                   whileHover={{ backgroundColor: "rgba(212,161,58,0.06)" }}
                   className={`flex items-center gap-3 px-5 py-5 w-full md:w-1/2 lg:w-auto lg:flex-1 cursor-default transition-colors duration-200 ${borderClass}`}
                 >
                   <div className="shrink-0 w-9 h-9 flex items-center justify-center rounded-full border border-gold/50 bg-gold/10">
-                    <SlideImage src={icon} size={18} />
+                    <SlideImage src={defaultCard.icon} size={18} />
                   </div>
                   <div>
                     <p className="text-gold font-bold text-[13px] sm:text-[13.5px] leading-tight">
-                      {title}
+                      {formatDynamicText(title, GOLD, "#ffffff")}
                     </p>
-                    <p className="text-white/60 text-[11.5px] sm:text-[12px] mt-0.5 font-medium leading-tight">
-                      {desc}
+                    <p className="text-white text-[11.5px] sm:text-[12px] mt-0.5 font-medium leading-tight">
+                      {formatDynamicText(desc, GOLD, "#ffffff")}
                     </p>
                   </div>
                 </motion.div>
@@ -341,19 +344,18 @@ export default function SlideWhyChoose() {
               </div>
               <div>
                 <p className="text-gold font-bold text-[13px] sm:text-[13.5px] leading-tight">
-                  Guided Journey
+                  {formatDynamicText(chooseData?.blueStripJourneyTitle || "Guided Journey", GOLD, "#ffffff")}
                 </p>
-                <p className="text-white/60 text-[11.5px] sm:text-[12px] mt-0.5 font-medium leading-tight">
-                  From first call to final decision.
+                <p className="text-white text-[11.5px] sm:text-[12px] mt-0.5 font-medium leading-tight">
+                  {formatDynamicText(chooseData?.blueStripJourneyDesc || "From first call to final decision.", GOLD, "#ffffff")}
                 </p>
               </div>
             </motion.div>
 
             {/* Section 6 – CTA text */}
             <div className="flex items-center px-6 py-5 w-full md:w-1/2 lg:w-[18%] shrink-0">
-              <p className="text-white/70 text-[12px] sm:text-[13px] font-semibold leading-snug italic">
-                Let's make your next property decision your{" "}
-                <span className="text-gold not-italic font-bold">best decision.</span>
+              <p className="text-white text-[12px] sm:text-[13px] font-semibold leading-snug italic">
+                {formatDynamicText(chooseData?.blueStripCtaText || "Let's make your next property decision your [gold]best decision.[/gold]", GOLD, "#ffffff")}
               </p>
             </div>
           </div>
