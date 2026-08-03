@@ -153,7 +153,7 @@ export default function SlideContactUs() {
       {/* ── Row 1: Contact Details LEFT | Image RIGHT ── */}
       <div className=" w-full bg-[#fcfdfe] relative">
         <div className="flex flex-col lg:flex-row relative">
-          {/* Left Column: logo badge, headings, info cards */}
+          
           <motion.div
             variants={staggerContainer(0.12, 0.1)}
             initial="hidden"
