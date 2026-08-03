@@ -39,31 +39,87 @@ app.use(cors({
 app.use(express.json({ limit: "50mb" }));
 app.use(cookieParser());
 
-// Database configuration
-const candidateDbDirs = [
-  path.join(__dirname, "database"),
-  path.join(__dirname, "../database"),
-  path.join(__dirname, "../backend/database"),
-  path.join(process.cwd(), "backend/database"),
-  path.join(process.cwd(), "database"),
-  path.join(process.cwd(), "public_html/backend/database"),
-  path.join(process.cwd(), "public_html/database")
-];
-const DB_DIR = candidateDbDirs.find((d) => fs.existsSync(d)) || path.join(__dirname, "database");
+// Database & Uploads persistent storage configuration (survives Hostinger redeployments)
+const getPersistentDbDir = () => {
+  if (process.env.DB_DIR) {
+    if (!fs.existsSync(process.env.DB_DIR)) {
+      fs.mkdirSync(process.env.DB_DIR, { recursive: true });
+    }
+    return process.env.DB_DIR;
+  }
+
+  const homeDir = process.env.HOME || process.env.USERPROFILE || "";
+  const candidates = [
+    path.join(homeDir, "propertyworks_persistent/database"),
+    path.resolve(process.cwd(), "../../propertyworks_persistent/database"),
+    path.resolve(__dirname, "../../propertyworks_persistent/database"),
+    path.join(__dirname, "database"),
+    path.join(process.cwd(), "backend/database"),
+    path.join(process.cwd(), "database")
+  ];
+
+  for (const d of candidates) {
+    try {
+      if (!fs.existsSync(d)) {
+        fs.mkdirSync(d, { recursive: true });
+      }
+      const testFile = path.join(d, ".perm_test");
+      fs.writeFileSync(testFile, "ok");
+      fs.unlinkSync(testFile);
+      console.log(`[DB System] Active persistent DB directory: ${d}`);
+      return d;
+    } catch (e) {
+      // Continue searching
+    }
+  }
+
+  return path.join(__dirname, "database");
+};
+
+const getPersistentUploadsDir = () => {
+  if (process.env.UPLOADS_DIR) {
+    if (!fs.existsSync(process.env.UPLOADS_DIR)) {
+      fs.mkdirSync(process.env.UPLOADS_DIR, { recursive: true });
+    }
+    return process.env.UPLOADS_DIR;
+  }
+
+  const homeDir = process.env.HOME || process.env.USERPROFILE || "";
+  const candidates = [
+    path.join(homeDir, "propertyworks_persistent/uploads"),
+    path.resolve(process.cwd(), "../../propertyworks_persistent/uploads"),
+    path.resolve(__dirname, "../../propertyworks_persistent/uploads"),
+    path.join(__dirname, "uploads"),
+    path.join(process.cwd(), "backend/uploads"),
+    path.join(process.cwd(), "uploads")
+  ];
+
+  for (const d of candidates) {
+    try {
+      if (!fs.existsSync(d)) {
+        fs.mkdirSync(d, { recursive: true });
+      }
+      const testFile = path.join(d, ".perm_test");
+      fs.writeFileSync(testFile, "ok");
+      fs.unlinkSync(testFile);
+      console.log(`[DB System] Active persistent uploads directory: ${d}`);
+      return d;
+    } catch (e) {
+      // Continue
+    }
+  }
+
+  return path.join(__dirname, "uploads");
+};
+
+const DB_DIR = getPersistentDbDir();
+const UPLOADS_DIR = getPersistentUploadsDir();
+
 const PROJECTS_PATH = path.join(DB_DIR, "projects.json");
 const ARTICLES_PATH = path.join(DB_DIR, "articles.json");
 const SETTINGS_PATH = path.join(DB_DIR, "settings.json");
 const ADMIN_PATH = path.join(DB_DIR, "admin.json");
 const LEADS_PATH = path.join(DB_DIR, "leads.json");
-
-const candidateUploadsDirs = [
-  path.join(__dirname, "uploads"),
-  path.join(__dirname, "../uploads"),
-  path.join(process.cwd(), "backend/uploads"),
-  path.join(process.cwd(), "uploads"),
-  path.join(process.cwd(), "public_html/uploads")
-];
-const UPLOADS_DIR = candidateUploadsDirs.find((d) => fs.existsSync(d)) || path.join(__dirname, "uploads");
 
 // Serve uploads statically
 app.use("/uploads", express.static(UPLOADS_DIR));
@@ -281,9 +337,32 @@ function initDb() {
     fs.mkdirSync(DB_DIR, { recursive: true });
   }
 
-  if (!fs.existsSync(UPLOADS_DIR)) {
-    fs.mkdirSync(UPLOADS_DIR, { recursive: true });
-  }
+  const copySeedIfMissing = (targetPath, fileName) => {
+    if (!fs.existsSync(targetPath)) {
+      const seedPaths = [
+        path.join(__dirname, "database", fileName),
+        path.join(process.cwd(), "backend/database", fileName),
+        path.join(process.cwd(), "database", fileName)
+      ];
+      const foundSeed = seedPaths.find((p) => fs.existsSync(p) && p !== targetPath);
+      if (foundSeed) {
+        try {
+          fs.copyFileSync(foundSeed, targetPath);
+          console.log(`[DB Init] Preserved/seeded ${fileName} from ${foundSeed}`);
+          return true;
+        } catch (e) {
+          console.error(`[DB Init] Failed to copy seed ${fileName}:`, e);
+        }
+      }
+    }
+    return fs.existsSync(targetPath);
+  };
+
+  copySeedIfMissing(LEADS_PATH, "leads.json");
+  copySeedIfMissing(ADMIN_PATH, "admin.json");
+  copySeedIfMissing(SETTINGS_PATH, "settings.json");
+  copySeedIfMissing(ARTICLES_PATH, "articles.json");
+  copySeedIfMissing(PROJECTS_PATH, "projects.json");
 
   if (!fs.existsSync(LEADS_PATH)) {
     fs.writeFileSync(LEADS_PATH, JSON.stringify([], null, 2), "utf-8");
