@@ -176,11 +176,11 @@ export default function SlideGuidedSiteVisits() {
             viewport={{ once: true }}
             className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-6 lg:gap-8"
           >
-            {(Array.isArray(visitsData?.features) && visitsData.features.length > 0
+            {(Array.isArray(visitsData?.features) && visitsData.features.length > 0 && typeof visitsData.features[0] === 'object' && visitsData.features[0]?.title
               ? visitsData.features.map((f: any, i: number) => ({
-                  icon: [y.scalesGold, y.vastu, y.location, y.rupeeCircle, y.handshake][i % 5],
-                  title: f.title || "",
-                  desc: f.desc || ""
+                  icon: [y.scalesGold, y.vastu, y.location, y.scales, y.handshake][i % 5],
+                  title: f.title || T[i % T.length]?.title || "",
+                  desc: f.desc || T[i % T.length]?.desc || ""
                 }))
               : T
             ).map((e: any, i: number) => (

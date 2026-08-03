@@ -91,17 +91,33 @@ export default function SlideOurServices() {
   const servicesData = settings?.sections?.services;
   const [activeCardIndex, setActiveCardIndex] = useState(0);
 
-  const defaultServiceIcons = [y.searchBuilding, y.commercialBuilding, y.guidedWalkthrough];
+  const defaultServiceIcons = [y.searchBuilding, y.commercial, y.residential];
 
-  const displayServices = Array.isArray(servicesData?.items) && servicesData.items.length > 0
-    ? servicesData.items.map((it: any, i: number) => ({
-        num: `0${i + 1}`,
-        icon: defaultServiceIcons[i % defaultServiceIcons.length],
-        title: it.title || "",
-        subtitle: "",
-        points: typeof it.bullets === "string" ? it.bullets.split("|").map((s: string) => s.trim()).filter(Boolean) : (it.description ? [it.description] : [])
-      }))
-    : ge;
+  const displayServices = ge.map((defaultCard: any, i: number) => {
+    const dbItem = servicesData?.items?.[i];
+    if (!dbItem) return defaultCard;
+
+    let dbPoints: string[] = [];
+    if (typeof dbItem.bullets === "string" && dbItem.bullets.trim().length > 0) {
+      dbPoints = dbItem.bullets.split("|").map((s: string) => s.trim()).filter(Boolean);
+    } else if (Array.isArray(dbItem.points) && dbItem.points.length > 0) {
+      dbPoints = dbItem.points;
+    } else if (dbItem.description) {
+      dbPoints = [dbItem.description];
+    }
+
+    const mergedPoints = dbPoints.length >= 5 ? dbPoints : [
+      ...dbPoints,
+      ...defaultCard.points.slice(dbPoints.length)
+    ];
+
+    return {
+      ...defaultCard,
+      title: dbItem.title || defaultCard.title,
+      subtitle: dbItem.subtitle || defaultCard.subtitle,
+      points: mergedPoints
+    };
+  });
 
   useEffect(() => {
     const interval = setInterval(() => {

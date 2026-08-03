@@ -297,25 +297,27 @@ export default function SectionNoise() {
       },
       bodyVariants: {
         hidden: { opacity: 0, y: 12 },
+        visible: { opacity: 1, y: 0, transition: { duration: 0.5, delay: 0.15, ease: "easeOut" as const } }
       }
     },
   ];
 
   const defaultIcons = [iconCarCircle, iconMegaphoneGold, iconRupeeCircle, iconInfoCircle, iconCompassCircle];
 
-  const displayItems = Array.isArray(noiseData?.items) && noiseData.items.length > 0
-    ? noiseData.items.map((it: any, i: number) => ({
-        icon: defaultIcons[i % defaultIcons.length],
-        title: formatDynamicText(it.title || "", GOLD),
-        body: formatDynamicText(it.body || "", GOLD),
-        solTitle: it.solTitle || "",
-        solBody: it.solBody || "",
-        tags: it.tags,
-        solTags: it.solTags,
-        titleVariants: items[i % items.length]?.titleVariants || items[0].titleVariants,
-        bodyVariants: items[i % items.length]?.bodyVariants || items[0].bodyVariants,
-      }))
-    : items;
+  const displayItems = items.map((defaultCard: any, i: number) => {
+    const dbItem = noiseData?.items?.[i];
+    if (!dbItem) return defaultCard;
+
+    return {
+      ...defaultCard,
+      title: dbItem.title ? formatDynamicText(dbItem.title, GOLD) : defaultCard.title,
+      body: dbItem.body ? formatDynamicText(dbItem.body, GOLD) : defaultCard.body,
+      solTitle: dbItem.solTitle || defaultCard.solTitle,
+      solBody: dbItem.solBody || defaultCard.solBody,
+      tags: (Array.isArray(dbItem.tags) && dbItem.tags.length > 0) ? dbItem.tags : defaultCard.tags,
+      solTags: (Array.isArray(dbItem.solTags) && dbItem.solTags.length > 0) ? dbItem.solTags : defaultCard.solTags,
+    };
+  });
 
   return (
     <section className="w-full bg-white relative overflow-hidden">

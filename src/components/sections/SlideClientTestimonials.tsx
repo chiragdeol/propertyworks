@@ -74,14 +74,16 @@ export default function SlideClientTestimonials() {
     "/images/prop-6-img.webp",
   ];
 
-  const displayTestimonials = Array.isArray(testimonialsData?.items) && testimonialsData.items.length > 0
-    ? testimonialsData.items.map((it: any, idx: number) => ({
-        name: it.name || "",
-        role: it.role || "",
-        text: it.quote || "",
-        img: defaultTestimonialImgs[idx % defaultTestimonialImgs.length]
-      }))
-    : testimonials;
+  const displayTestimonials = testimonials.map((defaultCard: any, idx: number) => {
+    const dbItem = testimonialsData?.items?.[idx];
+    if (!dbItem) return defaultCard;
+    return {
+      ...defaultCard,
+      name: dbItem.name || defaultCard.name,
+      role: dbItem.role || defaultCard.role,
+      text: dbItem.quote || defaultCard.text,
+    };
+  });
 
   const pillars = [
     {
