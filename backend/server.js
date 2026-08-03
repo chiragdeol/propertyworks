@@ -331,7 +331,7 @@ const defaultSections = {
   }
 };
 
-// Initialize Database Files
+
 function initDb() {
   if (!fs.existsSync(DB_DIR)) {
     fs.mkdirSync(DB_DIR, { recursive: true });
